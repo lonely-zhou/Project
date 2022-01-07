@@ -1,0 +1,4 @@
+controller.EmpList=org.springframework.stereotype.Component
+controller.UserLogin=org.springframework.stereotype.Component
+service.impl.EmpListServiceImpl=org.springframework.stereotype.Component
+service.impl.UserLoginServiceImpl=org.springframework.stereotype.Component

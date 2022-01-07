@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.EmpListDao">
+    <!-- 查询Emp表 -->
+    <select id="selectEmp" parameterType="String" resultType="po.Emp">
+        select *
+        from emp
+        where deptId = #{deptId}
+    </select>
+    <!--查询Dept表-->
+    <select id="selectDept" resultType="po.Dept">
+        select *
+        from dept
+    </select>
+    <!--修改Emp表-->
+    <update id="updateEmp" parameterType="po.Emp">
+        update emp
+        set name = #{name},
+            sex  = #{sex},
+            info = #{info}
+        where id = #{id}
+    </update>
+    <!--    查询DeptId-->
+    <select id="selectDeptId" parameterType="String" resultType="String">
+        select d.id
+        from dept d
+                 join emp e
+                      on e.deptId = d.id
+        where e.id = #{id}
+    </select>
+    <!--    删除Emp表员工-->
+    <delete id="deleteEmp" parameterType="String">
+        delete
+        from emp
+        where id = #{id}
+    </delete>
+</mapper>
