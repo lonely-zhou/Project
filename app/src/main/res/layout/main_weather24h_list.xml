@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="30dp"
+    android:orientation="vertical">
+    <!--时间-->
+    <TextView
+        android:id="@+id/main_weather24h_list_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+    <!--图标-->
+    <ImageView
+        android:id="@+id/main_weather24h_list_icon"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
+        android:layout_below="@+id/main_weather24h_list_time"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"/>
+    <!--温度-->
+    <TextView
+        android:id="@+id/main_weather24h_list_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_weather24h_list_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"/>
+    <!--降水百分比-->
+    <TextView
+        android:id="@+id/main_weather24h_list_pop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_weather24h_list_temp"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
