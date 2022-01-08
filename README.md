@@ -1,2 +1,2 @@
-# other
-## 其他代码存放
+# ssmProject
+## 基于SSM的简单员工管理
