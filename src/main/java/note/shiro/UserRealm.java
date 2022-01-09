@@ -34,9 +34,8 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         //token携带了用户信息
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
-        //获取前端输入的手机号
+        //获取前端输入的username
         String username = usernamePasswordToken.getUsername();
-//        UserVO vo = userService.findByUserName(username);
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
         if (user == null) {
             throw new UnknownAccountException("该用户不存在！");

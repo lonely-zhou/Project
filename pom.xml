@@ -78,11 +78,11 @@
 
         <!--shiro-->
         <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring-boot-web-starter -->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shiro</groupId>-->
-<!--            <artifactId>shiro-spring-boot-web-starter</artifactId>-->
-<!--            <version>1.8.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.apache.shiro</groupId>-->
+        <!--            <artifactId>shiro-spring-boot-web-starter</artifactId>-->
+        <!--            <version>1.8.0</version>-->
+        <!--        </dependency>-->
 
         <!-- shiro的spring整合框架 -->
         <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-spring -->
@@ -110,6 +110,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.6.2</version>
+                <configuration>
+                    <fork>true</fork>
+                </configuration>
             </plugin>
         </plugins>
     </build>

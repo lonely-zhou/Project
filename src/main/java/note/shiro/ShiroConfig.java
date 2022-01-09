@@ -32,7 +32,7 @@ public class ShiroConfig {
         //指定加密方式为MD5
         credentialsMatcher.setHashAlgorithmName("MD5");
         //加密次数
-        credentialsMatcher.setHashIterations(10);
+        credentialsMatcher.setHashIterations(1024);
         credentialsMatcher.setStoredCredentialsHexEncoded(true);
         return credentialsMatcher;
     }
@@ -49,8 +49,6 @@ public class ShiroConfig {
 
     /**
      * 创建 DefaultWebSecurityManager
-     *
-     *
      */
     @Bean("DefaultWebSecurityManager")
     public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("userRealm") UserRealm userRealm) {
@@ -64,14 +62,22 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("DefaultWebSecurityManager") DefaultWebSecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        /*拦截器*/
+        /*
+         * 拦截器
+         * anon 不需要登录就能访问,一般用于静态资源,或者移动端接口
+         * authc 需要登录认证才能访问的资源
+         * logout 用户登出拦截器,主要属性:redirectURL退出登录后重定向的地址
+         * prems 验证用户是否拥有资源权限
+         * roles 验证用户是否拥有资源角色
+         * user 用户拦截器，用户已经身份验证 / 记住我登录的都可；
+         * */
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         filterChainDefinitionMap.put("/recordAndShare", "anon");
-        filterChainDefinitionMap.put("/recordAndShare/user/getUser2", "authc");
         shiroFilterFactoryBean.setLoginUrl("/recordAndShare/user/login");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;
     }
+
 
 }

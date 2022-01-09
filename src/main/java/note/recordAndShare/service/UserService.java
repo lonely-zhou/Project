@@ -13,5 +13,6 @@ import note.recordAndShare.entity.vo.UserVO;
  * @since 2022-01-08 07:37:25
  */
 public interface UserService extends IService<User> {
-//    public UserVO findByUserName(String username);
+    int insUser(User user);
+    int findUser(String username);
 }
