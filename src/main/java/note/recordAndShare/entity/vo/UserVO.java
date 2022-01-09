@@ -1,24 +1,28 @@
-package note.recordAndShare.entity;
+package note.recordAndShare.entity.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.ToString;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author lonelyzhou
- * @since 2022-01-08 07:37:25
- */
+ * @Author: lonelyzhou
+ * @ProjectName: RecordAndShare
+ * @Package: IntelliJ IDEA
+ * @Description:
+ * @Date: 2022/1/8 下午 7:38
+ **/
+
 @Data
-@ToString
 @TableName("user")
-public class User {
+public class UserVO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1859552324788487470L;
 
     /**
      * 标识符
@@ -73,6 +77,4 @@ public class User {
      */
     @TableField("email")
     private String email;
-
-
 }

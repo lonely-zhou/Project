@@ -16,9 +16,9 @@ import java.util.Scanner;
 
 public class CodeGenerator {
     public static void main(String[] args) {
-        System.out.println("会覆盖生成文件 确定执行吗 y/n");
-        String txt = new Scanner(System.in).nextLine();
-        if (txt.equals("n")) System.exit(0);
+//        System.out.println("会覆盖生成文件 确定执行吗 y/n");
+//        String txt = new Scanner(System.in).nextLine();
+//        if (txt.equals("n")) System.exit(0);
 
         FastAutoGenerator.create("jdbc:mysql://81.70.167.144:3306/RecordAndShare", "root", "root")
                 // 全局配置
@@ -27,7 +27,7 @@ public class CodeGenerator {
                                 .commentDate("yyyy-MM-dd hh:mm:ss")
                                 .dateType(DateType.TIME_PACK)
 //                        .enableSwagger()
-                                .fileOverride()
+//                                .fileOverride()
 //                        .enableSwagger()
                                 .disableOpenDir()
                 )

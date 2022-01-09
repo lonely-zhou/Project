@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-01-07 02:33:54
+ * @since 2022-01-08 07:37:25
  */
 @RestController
-@RequestMapping("/RecordAndShare/user-admin")
-public class UserAdminController {
+@RequestMapping("/recordAndShare/role")
+public class RoleController {
 
 }

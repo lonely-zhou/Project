@@ -1,6 +1,6 @@
 package note.recordAndShare.service;
 
-import note.recordAndShare.entity.UserAdmin;
+import note.recordAndShare.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-01-07 02:33:54
+ * @since 2022-01-08 07:37:25
  */
-public interface UserAdminService extends IService<UserAdmin> {
+public interface RoleService extends IService<Role> {
 
 }
