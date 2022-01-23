@@ -112,7 +112,7 @@ import { ArrowRightBold } from '@element-plus/icons-vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { ElMessage } from 'element-plus';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
 
@@ -182,7 +182,6 @@ const showNoteList = computed(() => {
   return true;
 });
 onMounted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const user = cookies.get('user') as any;
   if (loginFlag.value === 'true') {
     circleUrl.value = user.circleUrl;
@@ -201,11 +200,7 @@ onMounted(() => {
 function toWrite(): void {
   if (loginFlag.value === 'true') router.push('/write');
   else {
-    Swal.fire({
-      title: '请登录',
-      icon: 'error',
-      timer: 2000,
-    });
+    ElMessage.error('请登录');
   }
 }
 </script>

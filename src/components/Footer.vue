@@ -8,7 +8,7 @@
   </el-footer>
 </template>
 <script lang="ts" setup>
-import api from '@/api/index';
+import api from '../api/index';
 
 const year: number = api.dateFormat.getDateRormatY();
 </script>

@@ -31,14 +31,9 @@
 import { Avatar, Unlock } from '@element-plus/icons-vue'; // element ui icon
 import { computed, reactive, ref } from 'vue';
 // import { useRouter } from "vue-router";
-import Swal from 'sweetalert2';
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
-// export default {
-// name: '注册',
-// components: {},
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-// setup() {
 const res = ref();
 // const router = useRouter();
 // 表单信息
@@ -65,18 +60,9 @@ function onSubmit() {
     .then(() => {
       // 总是会执行
       if (res.value.code === 200) {
-        Swal.fire({
-          title: '注册成功',
-          icon: 'success',
-          timer: 3000,
-        });
+        ElMessage.success('注册成功');
       } else {
-        Swal.fire({
-          title: '失败',
-          text: res.value.msg,
-          icon: 'error',
-          timer: 3000,
-        });
+        ElMessage.error(`失败 ${res.value.msg}`);
       }
     });
 }
@@ -87,16 +73,6 @@ const disabled = computed(() => {
   if (user.password === user.repassword) return false;
   return true;
 });
-
-// return {
-//   Avatar,
-//   Unlock,
-//   user,
-//   disabled,
-//   onSubmit,
-// };
-// },
-// };
 </script>
 <style scoped>
 .box {
@@ -123,8 +99,8 @@ const disabled = computed(() => {
   bottom: 0;
   margin: auto;
   /* 盒子水平垂直居中 --- end*/
-  border-radius: .1875rem;
-  box-shadow: 0 .0625rem .3125rem 0;
+  border-radius: 0.1875rem;
+  box-shadow: 0 0.0625rem 0.3125rem 0;
 }
 .logo {
   width: 12.5rem;
@@ -135,7 +111,7 @@ const disabled = computed(() => {
 }
 .form-input {
   width: 21.25rem;
-  margin-bottom: .125rem;
+  margin-bottom: 0.125rem;
 }
 .btn {
   margin-top: 3.75rem;

@@ -88,10 +88,10 @@ import { Avatar, Unlock } from '@element-plus/icons-vue'; // element ui icon
 // eslint-disable-next-line object-curly-newline
 import { computed, reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import { Base64 } from 'js-base64';
 import { useCookies } from 'vue3-cookies';
+import { ElMessage } from 'element-plus';
 
 const { cookies } = useCookies();
 const router = useRouter();
@@ -201,11 +201,9 @@ function onSubmit() {
     })
     .then(() => {
       if (res.value.code === 200) {
-        Swal.fire({
-          title: '登录成功',
-          icon: 'success',
-          timer: 3000,
-          didClose: () => {
+        ElMessage.success({
+          message: '登录成功',
+          onClose: () => {
             userCookie.username = user.username;
             userCookie.password = Base64.encode(user.password);
             cookies.set('user', JSON.stringify(userCookie), '7d');
@@ -214,11 +212,8 @@ function onSubmit() {
           },
         });
       } else {
-        Swal.fire({
-          title: '登录失败',
-          text: res.value.msg,
-          icon: 'error',
-          timer: 3000,
+        ElMessage.error({
+          message: `登录失败 ${res.value.msg}`,
         });
       }
     });
