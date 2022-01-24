@@ -103,6 +103,7 @@
       </el-row>
     </div>
   </div>
+  <el-backtop />
   <footer-vue />
 </template>
 <script lang="ts" setup>
@@ -112,7 +113,7 @@ import { ArrowRightBold } from '@element-plus/icons-vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElNotification } from 'element-plus';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
 
@@ -183,6 +184,9 @@ const showNoteList = computed(() => {
 });
 onMounted(() => {
   const user = cookies.get('user') as any;
+  if (user.phone === '0' && loginFlag.value === 'true') {
+    ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
+  }
   if (loginFlag.value === 'true') {
     circleUrl.value = user.circleUrl;
   }
