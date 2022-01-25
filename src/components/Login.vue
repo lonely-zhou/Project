@@ -97,8 +97,10 @@ import axios from 'axios';
 import { Base64 } from 'js-base64';
 import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
+import api from '../api';
 
 const { cookies } = useCookies();
+const store = api.store();
 const router = useRouter();
 const loginCode = ref();
 const phoneNumber = ref();
@@ -272,7 +274,8 @@ function onSubmit() {
             userCookie.password = Base64.encode(user.password);
             userCookie.phone = loginCode.value.data.phone;
             cookies.set('user', JSON.stringify(userCookie), '7d');
-            cookies.set('loginFlag', 'true', '1d');
+            // cookies.set('loginFlag', 'true', '1d');
+            store.setLoginFlag(true);
             router.push('/index');
           },
         });

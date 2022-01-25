@@ -118,7 +118,8 @@ import FooterVue from './Footer.vue';
 import api from '../api/index';
 
 const { cookies } = useCookies();
-const loginFlag = ref(cookies.get('loginFlag'));
+const store = api.store();
+const loginFlag = ref(store.loginFlag);
 const circleUrl = ref(); // 头像url
 const router = useRouter();
 const noteList = ref([
@@ -149,7 +150,8 @@ function handleCommand(command: string) {
       break;
     case 'toLogout':
       axios.get('api/user/logout');
-      cookies.set('loginFlag', 'false', '1d');
+      // cookies.set('loginFlag', 'false', '1d');
+      store.setLoginFlag(false);
       router.go(0);
       break;
 
@@ -164,8 +166,8 @@ const dawDate = reactive({
 });
 // '去登陆'是否显示
 const showLogin = computed(() => {
-  if (loginFlag.value === 'false' || loginFlag.value === null) return true;
-  return false;
+  if (loginFlag.value || !loginFlag.value === null) return false;
+  return true;
 });
 // 个人中心是否显示
 const showUserCenter = computed(() => {
@@ -184,10 +186,10 @@ const showNoteList = computed(() => {
 });
 onMounted(() => {
   const user = cookies.get('user') as any;
-  if (user.phone === '0' && loginFlag.value === 'true') {
+  if (user.phone === '0' && loginFlag.value) {
     ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
   }
-  if (loginFlag.value === 'true') {
+  if (loginFlag.value) {
     circleUrl.value = user.circleUrl;
   }
   axios
@@ -202,7 +204,7 @@ onMounted(() => {
 });
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
-  if (loginFlag.value === 'true') router.push('/write');
+  if (loginFlag.value) router.push('/write');
   else {
     ElMessage.error('请登录');
   }
