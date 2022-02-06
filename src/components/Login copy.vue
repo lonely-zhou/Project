@@ -25,13 +25,13 @@
         </form>
         <el-row :gutter="20" style="margin-top: 10px">
           <el-col :span="6" :offset="6">
-            <el-checkbox v-model="userCookie.rememberPassword" label="自动登录" size="large" />
+            <el-checkbox v-model="rememberPassword" label="记住密码" size="large" />
           </el-col>
           <el-col :span="6">
-            <el-checkbox v-model="userCookie.adminLogin" label="管理员登录" size="large" />
+            <el-checkbox v-model="userInfo.adminLogin" label="管理员登录" size="large" />
           </el-col>
         </el-row>
-        <el-button type="primary" class="btn" @click="onSubmit" :disabled="disabled"> 登录 </el-button>
+        <el-button type="primary" class="btn" @click="onSubmit" :disabled="loginDisabled"> 登录 </el-button>
         <el-row :gutter="20" style="margin-top: 30px; user-select: none">
           <el-col :span="6" :offset="6">
             <router-link to="/signup">注册账号</router-link>
@@ -44,7 +44,7 @@
     <transition name="fade">
       <!-- 忘记密码 外盒子 -->
       <div class="forgotPasswordBox" v-show="!showFP">
-        <el-steps :active="active" finish-status="success" simple style="margin-top: 20px">
+        <el-steps :active="forgotPasswordActive" finish-status="success" simple style="margin-top: 20px">
           <el-step title="确认账号"></el-step>
           <el-step title="重置密码"></el-step>
           <el-step title="重置成功"></el-step>
@@ -52,7 +52,7 @@
         <!-- step1 -->
         <div class="step1" v-show="stepShow.step1">
           <el-input v-model="forgotPasswordInfo.username" placeholder="输入账号 刷新返回登录" clearable />
-          <el-button style="width: 100%; margin-top: 10%" type="primary" @click="findUsername" :disabled="step1Button">
+          <el-button style="width: 100%; margin-top: 10%" type="primary" @click="selUserName" :disabled="step1Button">
             确定
           </el-button>
         </div>
@@ -62,7 +62,7 @@
           <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable />
           <div style="display: flex">
             <el-input :placeholder="phoneNumber" clearable disabled />
-            <el-button type="primary" style="width: 30%" :disabled="buttonDisabled.set60sDisabled" @click="set60s">
+            <el-button type="primary" style="width: 30%" :disabled="set60sDisabled" @click="set60s">
               <span class="wait_60s">
                 {{ wait60sText }}
                 <span v-show="wait60sShow">{{ wait60s }} </span>
@@ -97,31 +97,49 @@ import axios from 'axios';
 import { Base64 } from 'js-base64';
 import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
-// import api from '../api';
+import api from '../api';
 
-const { cookies } = useCookies();
-// const store = api.store();
-const router = useRouter();
-const loginCode = ref();
-const phoneNumber = ref();
-// 表单信息
 const user = reactive({
-  username: '', // 账户名
-  password: '', // 密码
-});
-// 用户cookie信息
-const userCookie = reactive({
   username: '',
   password: '',
-  rememberPassword: false,
-  adminLogin: false,
-  circleUrl: '',
-  phone: '',
 });
-let temp: any;
+const userInfo = ref({
+  id: '',
+  nickname: '',
+  username: '',
+  password: '',
+  phone: '',
+  sex: '',
+  lastTime: '',
+  email: '',
+  avatarUrl: '',
+  adminLogin: false,
+  rememberPassword: false,
+});
+const rememberPassword = ref();
+const jwtToken = ref();
+const store = api.store();
+const { cookies } = useCookies();
 const showFP = ref(true);
+const phoneNumber = ref();
+const set60sDisabled = ref(false);
+const wait60s = ref(); // 60秒等待
+const wait60sText = ref('获取验证码');
+const wait60sShow = ref(true);
+const router = useRouter();
+// 登录按钮状态
+const loginDisabled = computed(() => {
+  if (user.password !== '' && user.username !== '') return false;
+  return true;
+});
 // 当前步骤条
-const active = ref(0);
+const forgotPasswordActive = ref(0);
+// 步骤显示
+const stepShow = reactive({
+  step1: true,
+  step2: false,
+  step3: false,
+});
 // 忘记密码信息
 const forgotPasswordInfo = reactive({
   username: '',
@@ -130,30 +148,63 @@ const forgotPasswordInfo = reactive({
   code: '',
   phone: '',
 });
-// 步骤显示
-const stepShow = reactive({
-  step1: true,
-  step2: false,
-  step3: false,
+// 忘记密码step1按钮状态
+const step1Button = computed(() => {
+  if (forgotPasswordInfo.username !== '') return false;
+  return true;
 });
+// 忘记密码step2按钮状态
+const step2Button = computed(() => {
+  if (forgotPasswordInfo.code !== '') return false;
+  return true;
+});
+let temp: any;
+
+function onSubmit() {
+  const loginCode = ref();
+  const msg = ref();
+  // 登录
+  axios
+    .post('api/user/login', user)
+    .then((res) => {
+      jwtToken.value = res.data.data.Authorization;
+      userInfo.value = res.data.data.UserInfo;
+      phoneNumber.value = userInfo.value.phone;
+      loginCode.value = res.data.code;
+      msg.value = res.data.msg;
+    })
+    .then(() => {
+      // phoneNumber.value = phoneNumber.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
+      if (loginCode.value === 200) {
+        ElMessage.success({
+          message: '登录成功',
+          onClose: () => {
+            store.setjwtToken(jwtToken.value);
+            userInfo.value.password = Base64.encode(user.password);
+            userInfo.value.rememberPassword = rememberPassword.value;
+            cookies.set('userInfo', JSON.stringify(userInfo.value), '7d');
+            store.setLoginFlag(true);
+            router.push('/index');
+          },
+        });
+      } else {
+        ElMessage.error({
+          message: `登录失败 ${msg.value}`,
+        });
+      }
+    });
+}
 // 步骤条下一步
 function nextStep() {
-  active.value += 1;
-  if (active.value === 3) showFP.value = !showFP.value;
-  if (active.value > 2) active.value = 0;
-  switch (active.value) {
-    case 0:
-      stepShow.step1 = true;
-      stepShow.step2 = false;
-      stepShow.step3 = false;
-      break;
+  forgotPasswordActive.value += 1;
+  if (forgotPasswordActive.value === 3) showFP.value = !showFP.value;
+  if (forgotPasswordActive.value > 2) forgotPasswordActive.value = 0;
+  switch (forgotPasswordActive.value) {
     case 1:
       stepShow.step1 = false;
       stepShow.step2 = true;
-      stepShow.step3 = false;
       break;
     case 2:
-      stepShow.step1 = false;
       stepShow.step2 = false;
       stepShow.step3 = true;
       break;
@@ -161,27 +212,50 @@ function nextStep() {
       break;
   }
 }
-// step1 查找用户
-function findUsername() {
+function selUserName() {
   const result = ref();
   axios
-    .get(`api/user/findUsername?username=${forgotPasswordInfo.username}`)
+    .get(`api/user/selUser?username=${forgotPasswordInfo.username}`)
     .then((res) => {
       result.value = res.data;
-      phoneNumber.value = res.data.data;
-      forgotPasswordInfo.phone = res.data.data;
+      // console.log(res);
     })
     .then(() => {
       if (result.value.code === 200) {
-        phoneNumber.value = phoneNumber.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
-        if (result.value.data !== '0') nextStep();
-        else ElMessage.error('该账户未绑定手机号');
+        if (result.value.data.phone !== '0') {
+          nextStep();
+          phoneNumber.value = result.value.data.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
+        } else ElMessage.error('该账户未绑定手机号');
       } else {
         ElMessage.error(result.value.msg);
       }
     });
 }
-// step2 重置密码
+function set60s() {
+  wait60s.value = 60;
+  wait60sText.value = '';
+  set60sDisabled.value = !set60sDisabled.value;
+  const time = setInterval(() => {
+    wait60s.value -= 1;
+    if (wait60s.value === 0) {
+      wait60sShow.value = false;
+      set60sDisabled.value = !set60sDisabled.value;
+      wait60sText.value = '获取验证码';
+      clearInterval(time);
+    }
+  }, 1000);
+  const result = ref();
+  axios
+    .get(`api/user/sendSMSCode?username=${forgotPasswordInfo.username}`)
+    .then((res) => {
+      result.value = res.data;
+      console.log(result.value);
+    })
+    .then(() => {
+      if (result.value.code === 200) ElMessage.success('验证码发送成功');
+      else ElMessage.error('验证码发送失败');
+    });
+}
 function updatePassword() {
   const resultSMS = ref();
   const resultUpdate = ref();
@@ -209,98 +283,18 @@ function updatePassword() {
       }
     });
 }
-const wait60s = ref(); // 60秒等待
-const wait60sText = ref('获取验证码');
-const wait60sShow = ref(true);
-const buttonDisabled = reactive({
-  set60sDisabled: false,
-});
-// 60s倒计时 发送验证码
-function set60s() {
-  wait60s.value = 60;
-  wait60sText.value = '';
-  buttonDisabled.set60sDisabled = !buttonDisabled.set60sDisabled;
-  const time = setInterval(() => {
-    wait60s.value -= 1;
-    if (wait60s.value === 0) {
-      wait60sShow.value = false;
-      buttonDisabled.set60sDisabled = !buttonDisabled.set60sDisabled;
-      wait60sText.value = '获取验证码';
-      clearInterval(time);
-    }
-  }, 1000);
-  const result = ref();
-  axios
-    .get(`api/user/sendSMSCode?username=${forgotPasswordInfo.username}`)
-    .then((res) => {
-      result.value = res.data;
-      console.log(result.value);
-    })
-    .then(() => {
-      if (result.value.code === 200) ElMessage.success('验证码发送成功');
-      else ElMessage.error('验证码发送失败');
-    });
-}
-// 读取cookie
+// 记住密码 读取cookie
 onMounted(() => {
-  temp = cookies.get('user');
+  temp = cookies.get('userInfo');
   if (temp !== null) {
     if (temp.rememberPassword) {
       user.username = temp.username;
       user.password = Base64.decode(temp.password);
-      userCookie.rememberPassword = temp.rememberPassword;
-      userCookie.adminLogin = temp.adminLogin;
+      userInfo.value.rememberPassword = temp.rememberPassword;
+      userInfo.value.adminLogin = temp.adminLogin;
+      rememberPassword.value = temp.rememberPassword;
     }
   }
-});
-// 登录请求
-function onSubmit() {
-  axios
-    .get(`api/user/login?username=${user.username}&password=${user.password}`)
-    .then((response) => {
-      // console.log(response.data);
-      loginCode.value = response.data;
-      userCookie.circleUrl = response.data.data.avatar_url;
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .then(() => {
-      if (loginCode.value.code === 200) {
-        ElMessage.success({
-          message: '登录成功',
-          onClose: () => {
-            userCookie.username = user.username;
-            userCookie.password = Base64.encode(user.password);
-            userCookie.phone = loginCode.value.data.phone;
-            cookies.set('user', JSON.stringify(userCookie), '7d');
-            // cookies.set('loginFlag', 'true', '1d');
-            // store.setLoginFlag(true);
-            router.push('/index');
-          },
-        });
-      } else {
-        ElMessage.error({
-          message: `登录失败 ${loginCode.value.msg}`,
-        });
-      }
-    });
-}
-
-// 登录按钮状态
-const disabled = computed(() => {
-  if (user.password !== '' && user.username !== '') return false;
-  return true;
-});
-// 忘记密码step1按钮状态
-const step1Button = computed(() => {
-  if (forgotPasswordInfo.username !== '') return false;
-  return true;
-});
-// 忘记密码step2按钮状态
-const step2Button = computed(() => {
-  if (forgotPasswordInfo.code !== '') return false;
-  return true;
 });
 </script>
 <style scoped>

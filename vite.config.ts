@@ -9,7 +9,8 @@ export default defineConfig({
     port: 80,
     proxy: {
       '/api': {
-        target: 'http://81.70.167.144:8080/recordAndShare/', // 要转发的地址  你要代理的域名和端口号，要加上http
+        target: 'https://api.lonelyzhou.cn/recordAndShare/', // 要转发的地址  你要代理的域名和端口号，要加上http
+        // target: 'http://81.70.167.144:8080/recordAndShare/',
         ws: false, // 是否启用websockets
         changeOrigin: true, // 跨域
         rewrite: (path) => path.replace(/^\/api/, ''),
@@ -17,5 +18,5 @@ export default defineConfig({
     },
   },
 });
-// 服务器地址 81.70.167.144 http://81.70.167.144:8080/recordAndShare/
+// 服务器地址 81.70.167.144 https://api.lonelyzhou.cn/recordAndShare/
 // 本地 http://localhost:8080/recordAndShare/

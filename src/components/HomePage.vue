@@ -21,7 +21,7 @@
           <el-col :span="2" :xs="12">
             <!-- 头像 -->
             <el-dropdown @command="handleCommand">
-              <el-avatar :size="50" :src="circleUrl" />
+              <el-avatar :size="50" :src="circleUrl"></el-avatar>
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
@@ -54,7 +54,7 @@
                   <div class="noteNav">
                     <el-row>
                       <!-- 头像 -->
-                      <el-col :span="3"><el-avatar :size="40" src="" /></el-col>
+                      <el-col :span="3"><el-avatar :size="40" :src="item.avatar_url" /></el-col>
                       <!-- 作者 -->
                       <el-col :span="3"> {{ item.name }} </el-col>
                       <!-- 浏览数 -->
@@ -94,6 +94,14 @@
             </div>
           </div>
           <!-- noteList -->
+          <el-pagination
+            style="margin: 2%"
+            @current-change="changePage(page)"
+            v-model:current-page="page"
+            layout="prev, pager, next"
+            :total="total"
+            background
+          />
         </el-col>
         <el-col :span="6">
           <el-row>
@@ -103,6 +111,7 @@
       </el-row>
     </div>
   </div>
+
   <el-backtop />
   <footer-vue />
 </template>
@@ -139,9 +148,12 @@ const noteList = ref([
     look: '', // 浏览次数
     collection: '', // 收藏数
     user_id: '', // 作者ID
+    avatar_url: '', // 头像
   },
 ]);
 const noteListEmpty = ref();
+const total = ref(); // 分页数
+const page = ref(1);
 // 下拉列表点击事件
 function handleCommand(command: string) {
   switch (command) {
@@ -185,23 +197,49 @@ const showNoteList = computed(() => {
   return true;
 });
 onMounted(() => {
-  const user = cookies.get('user') as any;
-  if (user.phone === '0' && loginFlag.value) {
-    ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
-  }
-  if (loginFlag.value) {
-    circleUrl.value = user.circleUrl;
+  const user = cookies.get('userInfo') as any;
+  if (user !== null) {
+    if (user.phone === '0' && loginFlag.value) {
+      ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
+    }
+    if (loginFlag.value) {
+      circleUrl.value = user.avatar_url;
+    }
   }
   axios
-    .get('api/note/allNote')
+    .get(`api/note/getNoteList?page=${1}`)
     .then((res) => {
-      noteList.value = res.data.records;
+      noteList.value = res.data.data.records;
+      total.value = Number(res.data.msg);
+      // page.value = Math.ceil(Number(res.data.msg) / 9);
       noteListEmpty.value = true;
+      // console.log(res);
     })
     .catch(() => {
       noteListEmpty.value = false;
     });
 });
+function toTop() {
+  const goTop = setInterval(() => {
+    let scrollTop = document.body.scrollTop + document.documentElement.scrollTop;
+    scrollTop -= 10;
+    document.documentElement.scrollTop = scrollTop;
+    if (scrollTop < 0) {
+      clearInterval(goTop);
+    }
+  }, 5);
+}
+function changePage(num: number) {
+  axios
+    .get(`api/note/getNoteList?page=${num}`)
+    .then((res) => {
+      noteList.value = res.data.data.records;
+      console.log(res);
+    })
+    .then(() => {
+      toTop();
+    });
+}
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
   if (loginFlag.value) router.push('/write');
