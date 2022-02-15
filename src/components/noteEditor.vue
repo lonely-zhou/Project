@@ -1,5 +1,5 @@
 <template>
-  <el-page-header content="写笔记" @back="goIndex" title="返回" />
+  <page-header-vue :detail="detail" :path="path" />
   <div class="box">
     <div class="noteEditor">
       <div>
@@ -9,14 +9,9 @@
           placeholder="请输入标题（建议10字以内）"
           style="overflow-y: hidden; height: 64px"
         />
-        <el-button type="primary" @click="changeEditor">切换至MD编辑器</el-button>
+        <router-link to="/mdEditor"><el-button type="primary">切换至MD编辑器</el-button></router-link>
       </div>
-      <el-affix target=".noteEditor">
-        <!-- 工具栏 -->
-        <Toolbar :editorId="editorId" style="border-bottom: 1px solid #ccc" />
-      </el-affix>
-      <!-- 编辑器 -->
-      <Editor :editorId="editorId" :defaultConfig="editorConfig" @onChange="handleChange" style="height: 500px" />
+      <div ref="editor" />
       <div class="noteType">
         <el-row>
           <el-col :span="24"><p>选择分类</p></el-col>
@@ -65,24 +60,29 @@
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 // eslint-disable-next-line object-curly-newline
-import { onBeforeUnmount, reactive, ref, nextTick } from 'vue';
-// eslint-disable-next-line object-curly-newline
-import { Editor, Toolbar, getEditor, removeEditor } from '@wangeditor/editor-for-vue';
+import { onMounted, onBeforeUnmount, ref, reactive, nextTick } from 'vue';
+import WangEditor from 'wangeditor';
 import { useCookies } from 'vue3-cookies';
+import { ElInput, ElMessage } from 'element-plus';
 import axios from 'axios';
-import { ElMessage, ElInput } from 'element-plus';
+import PageHeaderVue from './PageHeader.vue';
 import router from '../router';
-import api from '../api';
+import api from '../api/index';
 
+const editor = ref();
+const path = 'index';
+const detail = '写笔记';
+const store = api.store();
 const { cookies } = useCookies();
 const userInfo = cookies.get('userInfo') as any;
-// 定义一个编辑器 id ，要求：全局唯一且不变！！！
-const editorId = 'wangeEditor-1';
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
+const userNote = store.userNote as any;
+
 const note = reactive({
   title: '', // 标题
   text: '', // 正文
@@ -93,31 +93,47 @@ const note = reactive({
   select_categories: '', // 分类
   label_values: [], // 标签
 });
-// 编辑器配置
-const editorConfig = {
-  placeholder: '请输入内容...',
-  MENU_CONF: {},
-};
-const store = api.store();
-
-// 回调函数
-const handleChange = (editor: any) => {
-  // console.log('change:', JSON.stringify(editor.children));
-  note.text = editor.getHtml();
-};
-
-// 组件销毁时，及时销毁编辑器
-onBeforeUnmount(() => {
-  const editor = getEditor(editorId);
-  if (editor == null) return;
-
-  // 销毁，并移除 editor
-  editor.destroy();
-  removeEditor(editorId);
-});
-function goIndex() {
-  router.push('/index');
+if (userNote !== '') {
+  note.title = userNote.title;
 }
+let instance: any;
+onMounted(() => {
+  instance = new WangEditor(editor.value);
+  Object.assign(instance.config, {
+    onchange() {
+      console.log('change');
+    },
+  });
+  instance.config.onchange = (newHtml: any) => {
+    note.text = newHtml;
+  };
+  instance.config.height = 400;
+  instance.create();
+  instance.txt.html(userNote.text);
+});
+
+onBeforeUnmount(() => {
+  instance.destroy();
+  instance = null;
+});
+const handleClose = (tag: string) => {
+  note.label_values.splice(note.label_values.indexOf(tag as never), 1);
+};
+
+const showInput = () => {
+  inputVisible.value = true;
+  nextTick(() => {
+    InputRef.value!.input!.focus();
+  });
+};
+
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    note.label_values.push(inputValue.value as never);
+  }
+  inputVisible.value = false;
+  inputValue.value = '';
+};
 function insNote() {
   const result = ref();
   if (note.title === '') {
@@ -143,41 +159,15 @@ function insNote() {
       });
   }
 }
-function changeEditor() {
-  router.push('/mdEditor');
-}
-
-const handleClose = (tag: string) => {
-  note.label_values.splice(note.label_values.indexOf(tag as never), 1);
-};
-
-const showInput = () => {
-  inputVisible.value = true;
-  nextTick(() => {
-    InputRef.value!.input!.focus();
-  });
-};
-
-const handleInputConfirm = () => {
-  if (inputValue.value) {
-    note.label_values.push(inputValue.value as never);
-  }
-  inputVisible.value = false;
-  inputValue.value = '';
-};
 </script>
 <style scoped>
 .box {
   text-align: left;
-  /* width: 750px;
-  height: 1200px;
-  border: 1px solid black;
-  margin: auto; */
 }
 .noteEditor {
-  width: 740px;
+  width: 1020px;
   margin: auto;
-  margin-bottom: 10%;
+  padding-top: 5%;
 }
 textarea {
   -webkit-text-size-adjust: 100%;
@@ -202,8 +192,9 @@ textarea {
   height: 64px;
 }
 .noteType {
-  width: 40%;
+  width: 30%;
 }
+
 .el-col-24 {
   margin-bottom: 2%;
 }
@@ -212,4 +203,3 @@ textarea {
   justify-content: space-between;
 }
 </style>
-<style src="@wangeditor/editor/dist/css/style.css"></style>

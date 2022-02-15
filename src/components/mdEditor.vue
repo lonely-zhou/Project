@@ -1,5 +1,6 @@
 <template>
-  <el-page-header content="写笔记" @back="goIndex" title="返回" />
+  <!-- <el-page-header content="写笔记" @back="goIndex" title="返回" /> -->
+  <page-header-vue :detail="detail" :path="path" />
   <div class="box">
     <div class="mdEditor">
       <div>
@@ -9,7 +10,7 @@
           placeholder="请输入标题（建议10字以内）"
           style="overflow-y: hidden; height: 64px"
         />
-        <el-button type="primary" @click="changeEditor">切换至普通编辑器</el-button>
+        <router-link to="/write"><el-button type="primary">切换至普通编辑器</el-button></router-link>
       </div>
       <mavon-editor v-model="note.text" :toolbars="toolbars" />
       <div class="noteType">
@@ -22,8 +23,30 @@
               <el-radio-button label="工作经验"></el-radio-button>
             </el-radio-group>
           </el-col>
-          <el-col :span="24"><p>输入标签</p></el-col>
-          <el-col :span="24"><el-input v-model="note.label_values" placeholder="标签" /></el-col>
+          <!-- <el-col :span="24"><p>输入标签</p></el-col> -->
+          <el-col :span="24">
+            <!-- <el-input v-model="note.label_values" placeholder="标签" /> -->
+            <el-tag
+              v-for="tag in note.label_values"
+              :key="tag"
+              class="mx-1"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+            >
+              {{ tag }}
+            </el-tag>
+            <el-input
+              v-if="inputVisible"
+              ref="InputRef"
+              v-model="inputValue"
+              class="ml-1 w-20"
+              @keyup.enter="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag ml-1" @click="showInput">添加标签</el-button>
+          </el-col>
           <el-col :span="24">
             <el-radio-group v-model="note.message">
               <el-radio-button label="0">公开</el-radio-button>
@@ -39,16 +62,23 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+// eslint-disable-next-line object-curly-newline
+import { reactive, ref, nextTick } from 'vue';
 import { useCookies } from 'vue3-cookies';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElInput } from 'element-plus';
 import axios from 'axios';
 import router from '../router';
+import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
 const { cookies } = useCookies();
 const userInfo = cookies.get('userInfo') as any;
 const store = api.store();
+const path = 'index';
+const detail = '写笔记';
+const inputValue = ref('');
+const inputVisible = ref(false);
+const InputRef = ref<InstanceType<typeof ElInput>>();
 const note = reactive({
   title: '', // 标题
   text: '', // 正文
@@ -57,7 +87,7 @@ const note = reactive({
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: 0, // 是否公开 0公开
   select_categories: '', // 分类
-  label_values: '', // 标签
+  label_values: [], // 标签
 });
 const toolbars = {
   bold: true, // 粗体
@@ -95,12 +125,12 @@ const toolbars = {
   preview: true, // 预览
 };
 
-function goIndex() {
-  router.push('/index');
-}
-function changeEditor() {
-  router.push('/write');
-}
+// function goIndex() {
+//   router.push('/index');
+// }
+// function changeEditor() {
+//   router.push('/write');
+// }
 function insNote() {
   const result = ref();
   if (note.title === '') {
@@ -126,8 +156,26 @@ function insNote() {
       });
   }
 }
+const handleClose = (tag: string) => {
+  note.label_values.splice(note.label_values.indexOf(tag as never), 1);
+};
+
+const showInput = () => {
+  inputVisible.value = true;
+  nextTick(() => {
+    InputRef.value!.input!.focus();
+  });
+};
+
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    note.label_values.push(inputValue.value as never);
+  }
+  inputVisible.value = false;
+  inputValue.value = '';
+};
 </script>
-<style>
+<style scoped>
 .box {
   text-align: left;
 }

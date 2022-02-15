@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 import { onMounted } from 'vue';
 import api from './api/index';
 
@@ -36,6 +35,7 @@ onMounted(() => {
   color: #2c3e50;
   background-color: #f5f5f5;
 }
+
 a {
   text-decoration: none;
   color: rgb(0, 0, 0);

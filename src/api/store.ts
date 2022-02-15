@@ -5,6 +5,7 @@ const useStore = defineStore({
   state: () => ({
     jwtToken: '',
     loginFlag: false,
+    userNote: {},
   }),
   getters: {},
   actions: {
@@ -13,6 +14,9 @@ const useStore = defineStore({
     },
     setLoginFlag(flag: boolean) {
       this.loginFlag = flag;
+    },
+    setUserNote(note: string) {
+      this.userNote = note;
     },
   },
 });

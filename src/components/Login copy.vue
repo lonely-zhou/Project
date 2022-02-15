@@ -25,10 +25,10 @@
         </form>
         <el-row :gutter="20" style="margin-top: 10px">
           <el-col :span="6" :offset="6">
-            <el-checkbox v-model="rememberPassword" label="记住密码" size="large" />
+            <el-checkbox v-model="loginState.rememberPassword" label="记住密码" size="large" />
           </el-col>
           <el-col :span="6">
-            <el-checkbox v-model="userInfo.adminLogin" label="管理员登录" size="large" />
+            <el-checkbox v-model="loginState.adminLogin" label="管理员登录" size="large" />
           </el-col>
         </el-row>
         <el-button type="primary" class="btn" @click="onSubmit" :disabled="loginDisabled"> 登录 </el-button>
@@ -107,16 +107,14 @@ const userInfo = ref({
   id: '',
   nickname: '',
   username: '',
-  password: '',
   phone: '',
   sex: '',
   lastTime: '',
   email: '',
   avatarUrl: '',
-  adminLogin: false,
-  rememberPassword: false,
 });
-const rememberPassword = ref();
+const loginState = ref({ adminLogin: false, rememberPassword: false, password: '' });
+// const rememberPassword = ref();
 const jwtToken = ref();
 const store = api.store();
 const { cookies } = useCookies();
@@ -180,9 +178,10 @@ function onSubmit() {
           message: '登录成功',
           onClose: () => {
             store.setjwtToken(jwtToken.value);
-            userInfo.value.password = Base64.encode(user.password);
-            userInfo.value.rememberPassword = rememberPassword.value;
+            loginState.value.password = Base64.encode(user.password);
+            // loginState.value.rememberPassword = rememberPassword.value;
             cookies.set('userInfo', JSON.stringify(userInfo.value), '7d');
+            cookies.set('loginState', JSON.stringify(loginState.value), '7d');
             store.setLoginFlag(true);
             router.push('/index');
           },
@@ -284,15 +283,16 @@ function updatePassword() {
     });
 }
 // 记住密码 读取cookie
+let loginStateTemp: any;
 onMounted(() => {
   temp = cookies.get('userInfo');
+  loginStateTemp = cookies.get('loginState');
   if (temp !== null) {
-    if (temp.rememberPassword) {
+    if (loginStateTemp.rememberPassword) {
       user.username = temp.username;
-      user.password = Base64.decode(temp.password);
-      userInfo.value.rememberPassword = temp.rememberPassword;
-      userInfo.value.adminLogin = temp.adminLogin;
-      rememberPassword.value = temp.rememberPassword;
+      user.password = Base64.decode(loginStateTemp.password);
+      loginState.value.rememberPassword = loginStateTemp.rememberPassword;
+      loginState.value.adminLogin = loginStateTemp.adminLogin;
     }
   }
 });

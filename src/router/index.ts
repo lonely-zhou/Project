@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
+  { path: '/updPE/:showInfo', name: 'UpdPE', component: () => import('../components/UpdPE.vue') },
+  { path: '/personalCenter', name: 'PersonalCenter', component: () => import('../components/PersonalCenter.vue') },
   {
     path: '/mdEditor',
-    name: 'mdEditor',
-    component: () => import('../components/mdEditor.vue'),
+    name: 'MdEditor',
+    component: () => import('../components/MdEditor.vue'),
   },
   {
     path: '/',
@@ -28,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/write',
     name: 'WriteNote',
-    component: () => import('../components/noteEditor.vue'),
+    component: () => import('../components/NoteEditor.vue'),
     meta: { title: '写笔记' },
   },
   {

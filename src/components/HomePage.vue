@@ -25,7 +25,9 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
-                  <el-dropdown-item v-if="showUserCenter"><span>个人中心</span></el-dropdown-item>
+                  <el-dropdown-item v-if="showUserCenter" command="toPersonalCenter"
+                    ><span>个人中心</span></el-dropdown-item
+                  >
                   <el-dropdown-item command="toLogout" v-if="showUserCenter"><span>退出登录</span></el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -165,6 +167,9 @@ function handleCommand(command: string) {
       // cookies.set('loginFlag', 'false', '1d');
       store.setLoginFlag(false);
       router.go(0);
+      break;
+    case 'toPersonalCenter':
+      router.push('/personalCenter');
       break;
 
     default:
