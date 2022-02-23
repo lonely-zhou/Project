@@ -1,5 +1,4 @@
 <template>
-  <page-header-vue :detail="detail" :path="path" />
   <div class="box">
     <div class="noteEditor">
       <div>
@@ -9,7 +8,6 @@
           placeholder="请输入标题（建议10字以内）"
           style="overflow-y: hidden; height: 64px"
         />
-        <!-- <router-link to="/mdEditor"><el-button type="primary">切换至MD编辑器</el-button></router-link> -->
       </div>
       <div ref="editor" />
       <div class="noteType">
@@ -22,9 +20,7 @@
               <el-radio-button label="工作经验"></el-radio-button>
             </el-radio-group>
           </el-col>
-          <!-- <el-col :span="24"><p>输入标签</p></el-col> -->
           <el-col :span="24">
-            <!-- <el-input v-model="note.label_values" placeholder="标签" /> -->
             <el-tag
               v-for="tag in note.label"
               :key="tag"
@@ -53,7 +49,7 @@
             </el-radio-group>
           </el-col>
           <el-col :span="24">
-            <el-button type="primary" plain @click="insNote">保存</el-button>
+            <el-button type="primary" plain @click="updNote">更新</el-button>
           </el-col>
         </el-row>
       </div>
@@ -65,34 +61,38 @@
 // eslint-disable-next-line object-curly-newline
 import { onMounted, onBeforeUnmount, ref, reactive, nextTick } from 'vue';
 import WangEditor from 'wangeditor';
-import { useCookies } from 'vue3-cookies';
+// import { useCookies } from 'vue3-cookies';
 import { ElInput, ElMessage } from 'element-plus';
 import axios from 'axios';
-import PageHeaderVue from './PageHeader.vue';
-import router from '../router';
+// import router from '../router';
 import api from '../api/index';
 
 const editor = ref();
-const path = 'index';
-const detail = '写笔记';
 const store = api.store();
-const { cookies } = useCookies();
-const userInfo = cookies.get('userInfo') as any;
+// const { cookies } = useCookies();
+// const userInfo = cookies.get('userInfo') as any;
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
-
+const userNote = store.getUserNote;
 const note = reactive({
-  title: '', // 标题
+  id: userNote.id,
+  title: userNote.title, // 标题
   text: '', // 正文
-  user_id: userInfo.id, // 作者ID
-  name: userInfo.username, // 作者
+  user_id: userNote.user_id, // 作者ID
+  name: userNote.name, // 作者
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
-  message: 0, // 是否公开 0公开
-  select_categories: '', // 分类
-  label_values: '', // 标签
+  message: userNote.message, // 是否公开 0公开
+  select_categories: userNote.select_categories, // 分类
+  label_values: userNote.label_values as string, // 标签
   label: [], // 标签
 });
+if (userNote.label_values !== '' && userNote.label_values !== undefined) {
+  const labelList = note.label_values.split(',');
+  for (let index = 0; index < labelList.length; index += 1) {
+    note.label.push(labelList[index] as never);
+  }
+}
 let instance: any;
 onMounted(() => {
   instance = new WangEditor(editor.value);
@@ -106,6 +106,7 @@ onMounted(() => {
   };
   instance.config.height = 400;
   instance.create();
+  instance.txt.html(userNote.text);
 });
 
 onBeforeUnmount(() => {
@@ -130,31 +131,17 @@ const handleInputConfirm = () => {
   inputVisible.value = false;
   inputValue.value = '';
 };
-function insNote() {
+function updNote() {
   const result = ref();
-  if (note.title === '') {
-    ElMessage.error('请输入标题');
-  } else {
-    note.label_values = note.label.toString();
-    axios
-      .post('api/note/insNote', note, {
-        headers: {
-          Authorization: store.jwtToken,
-        },
-      })
-      .then((res) => {
-        result.value = res.data;
-        // console.log(res);
-      })
-      .then(() => {
-        if (result.value.code === 200) {
-          ElMessage.success('保存成功');
-          router.go(0);
-        } else {
-          ElMessage.error(result.value.msg);
-        }
-      });
-  }
+  note.label_values = note.label.toString();
+  axios
+    .post('api/note/updUserNote', note)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) ElMessage.success('更新成功');
+    });
 }
 </script>
 <style scoped>

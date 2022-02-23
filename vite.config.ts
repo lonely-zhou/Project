@@ -18,5 +18,5 @@ export default defineConfig({
     },
   },
 });
-// 服务器地址 81.70.167.144 https://api.lonelyzhou.cn/recordAndShare/
+// 服务器地址 81.70.92.142 https://api.lonelyzhou.cn/recordAndShare/
 // 本地 http://localhost:8080/recordAndShare/

@@ -2,7 +2,7 @@
   <page-header-vue :detail="detail" :path="path" />
   <div class="box">
     <div style="text-align: left">
-      <el-tabs tab-position="left" type="card" v-model="activeName" @tab-click="selUserNote">
+      <el-tabs tab-position="left" type="card" v-model="activeName" @tab-click="clickTap">
         <el-tab-pane label="首页" name="首页" style="margin-top: 20px">
           <el-row>
             <el-col :span="8">
@@ -105,12 +105,49 @@
               </el-col>
               <el-col :span="12" style="text-align: right">
                 <el-button type="primary" plain @click="updUserNote(i)">修改</el-button>
-                <el-button type="primary" plain>删除</el-button>
+                <el-button type="primary" plain @click="delUserNote(v.id)">删除</el-button>
               </el-col>
             </el-row>
+            <el-pagination
+              style="margin: 2%"
+              @current-change="changePageMyNote(paginationData.pageMyNote)"
+              v-model:current-page="paginationData.pageMyNote"
+              layout="prev, pager, next"
+              :total="paginationData.totalMyNote"
+              background
+              hide-on-single-page
+            />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="我的评论">Task</el-tab-pane>
+        <el-tab-pane label="我的评论" name="我的评论">
+          <div class="myComment">
+            <el-row v-for="(item, index) in userCommentList" :key="index" class="userCommentList">
+              <el-col :span="20">
+                <el-row>
+                  <el-col :span="24">
+                    {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
+                  </el-col>
+                  <el-col :span="24"> {{ item.message }} </el-col>
+                </el-row>
+              </el-col>
+              <el-col :span="4">
+                <el-row>
+                  <el-col :span="24"> <el-button type="primary" plain>修改</el-button> </el-col>
+                  <el-col :span="24"> <el-button type="primary" plain>删除</el-button> </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+            <el-pagination
+              style="margin: 2%"
+              @current-change="changePageMyComment(paginationData.pageMyComment)"
+              v-model:current-page="paginationData.pageMyComment"
+              layout="prev, pager, next"
+              :total="paginationData.totalMyComment"
+              background
+              hide-on-single-page
+            />
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="账户安全">
           <el-row>
             <el-col :span="24" style="margin-top: 16px">
@@ -123,6 +160,30 @@
             </el-col>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane label="我的点赞" name="我的点赞">Task</el-tab-pane>
+        <el-tab-pane label="我的收藏" name="我的收藏">
+          <div class="myCollect">
+            <el-row v-for="(item, index) in userCollectList" :key="index" class="userCollectList">
+              <el-col :span="20">
+                {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
+              </el-col>
+              <el-col :span="4"
+                ><el-button type="primary" plain @click="delUserNoteCollect(item.note_id, index)">删除</el-button>
+              </el-col>
+            </el-row>
+            <el-pagination
+              style="margin: 2%"
+              @current-change="changePageMyCollect(paginationData.pageMyCollect)"
+              v-model:current-page="paginationData.pageMyCollect"
+              layout="prev, pager, next"
+              :total="10"
+              :page-size="5"
+              hide-on-single-page
+              background
+            />
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="设置">Task</el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -145,7 +206,17 @@ const userInfo = cookies.get('userInfo') as any;
 const router = useRouter();
 const uploadData = { username: userInfo.username };
 const userNoteList = ref();
+const userCommentList = ref();
+const userCollectList = ref([{ title: '', note_id: '', time: '' }]);
 const store = api.store();
+const paginationData = reactive({
+  totalMyNote: 0,
+  pageMyNote: 1,
+  totalMyComment: 0,
+  pageMyComment: 1,
+  totalMyCollect: 0,
+  pageMyCollect: 1,
+});
 
 const updUserInfo = reactive({
   username: userInfo.username,
@@ -195,17 +266,70 @@ function toUpdPE(showInfo: string) {
 function uploadSuccess() {
   ElMessage.success('头像上传成功，下次登录生效！');
 }
-function selUserNote() {
+function clickTap() {
   if (activeName.value === '我的笔记') {
     axios.get(`api/note/selUserNote?userid=${userInfo.id}&page=1`).then((res) => {
       userNoteList.value = res.data.data.records;
-      console.log(res);
+      paginationData.totalMyNote = Number(res.data.msg);
+    });
+  }
+  if (activeName.value === '我的评论') {
+    axios.get(`api/comment/selUserCommentList?userId=${userInfo.id}&page=1`).then((res) => {
+      userCommentList.value = res.data.data.records;
+      paginationData.totalMyComment = Number(res.data.msg);
+    });
+  }
+  if (activeName.value === '我的收藏') {
+    axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=1`).then((res) => {
+      userCollectList.value = res.data.data.records;
+      // paginationData.totalMyCollect = Number(res.data.msg);
+      paginationData.totalMyCollect = Number(res.data.msg);
     });
   }
 }
 function updUserNote(index: number) {
   store.setUserNote(userNoteList.value[index]);
-  router.push('/write');
+  router.push('/updUserNote');
+}
+function delUserNote(id: string) {
+  const result = ref();
+  axios
+    .get(`api/note/delUserNote?id=${id}`)
+    .then((res) => {
+      result.value = res.data;
+      console.log(res);
+    })
+    .then(() => {
+      clickTap();
+    });
+}
+function changePageMyNote(pageMyNoteNum: number) {
+  axios.get(`api/?userid=${userInfo.id}&page=${pageMyNoteNum}`).then((res) => {
+    userCommentList.value = res.data.data.records;
+  });
+}
+function changePageMyComment(pageMyCommentNum: number) {
+  axios.get(`api/?userid=${userInfo.id}&page=${pageMyCommentNum}`).then((res) => {
+    userCommentList.value = res.data.data.records;
+  });
+}
+function changePageMyCollect(pageMyCollectNum: number) {
+  axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=${pageMyCollectNum}`).then((res) => {
+    userCollectList.value = res.data.data.records;
+  });
+}
+function delUserNoteCollect(noteId: string, index: number) {
+  const result = ref();
+  axios
+    .delete(`api/collects/delUserNoteCollect?userId=${userInfo.id}&noteId=${noteId}`)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) {
+        userCollectList.value.splice(index, 1);
+      }
+    });
 }
 </script>
 <style scoped>
@@ -246,18 +370,22 @@ p {
   margin: auto;
   /* 盒子水平垂直居中 --- end*/
 }
-.myNote {
-  width: 80%;
-  height: 90%;
+.myNote,
+.myComment,
+.myCollect {
+  margin: 30px 0 0 60px;
 }
 .myNote .title {
   font-family: '思源黑体';
   font-size: large;
 }
-.userNoteList {
+.userNoteList,
+.userCommentList,
+.userCollectList {
   border: 1px solid black;
   border-radius: 5px;
   margin-bottom: 12px;
+  width: 640px;
   align-items: center;
 }
 .createTime {

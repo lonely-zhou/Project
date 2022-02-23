@@ -1,13 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
+  { path: '/reportPage', name: 'ReportPage', component: () => import('../components/ReportPage.vue') },
+  { path: '/readNote', name: 'ReadNote', component: () => import('../components/ReadNote.vue') },
+  { path: '/updUserNote', name: 'UpdUserNote', component: () => import('../components/UpdUserNote.vue') },
   { path: '/updPE/:showInfo', name: 'UpdPE', component: () => import('../components/UpdPE.vue') },
   { path: '/personalCenter', name: 'PersonalCenter', component: () => import('../components/PersonalCenter.vue') },
-  {
-    path: '/mdEditor',
-    name: 'MdEditor',
-    component: () => import('../components/MdEditor.vue'),
-  },
+  { path: '/mdEditor', name: 'MdEditor', component: () => import('../components/MdEditor.vue') },
   {
     path: '/',
     name: 'Home',
@@ -18,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../components/Login copy.vue'),
+    component: () => import('../components/Login.vue'),
     meta: { title: '登录' },
   },
   {

@@ -1,40 +1,44 @@
 <template>
   <div class="box">
     <div class="bacImg">
-      <div class="navTop">
-        <el-row>
-          <el-col :span="3" :xs="8"><span class="text">生活杂谈</span></el-col>
-          <el-col :span="3" :xs="8"><span class="text">学习分享</span></el-col>
-          <el-col :span="3" :xs="8"><span class="text">工作经验</span></el-col>
-          <!-- 当前日期 城市 天气 温度 -->
-          <el-col :span="10" :xs="24">
-            <span class="text">
-              {{ dawDate.dateNow }}
-              {{ dawDate.weather.city }}
-              {{ dawDate.weather.text }}
-              {{ dawDate.weather.temp }} ℃
-            </span>
-          </el-col>
-          <el-col :span="3" :xs="12" @click="toWrite">
-            <span class="text">写笔记</span>
-          </el-col>
-          <el-col :span="2" :xs="12">
-            <!-- 头像 -->
-            <el-dropdown @command="handleCommand">
-              <el-avatar :size="50" :src="circleUrl"></el-avatar>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
-                  <el-dropdown-item v-if="showUserCenter" command="toPersonalCenter"
-                    ><span>个人中心</span></el-dropdown-item
-                  >
-                  <el-dropdown-item command="toLogout" v-if="showUserCenter"><span>退出登录</span></el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </el-col>
-        </el-row>
-      </div>
+      <el-affix>
+        <div class="navTop">
+          <el-row>
+            <el-col :span="3" :xs="8"><span class="text">生活杂谈</span></el-col>
+            <el-col :span="3" :xs="8"><span class="text">学习分享</span></el-col>
+            <el-col :span="3" :xs="8"><span class="text">工作经验</span></el-col>
+            <!-- 当前日期 城市 天气 温度 -->
+            <el-col :span="10" :xs="24">
+              <a target="_black" href="https://www.qweather.com/">
+                <span class="text">
+                  {{ dawDate.dateNow }}
+                  {{ dawDate.weather.city }}
+                  {{ dawDate.weather.text }}
+                  {{ dawDate.weather.temp }} ℃
+                </span>
+              </a>
+            </el-col>
+            <el-col :span="3" :xs="12" @click="toWrite">
+              <span class="text">写笔记</span>
+            </el-col>
+            <el-col :span="2" :xs="12">
+              <!-- 头像 -->
+              <el-dropdown @command="handleCommand">
+                <el-avatar :size="50" :src="circleUrl"></el-avatar>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
+                    <el-dropdown-item v-if="showUserCenter" command="toPersonalCenter"
+                      ><span>个人中心</span></el-dropdown-item
+                    >
+                    <el-dropdown-item command="toLogout" v-if="showUserCenter"><span>退出登录</span></el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-col>
+          </el-row>
+        </div>
+      </el-affix>
     </div>
     <div class="main">
       <el-row>
@@ -63,39 +67,55 @@
                       <el-col :span="3"> <span class="iconfont icon-eye" />{{ item.look }} </el-col>
                       <!-- 点赞数 -->
                       <el-col :span="3">
-                        <el-button type="text" style="color: black"> <span class="iconfont icon-like" /> </el-button>
+                        <el-tooltip effect="light" content="点赞" show-after="3000" placement="bottom">
+                          <el-button type="text" style="color: black" @click="addLike(item.id, index)">
+                            {{ isUserLikeNote(item.id) }}
+                            <span class="iconfont icon-like" :id="item.id" />
+                          </el-button>
+                        </el-tooltip>
                         {{ item.likes }}
                       </el-col>
                       <!-- 收藏数 -->
                       <el-col :span="3">
-                        <el-button type="text" style="color: black">
-                          <span class="iconfont icon-star" />
-                        </el-button>
+                        <el-tooltip effect="light" content="收藏" show-after="3000" placement="bottom">
+                          <el-button type="text" style="color: black" @click="insUserCollect(item.id, index)">
+                            <span class="iconfont icon-star" :id="item.id" />
+                          </el-button>
+                        </el-tooltip>
                         {{ item.collection }}
                       </el-col>
                       <!-- 举报按钮 -->
                       <el-col :span="3">
-                        <el-button type="text" style="color: black"><span class="iconfont icon-flag" /></el-button>
+                        <el-tooltip effect="light" content="举报" show-after="3000" placement="bottom">
+                          <el-button type="text" style="color: black" @click="toReportPage(item.id)"
+                            ><span class="iconfont icon-flag" />
+                          </el-button>
+                        </el-tooltip>
                       </el-col>
                       <!-- 分享按钮 -->
                       <el-col :span="3">
-                        <el-button type="text" style="color: black"><span class="iconfont icon-share" /></el-button>
+                        <el-tooltip effect="light" content="分享" show-after="3000" placement="bottom">
+                          <el-button type="text" style="color: black" @click="shareUrl(item.id)">
+                            <span class="iconfont icon-share" />
+                          </el-button>
+                        </el-tooltip>
                       </el-col>
                       <!-- 阅读全文按钮 -->
                       <el-col :span="3">
-                        <el-button type="text">
+                        <el-button type="text" @click="toReadNote(item.id)">
                           阅读全文
                           <el-icon class="el-icon--right"><arrow-right-bold /></el-icon>
                         </el-button>
                       </el-col>
                     </el-row>
                   </div>
-                  <!-- noteNav -->
+                  <!-- noteNav end -->
                 </el-col>
               </el-row>
             </div>
           </div>
-          <!-- noteList -->
+          <!-- noteList end -->
+          <!-- 分页 -->
           <el-pagination
             style="margin: 2%"
             @current-change="changePage(page)"
@@ -133,8 +153,12 @@ const store = api.store();
 const loginFlag = ref(store.loginFlag);
 const circleUrl = ref(); // 头像url
 const router = useRouter();
+const user = cookies.get('userInfo') as any;
+// 剪贴板操作
+const clipboardObj = navigator.clipboard;
 const noteList = ref([
   {
+    id: '', // 笔记ID
     title: '', // 标题
     text: '', // 正文
     label_values: '', // 标签
@@ -202,7 +226,6 @@ const showNoteList = computed(() => {
   return true;
 });
 onMounted(() => {
-  const user = cookies.get('userInfo') as any;
   if (user !== null) {
     if (user.phone === '0' && loginFlag.value) {
       ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
@@ -224,25 +247,24 @@ onMounted(() => {
       noteListEmpty.value = false;
     });
 });
-function toTop() {
-  const goTop = setInterval(() => {
-    let scrollTop = document.body.scrollTop + document.documentElement.scrollTop;
-    scrollTop -= 10;
-    document.documentElement.scrollTop = scrollTop;
-    if (scrollTop < 0) {
-      clearInterval(goTop);
-    }
-  }, 5);
-}
+// function toTop() {
+//   const goTop = setInterval(() => {
+//     let scrollTop = document.body.scrollTop + document.documentElement.scrollTop;
+//     scrollTop -= 10;
+//     document.documentElement.scrollTop = scrollTop;
+//     if (scrollTop < 0) {
+//       clearInterval(goTop);
+//     }
+//   }, 5);
+// }
 function changePage(num: number) {
   axios
     .get(`api/note/getNoteList?page=${num}`)
     .then((res) => {
       noteList.value = res.data.data.records;
-      console.log(res);
     })
     .then(() => {
-      toTop();
+      // toTop();
     });
 }
 // 跳转写笔记 判断是否登录
@@ -250,6 +272,74 @@ function toWrite(): void {
   if (loginFlag.value) router.push('/write');
   else {
     ElMessage.error('请登录');
+  }
+}
+// 跳转阅读全文
+function toReadNote(noteId: string) {
+  router.push({ name: 'ReadNote', query: { noteId } });
+  axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
+}
+function isUserLikeNote(noteId: string) {
+  const result = ref();
+  axios
+    .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      const span = document.getElementById(noteId) as HTMLElement;
+      if (result.value.data === 'true') {
+        span.style.color = 'red';
+      } else {
+        span.style.color = 'black';
+      }
+    });
+}
+// 点赞
+function addLike(noteId: string, index: number) {
+  if (loginFlag.value === true) {
+    const result = ref();
+    axios
+      .get(`api/likes/addLike?userId=${user.id}&noteId=${noteId}`)
+      .then((res) => {
+        result.value = res.data;
+      })
+      .then(() => {
+        noteList.value[index].likes = result.value.data;
+        isUserLikeNote(noteId);
+      });
+  } else {
+    ElNotification({
+      title: 'Warning',
+      message: '登录才能点赞哦！',
+      type: 'warning',
+    });
+  }
+}
+// 跳转举报页
+function toReportPage(noteId: string) {
+  router.push({ name: 'ReportPage', query: { noteId } });
+}
+function insUserCollect(noteId: string, index: number) {
+  if (loginFlag.value === true) {
+    axios.get(`api/collects/insUserNoteCollect?userId=${user.id}&noteId=${noteId}`).then((res) => {
+      noteList.value[index].collection = res.data.data;
+    });
+  } else {
+    ElNotification({
+      title: 'Warning',
+      message: '登录才能收藏哦！',
+      type: 'warning',
+    });
+  }
+}
+function shareUrl(noteId: string) {
+  try {
+    clipboardObj.writeText(`localhost/readNote?noteId=${noteId}`); // localhost
+    // clipboardObj.writeText(`https://www.lonelyzhou.cn/readNote?noteId=${noteId}`);
+    ElMessage.success('已复制到剪贴板');
+  } catch {
+    ElMessage.error('复制失败');
   }
 }
 </script>
@@ -319,5 +409,8 @@ function toWrite(): void {
 }
 a {
   color: white;
+}
+.isLike {
+  color: red;
 }
 </style>

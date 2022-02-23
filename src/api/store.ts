@@ -7,7 +7,11 @@ const useStore = defineStore({
     loginFlag: false,
     userNote: {},
   }),
-  getters: {},
+  getters: {
+    getUserNote(): any {
+      return this.userNote;
+    },
+  },
   actions: {
     setjwtToken(jwt: string) {
       this.jwtToken = jwt;
