@@ -11,8 +11,9 @@ export default defineConfig({
       '/api': {
         // target: 'https://api.lonelyzhou.cn/recordAndShare/', // 要转发的地址  你要代理的域名和端口号，要加上http
         target: 'http://localhost:8080/recordAndShare/',
-        ws: false, // 是否启用websockets
+        ws: true, // 是否启用websockets
         changeOrigin: true, // 跨域
+        // secure: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },

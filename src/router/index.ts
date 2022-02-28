@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
+  { path: '/search', name: 'SearchPage', component: () => import('../components/SearchPage.vue') },
   { path: '/reportPage', name: 'ReportPage', component: () => import('../components/ReportPage.vue') },
   { path: '/readNote', name: 'ReadNote', component: () => import('../components/ReadNote.vue') },
   { path: '/updUserNote', name: 'UpdUserNote', component: () => import('../components/UpdUserNote.vue') },

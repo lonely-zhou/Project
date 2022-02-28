@@ -28,9 +28,9 @@
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
-                    <el-dropdown-item v-if="showUserCenter" command="toPersonalCenter"
-                      ><span>个人中心</span></el-dropdown-item
-                    >
+                    <el-dropdown-item v-if="showUserCenter" command="toPersonalCenter">
+                      <span>个人中心</span>
+                    </el-dropdown-item>
                     <el-dropdown-item command="toLogout" v-if="showUserCenter"><span>退出登录</span></el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -127,7 +127,34 @@
         </el-col>
         <el-col :span="6">
           <el-row>
+            <!-- logo -->
             <el-col :span="24"><img src="../assets/logo_2.png" alt="logo" /></el-col>
+            <!-- 搜索 -->
+            <el-col :span="24">
+              <el-input
+                v-model="search"
+                placeholder="输入关键字 搜索"
+                :suffix-icon="Search"
+                class="search"
+                @keydown.enter="toSearch"
+                clearable
+              />
+            </el-col>
+            <!-- 标签云 -->
+            <el-col :span="24" style="margin-top: 24px">
+              <p style="margin-bottom: 12px">标签云</p>
+              <el-tag
+                v-for="(item, index) in labelValuesList"
+                :key="index"
+                :color="setColor()"
+                class="tag"
+                @click="clickTag(item)"
+              >
+                <el-tooltip effect="light" :content="item" placement="top">
+                  <span style="color: white">{{ item }}</span>
+                </el-tooltip>
+              </el-tag>
+            </el-col>
           </el-row>
         </el-col>
       </el-row>
@@ -140,7 +167,7 @@
 <script lang="ts" setup>
 // eslint-disable-next-line object-curly-newline
 import { computed, onMounted, reactive, ref } from 'vue';
-import { ArrowRightBold } from '@element-plus/icons-vue';
+import { ArrowRightBold, Search } from '@element-plus/icons-vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -154,8 +181,10 @@ const loginFlag = ref(store.loginFlag);
 const circleUrl = ref(); // 头像url
 const router = useRouter();
 const user = cookies.get('userInfo') as any;
+const search = ref();
 // 剪贴板操作
 const clipboardObj = navigator.clipboard;
+const labelValuesList = ref();
 const noteList = ref([
   {
     id: '', // 笔记ID
@@ -180,6 +209,20 @@ const noteList = ref([
 const noteListEmpty = ref();
 const total = ref(); // 分页数
 const page = ref(1);
+console.log(
+  // eslint-disable-next-line operator-linebreak
+  '  _____                        _                    _  _____ _                    \n' +
+    // eslint-disable-next-line operator-linebreak
+    ' |  __ \\                      | |   /\\             | |/ ____| |                   \n' +
+    // eslint-disable-next-line operator-linebreak
+    ' | |__) |___  ___ ___  _ __ __| |  /  \\   _ __   __| | (___ | |__   __ _ _ __ ___ \n' +
+    // eslint-disable-next-line operator-linebreak
+    " |  _  // _ \\/ __/ _ \\| '__/ _` | / /\\ \\ | '_ \\ / _` |\\___ \\| '_ \\ / _` | '__/ _ \\\n" +
+    // eslint-disable-next-line operator-linebreak
+    ' | | \\ \\  __/ (_| (_) | | | (_| |/ ____ \\| | | | (_| |____) | | | | (_| | | |  __/\n' +
+    ' |_|  \\_\\___|\\___\\___/|_|  \\__,_/_/    \\_\\_| |_|\\__,_|_____/|_| |_|\\__,_|_|  \\___|    \n',
+);
+
 // 下拉列表点击事件
 function handleCommand(command: string) {
   switch (command) {
@@ -234,38 +277,26 @@ onMounted(() => {
       circleUrl.value = user.avatar_url;
     }
   }
+  // 笔记列表
   axios
     .get(`api/note/getNoteList?page=${1}`)
     .then((res) => {
       noteList.value = res.data.data.records;
       total.value = Number(res.data.msg);
-      // page.value = Math.ceil(Number(res.data.msg) / 9);
       noteListEmpty.value = true;
-      // console.log(res);
     })
     .catch(() => {
       noteListEmpty.value = false;
     });
+  // 标签列表
+  axios.get('api/note/selLabelValuesList').then((res) => {
+    labelValuesList.value = res.data.data;
+  });
 });
-// function toTop() {
-//   const goTop = setInterval(() => {
-//     let scrollTop = document.body.scrollTop + document.documentElement.scrollTop;
-//     scrollTop -= 10;
-//     document.documentElement.scrollTop = scrollTop;
-//     if (scrollTop < 0) {
-//       clearInterval(goTop);
-//     }
-//   }, 5);
-// }
 function changePage(num: number) {
-  axios
-    .get(`api/note/getNoteList?page=${num}`)
-    .then((res) => {
-      noteList.value = res.data.data.records;
-    })
-    .then(() => {
-      // toTop();
-    });
+  axios.get(`api/note/getNoteList?page=${num}`).then((res) => {
+    noteList.value = res.data.data.records;
+  });
 }
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
@@ -277,23 +308,27 @@ function toWrite(): void {
 // 跳转阅读全文
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
+  // if (loginFlag.value) {
   axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
+  // }
 }
 function isUserLikeNote(noteId: string) {
   const result = ref();
-  axios
-    .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
-    .then((res) => {
-      result.value = res.data;
-    })
-    .then(() => {
-      const span = document.getElementById(noteId) as HTMLElement;
-      if (result.value.data === 'true') {
-        span.style.color = 'red';
-      } else {
-        span.style.color = 'black';
-      }
-    });
+  if (loginFlag.value) {
+    axios
+      .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
+      .then((res) => {
+        result.value = res.data;
+      })
+      .then(() => {
+        const span = document.getElementById(noteId) as HTMLElement;
+        if (result.value.data === 'true') {
+          span.style.color = 'red';
+        } else {
+          span.style.color = 'black';
+        }
+      });
+  }
 }
 // 点赞
 function addLike(noteId: string, index: number) {
@@ -342,6 +377,20 @@ function shareUrl(noteId: string) {
     ElMessage.error('复制失败');
   }
 }
+function toSearch() {
+  router.push({ name: 'SearchPage', query: { q: search.value } });
+}
+function setColor() {
+  // 随机颜色
+  const R = Math.floor(Math.random() * 130 + 110);
+  const G = Math.floor(Math.random() * 130 + 110);
+  const B = Math.floor(Math.random() * 130 + 110);
+  return `rgb(${R},${G},${B})`;
+}
+// 点击标签
+function clickTag(tagName: string) {
+  router.push({ name: 'SearchPage', query: { tagName } });
+}
 </script>
 <style scoped>
 .box {
@@ -375,8 +424,6 @@ function shareUrl(noteId: string) {
   height: 160px;
 }
 .noteList {
-  /* width: 770px; */
-  /* height: 160px; */
   border: 1px solid rgb(0, 0, 0);
   border-radius: 16px;
   margin-top: 32px;
@@ -412,5 +459,13 @@ a {
 }
 .isLike {
   color: red;
+}
+.search {
+  border-radius: 20px;
+  width: 80%;
+}
+.tag {
+  margin-right: 3px;
+  cursor: pointer;
 }
 </style>

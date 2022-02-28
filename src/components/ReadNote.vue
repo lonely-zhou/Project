@@ -161,6 +161,7 @@ function submitComment() {
       if (result.value.code === 200) {
         ElMessage.success('评论成功');
         selNoteCommentList();
+        comment.message = '';
       } else {
         ElMessage.error(result.value.data);
       }
@@ -176,7 +177,9 @@ onMounted(() => {
     note.value = result.value.data;
     noteCommentCount.value = res[1].data.data;
   });
-  isUserLikeNote();
+  if (loginFlag.value) {
+    isUserLikeNote();
+  }
   selNoteCommentList();
 });
 </script>

@@ -44,26 +44,29 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="我的信息" name="我的信息">
-          <el-row style="width: 40%">
+          <el-row style="width: 40%" class="myInfo">
             <el-col :span="24">
               <el-input v-model="updUserInfo.nickname" maxlength="8" show-word-limit :placeholder="userInfo.nickname">
                 <template #prepend>昵称</template>
               </el-input>
             </el-col>
-            <el-col :span="24" style="text-align: center; margin-top: 20px">
+            <el-col :span="24" style="margin-top: 20px">
+              性别：
               <el-radio-group v-model="updUserInfo.sex">
-                <el-radio-button label="男"></el-radio-button>
-                <el-radio-button label="女"></el-radio-button>
-                <el-radio-button label="保密"></el-radio-button>
+                <el-radio label="男"></el-radio>
+                <el-radio label="女"></el-radio>
+                <el-radio label="保密"></el-radio>
               </el-radio-group>
             </el-col>
-            <el-col :span="24" style="text-align: center; margin-top: 20px">
-              <el-button type="primary" plain @click="updUser" :disabled="disUpdUser">保存</el-button>
+            <el-col :span="24" style="margin-top: 20px">
+              <el-button type="primary" plain @click="updUser" :disabled="disUpdUser" style="width: 100%">
+                保存
+              </el-button>
             </el-col>
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="更换头像">
-          <el-row>
+          <el-row class="myAvatar">
             <el-col :span="12" :push="4">
               <el-upload
                 action="api/user/updAvatar"
@@ -75,7 +78,7 @@
               </el-upload>
             </el-col>
             <el-col :span="12">
-              <el-row>
+              <el-row style="margin-top: 30px">
                 <el-col :span="24"><el-avatar :size="80" :src="userInfo.avatar_url" /></el-col>
                 <el-col :span="24">当前头像</el-col>
               </el-row>
@@ -83,8 +86,9 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="我的笔记" name="我的笔记">
-          <div class="myNote">
-            <el-row v-for="(v, i) in userNoteList" :key="i" class="userNoteList">
+          <el-empty description="无笔记" v-if="showMyNote" />
+          <div class="myNote" v-if="show">
+            <el-row v-for="(v, i) in myData.myNoteList" :key="i" class="userNoteList">
               <el-col :span="12">
                 <el-row>
                   <!-- 标题 -->
@@ -120,8 +124,9 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="我的评论" name="我的评论">
-          <div class="myComment">
-            <el-row v-for="(item, index) in userCommentList" :key="index" class="userCommentList">
+          <div class="myComment" v-if="show">
+            <el-empty description="无评论" v-if="showMyComment" />
+            <el-row v-for="(item, index) in myData.myCommentList" :key="index" class="userCommentList">
               <el-col :span="20">
                 <el-row>
                   <el-col :span="24">
@@ -132,8 +137,12 @@
               </el-col>
               <el-col :span="4">
                 <el-row>
-                  <el-col :span="24"> <el-button type="primary" plain>修改</el-button> </el-col>
-                  <el-col :span="24"> <el-button type="primary" plain>删除</el-button> </el-col>
+                  <el-col :span="24">
+                    <el-button type="primary" plain @click="updMyComment(index, item.id)">修改</el-button>
+                  </el-col>
+                  <el-col :span="24">
+                    <el-button type="primary" plain @click="delMyComment(index, item.id)">删除</el-button>
+                  </el-col>
                 </el-row>
               </el-col>
             </el-row>
@@ -149,7 +158,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="账户安全">
-          <el-row>
+          <el-row class="myAccount">
             <el-col :span="24" style="margin-top: 16px">
               <span class="iconfont icon-phone">手机</span> {{ isPhone }}
               <el-button type="text" @click="toUpdPE('phone')"> {{ isPhoneText }} </el-button>
@@ -160,15 +169,15 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-        <el-tab-pane label="我的点赞" name="我的点赞">Task</el-tab-pane>
-        <el-tab-pane label="我的收藏" name="我的收藏">
-          <div class="myCollect">
-            <el-row v-for="(item, index) in userCollectList" :key="index" class="userCollectList">
-              <el-col :span="20">
+        <el-tab-pane label="我的点赞" name="我的点赞">
+          <el-empty description="无点赞" v-if="showMyLike" />
+          <div class="myLike" v-if="show">
+            <el-row v-for="(item, index) in myData.myLikeList" :key="index" class="userLikeList">
+              <el-col :span="20" @click="toReadNote(item.note_id)" class="toReadNote">
                 {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
               </el-col>
-              <el-col :span="4"
-                ><el-button type="primary" plain @click="delUserNoteCollect(item.note_id, index)">删除</el-button>
+              <el-col :span="4">
+                <el-button type="primary" plain @click="delUserLikeNote(item.note_id, index)">删除</el-button>
               </el-col>
             </el-row>
             <el-pagination
@@ -176,14 +185,37 @@
               @current-change="changePageMyCollect(paginationData.pageMyCollect)"
               v-model:current-page="paginationData.pageMyCollect"
               layout="prev, pager, next"
-              :total="10"
+              :total="paginationData.totalMyCollect"
               :page-size="5"
               hide-on-single-page
               background
             />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="设置">Task</el-tab-pane>
+        <el-tab-pane label="我的收藏" name="我的收藏">
+          <el-empty description="无收藏" v-if="showMyCollect" />
+          <div class="myCollect" v-if="show">
+            <el-row v-for="(item, index) in myData.myCollectList" :key="index" class="userCollectList">
+              <el-col :span="20" @click="toReadNote(item.note_id)" class="toReadNote">
+                {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
+              </el-col>
+              <el-col :span="4">
+                <el-button type="primary" plain @click="delUserNoteCollect(item.note_id, index)">删除</el-button>
+              </el-col>
+            </el-row>
+            <el-pagination
+              style="margin: 2%"
+              @current-change="changePageMyCollect(paginationData.pageMyCollect)"
+              v-model:current-page="paginationData.pageMyCollect"
+              layout="prev, pager, next"
+              :total="paginationData.totalMyCollect"
+              :page-size="5"
+              hide-on-single-page
+              background
+            />
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="其他">Task</el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -194,7 +226,7 @@ import axios from 'axios';
 import { computed, reactive, ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
@@ -205,9 +237,30 @@ const path = 'index';
 const userInfo = cookies.get('userInfo') as any;
 const router = useRouter();
 const uploadData = { username: userInfo.username };
-const userNoteList = ref();
-const userCommentList = ref();
-const userCollectList = ref([{ title: '', note_id: '', time: '' }]);
+const show = ref(true);
+const myData = reactive({
+  myNoteList: [
+    {
+      title: '',
+      create_time: '',
+      look: '',
+      likes: '',
+      collection: '',
+      id: '',
+    },
+  ],
+  myCommentList: [
+    {
+      id: '',
+      title: '',
+      time: '',
+      message: '',
+      note_id: '',
+    },
+  ],
+  myCollectList: [{ note_id: '', time: '', title: '' }],
+  myLikeList: [{ note_id: '', time: '', title: '' }],
+});
 const store = api.store();
 const paginationData = reactive({
   totalMyNote: 0,
@@ -216,6 +269,8 @@ const paginationData = reactive({
   pageMyComment: 1,
   totalMyCollect: 0,
   pageMyCollect: 1,
+  totalMyLike: 0,
+  pageMyLike: 1,
 });
 
 const updUserInfo = reactive({
@@ -244,6 +299,22 @@ const disUpdUser = computed(() => {
   if (updUserInfo.nickname === '') return true;
   return false;
 });
+const showMyComment = computed(() => {
+  if (myData.myCommentList.length === 0) return true;
+  return false;
+});
+const showMyNote = computed(() => {
+  if (myData.myNoteList.length === 0) return true;
+  return false;
+});
+const showMyCollect = computed(() => {
+  if (myData.myCollectList.length === 0) return true;
+  return false;
+});
+const showMyLike = computed(() => {
+  if (myData.myLikeList.length === 0) return true;
+  return false;
+});
 
 function updUser() {
   const result = ref();
@@ -267,37 +338,48 @@ function uploadSuccess() {
   ElMessage.success('头像上传成功，下次登录生效！');
 }
 function clickTap() {
+  show.value = false;
   if (activeName.value === '我的笔记') {
     axios.get(`api/note/selUserNote?userid=${userInfo.id}&page=1`).then((res) => {
-      userNoteList.value = res.data.data.records;
+      myData.myNoteList = res.data.data.records;
       paginationData.totalMyNote = Number(res.data.msg);
+      show.value = true;
     });
   }
   if (activeName.value === '我的评论') {
     axios.get(`api/comment/selUserCommentList?userId=${userInfo.id}&page=1`).then((res) => {
-      userCommentList.value = res.data.data.records;
+      myData.myCommentList = res.data.data.records;
       paginationData.totalMyComment = Number(res.data.msg);
+      show.value = true;
     });
   }
   if (activeName.value === '我的收藏') {
     axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=1`).then((res) => {
-      userCollectList.value = res.data.data.records;
+      myData.myCollectList = res.data.data.records;
       // paginationData.totalMyCollect = Number(res.data.msg);
       paginationData.totalMyCollect = Number(res.data.msg);
+      show.value = true;
+    });
+  }
+  if (activeName.value === '我的点赞') {
+    axios.get(`api/likes/selUserLikeList?userId=${userInfo.id}&page=1`).then((res) => {
+      myData.myLikeList = res.data.data.records;
+      paginationData.totalMyLike = Number(res.data.msg);
+      show.value = true;
     });
   }
 }
 function updUserNote(index: number) {
-  store.setUserNote(userNoteList.value[index]);
+  store.setUserNote(JSON.stringify(myData.myNoteList[index]));
   router.push('/updUserNote');
 }
-function delUserNote(id: string) {
+// 删除用户笔记
+function delUserNote(noteId: string) {
   const result = ref();
   axios
-    .get(`api/note/delUserNote?id=${id}`)
+    .get(`api/note/delUserNote?noteId=${noteId}`)
     .then((res) => {
       result.value = res.data;
-      console.log(res);
     })
     .then(() => {
       clickTap();
@@ -305,17 +387,17 @@ function delUserNote(id: string) {
 }
 function changePageMyNote(pageMyNoteNum: number) {
   axios.get(`api/?userid=${userInfo.id}&page=${pageMyNoteNum}`).then((res) => {
-    userCommentList.value = res.data.data.records;
+    myData.myNoteList = res.data.data.records;
   });
 }
 function changePageMyComment(pageMyCommentNum: number) {
   axios.get(`api/?userid=${userInfo.id}&page=${pageMyCommentNum}`).then((res) => {
-    userCommentList.value = res.data.data.records;
+    myData.myCommentList = res.data.data.records;
   });
 }
 function changePageMyCollect(pageMyCollectNum: number) {
   axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=${pageMyCollectNum}`).then((res) => {
-    userCollectList.value = res.data.data.records;
+    myData.myCollectList = res.data.data.records;
   });
 }
 function delUserNoteCollect(noteId: string, index: number) {
@@ -327,7 +409,71 @@ function delUserNoteCollect(noteId: string, index: number) {
     })
     .then(() => {
       if (result.value.code === 200) {
-        userCollectList.value.splice(index, 1);
+        myData.myCollectList.splice(index, 1);
+      }
+    });
+}
+function toReadNote(noteId: string) {
+  router.push({ name: 'ReadNote', query: { noteId } });
+}
+// 修改我的评论
+function updMyComment(index: number, commentId: string) {
+  ElMessageBox.prompt('输入评论', '评论', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputValue: myData.myCommentList[index].message,
+  })
+    .then(({ value }) => {
+      const result = ref();
+      const comment = reactive({
+        id: commentId,
+        time: api.dateFormat.getDateFormatYHD(),
+        message: value,
+      });
+      axios
+        .post('api/comment/updNoteComment', comment)
+        .then((res) => {
+          result.value = res.data;
+        })
+        .then(() => {
+          myData.myCommentList[index].message = result.value.data.message;
+          myData.myCommentList[index].time = result.value.data.time;
+          ElMessage({
+            type: 'success',
+            message: '修改成功',
+          });
+        });
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '未修改评论',
+      });
+    });
+}
+function delMyComment(index: number, id: string) {
+  const result = ref();
+  axios
+    .delete(`api/comment/delNoteComment?id=${id}`)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) {
+        myData.myCommentList.splice(index, 1);
+      }
+    });
+}
+function delUserLikeNote(noteId: string, index: number) {
+  const result = ref();
+  axios
+    .delete(`api/likes/delUserLikeNote?userId=${userInfo.id}&noteId=${noteId}`)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) {
+        myData.myLikeList.splice(index, 1);
       }
     });
 }
@@ -372,8 +518,15 @@ p {
 }
 .myNote,
 .myComment,
-.myCollect {
+.myCollect,
+.myLike,
+.myAvatar,
+.myInfo,
+.myAccount {
   margin: 30px 0 0 60px;
+}
+.myInfo {
+  text-align: left;
 }
 .myNote .title {
   font-family: '思源黑体';
@@ -381,7 +534,8 @@ p {
 }
 .userNoteList,
 .userCommentList,
-.userCollectList {
+.userCollectList,
+.userLikeList {
   border: 1px solid black;
   border-radius: 5px;
   margin-bottom: 12px;
@@ -390,5 +544,8 @@ p {
 }
 .createTime {
   font-size: xx-small;
+}
+.toReadNote {
+  cursor: pointer;
 }
 </style>

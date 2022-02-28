@@ -74,7 +74,7 @@ const store = api.store();
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
-const userNote = store.getUserNote;
+const userNote = JSON.parse(store.getUserNote);
 const note = reactive({
   id: userNote.id,
   title: userNote.title, // 标题

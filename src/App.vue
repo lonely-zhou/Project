@@ -1,8 +1,20 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import api from './api/index';
+import router from './router';
 
 const store = api.store();
+const percentage = ref();
+const showProgress = ref(false);
+
+router.beforeEach(() => {
+  percentage.value = Math.ceil(Math.random() * 100);
+  showProgress.value = true;
+});
+router.afterEach(() => {
+  percentage.value = 100;
+  showProgress.value = false;
+});
 
 onMounted(() => {
   // 在页面加载时读取sessionStorage里的状态信息
@@ -19,11 +31,15 @@ onMounted(() => {
 });
 </script>
 <template>
+  <el-affix>
+    <el-progress :percentage="percentage" :show-text="false" :stroke-width="3" v-show="showProgress" />
+  </el-affix>
   <router-view v-slot="{ Component }">
     <transition name="fade">
       <component :is="Component" />
     </transition>
   </router-view>
+  <!-- <router-view /> -->
 </template>
 
 <style>
@@ -52,7 +68,6 @@ a {
   font-family: 思源黑体;
   src: url('./assets/Font/SubsetOTF/SourceHanSansCN-Bold.otf');
 }
-/* 渐变过渡 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease;
