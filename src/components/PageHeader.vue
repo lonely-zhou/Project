@@ -16,7 +16,6 @@ function goBack() {
 </script>
 <style scoped>
 .box {
-  background-color: white;
   position: absolute;
   top: 12px;
   left: 12px;

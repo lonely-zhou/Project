@@ -14,7 +14,7 @@
     "js-base64": "^3.7.2",
     "mavon-editor": "^3.0.0-beta",
     "pinia": "^2.0.9",
-    "vue": "^3.2.25",
+    "vue": "^3.2.31",
     "vue-router": "^4.0.12",
     "vue3-cookies": "^1.0.6",
     "wangeditor": "^4.7.11"

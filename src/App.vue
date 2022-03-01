@@ -15,7 +15,6 @@ router.afterEach(() => {
   percentage.value = 100;
   showProgress.value = false;
 });
-
 onMounted(() => {
   // 在页面加载时读取sessionStorage里的状态信息
   // if (sessionStorage.getItem('jwtToken')) {
@@ -32,7 +31,13 @@ onMounted(() => {
 </script>
 <template>
   <el-affix>
-    <el-progress :percentage="percentage" :show-text="false" :stroke-width="3" v-show="showProgress" />
+    <el-progress
+      :percentage="percentage"
+      :indeterminate="true"
+      :show-text="false"
+      :stroke-width="3"
+      v-show="showProgress"
+    />
   </el-affix>
   <router-view v-slot="{ Component }">
     <transition name="fade">

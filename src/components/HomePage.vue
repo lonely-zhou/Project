@@ -24,7 +24,8 @@
             <el-col :span="2" :xs="12">
               <!-- 头像 -->
               <el-dropdown @command="handleCommand">
-                <el-avatar :size="50" :src="circleUrl"></el-avatar>
+                <el-avatar :size="50" :src="circleUrl" v-if="showAvatar"></el-avatar>
+                <el-avatar :size="50" v-if="!showAvatar">登录</el-avatar>
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="toLogin" v-if="showLogin"><span>去登录</span></el-dropdown-item>
@@ -51,7 +52,7 @@
             <div class="noteList" v-if="showNoteList">
               <el-row>
                 <el-col :span="24">
-                  <div class="noteText">
+                  <div class="noteText" @click="toReadNote(item.id)">
                     <div class="noteTextTitle">{{ item.title }}</div>
                     <div class="noteTextSyn">{{ item.article_tabled }}</div>
                   </div>
@@ -223,6 +224,10 @@ console.log(
     ' |_|  \\_\\___|\\___\\___/|_|  \\__,_/_/    \\_\\_| |_|\\__,_|_____/|_| |_|\\__,_|_|  \\___|    \n',
 );
 
+const showAvatar = computed(() => {
+  if (loginFlag.value) return true;
+  return false;
+});
 // 下拉列表点击事件
 function handleCommand(command: string) {
   switch (command) {
@@ -268,6 +273,7 @@ const showNoteList = computed(() => {
   if (showEmptyNote.value) return false;
   return true;
 });
+
 onMounted(() => {
   if (user !== null) {
     if (user.phone === '0' && loginFlag.value) {
@@ -308,9 +314,7 @@ function toWrite(): void {
 // 跳转阅读全文
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
-  // if (loginFlag.value) {
   axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
-  // }
 }
 function isUserLikeNote(noteId: string) {
   const result = ref();
@@ -370,8 +374,7 @@ function insUserCollect(noteId: string, index: number) {
 }
 function shareUrl(noteId: string) {
   try {
-    clipboardObj.writeText(`localhost/readNote?noteId=${noteId}`); // localhost
-    // clipboardObj.writeText(`https://www.lonelyzhou.cn/readNote?noteId=${noteId}`);
+    clipboardObj.writeText(`https://note.lonelyzhou.cn/readNote?noteId=${noteId}`);
     ElMessage.success('已复制到剪贴板');
   } catch {
     ElMessage.error('复制失败');
@@ -435,6 +438,7 @@ function clickTag(tagName: string) {
 .noteText {
   text-align: left;
   margin: 16px 0 0 16px;
+  cursor: pointer;
 }
 .noteTextTitle {
   font-family: '思源黑体';

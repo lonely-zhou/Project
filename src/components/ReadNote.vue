@@ -1,5 +1,6 @@
 <template>
   <div class="box">
+    <PageHeaderVue :detail="detail" :path="path" />
     <div class="noteInfo">
       <h1 class="title">{{ note.title }}</h1>
       <div class="info">
@@ -15,10 +16,15 @@
       <el-button type="primary" plain class="iconfont icon-like" v-show="!isLike" @click="addLike">
         &nbsp;点赞
       </el-button>
-      <el-button type="primary" plain class="iconfont icon-like" v-show="isLike" @click="addLike"
-        >&nbsp;已点赞</el-button
-      >
-      <el-button type="success" plain class="iconfont icon-star">&nbsp;收藏</el-button>
+      <el-button type="primary" plain class="iconfont icon-like" v-show="isLike" @click="addLike">
+        &nbsp;已点赞
+      </el-button>
+      <el-button type="success" plain class="iconfont icon-star" @click="insUserNoteCollect" v-show="!showCollect">
+        &nbsp;收藏
+      </el-button>
+      <el-button type="success" plain class="iconfont icon-star" @click="insUserNoteCollect" v-show="showCollect">
+        &nbsp;已收藏
+      </el-button>
       <el-button type="warning" plain class="iconfont icon-share" @click="shareUrl">&nbsp;分享</el-button>
       <el-button type="danger" plain class="iconfont icon-flag">&nbsp;举报</el-button>
     </div>
@@ -27,6 +33,8 @@
       <div style="margin: 20px 0"></div>
       <el-input
         v-model="comment.message"
+        maxlength="140"
+        show-word-limit
         :autosize="{ minRows: 2, maxRows: 4 }"
         type="textarea"
         placeholder="说点什么吧！"
@@ -46,6 +54,7 @@
           <el-divider></el-divider>
         </el-col>
       </el-row>
+      <!-- 分页 -->
       <el-pagination
         style="margin: 2%"
         @current-change="changePage(page)"
@@ -63,14 +72,18 @@ import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import PageHeaderVue from './PageHeader.vue';
 import cookies from '../api/cookies';
 import api from '../api/index';
 
 const route = useRoute();
+const detail = '阅读全文';
+const path = 'index';
 const store = api.store();
 const { noteId } = route.query;
 const user = cookies.get('userInfo') as any;
 const isLike = ref();
+const showCollect = ref();
 const loginFlag = ref(store.loginFlag);
 const clipboardObj = navigator.clipboard;
 const noteCommentList = ref();
@@ -103,17 +116,28 @@ const note = ref({
 });
 const noteCommentCount = ref();
 
+// 查询笔记评论数
 function getNoteCommentCount() {
   return axios.get(`api/comment/selNoteCommentCount?noteId=${noteId}`);
 }
+// 通过 noteId 查询笔记
 function getNote() {
   return axios.get(`api/note/selNote?noteId=${noteId}`);
 }
+// 用户是否点赞
 function isUserLikeNote() {
-  axios.get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`).then((res) => {
-    isLike.value = res.data.data;
-  });
+  const result = ref();
+  axios
+    .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
+    .then((res) => {
+      result.value = res.data.data;
+    })
+    .then(() => {
+      if (result.value === 'true') isLike.value = true;
+      else isLike.value = false;
+    });
 }
+// 点赞
 function addLike() {
   const result = ref();
   if (loginFlag.value === true) {
@@ -130,10 +154,10 @@ function addLike() {
   }
 }
 
+// 获取分享链接
 function shareUrl() {
   try {
-    clipboardObj.writeText(`localhost/readNote?noteId=${noteId}`); // localhost
-    // clipboardObj.writeText(`https://www.lonelyzhou.cn/readNote?noteId=${noteId}`);
+    clipboardObj.writeText(`https://note.lonelyzhou.cn/readNote?noteId=${noteId}`);
     ElMessage.success('已复制到剪贴板');
   } catch {
     ElMessage.error('复制失败');
@@ -146,10 +170,15 @@ function selNoteCommentList() {
     total.value = Number(res.data.msg);
   });
 }
+// 提交评论
 function submitComment() {
   const result = ref();
   if (comment.message === '') {
     ElMessage.error('评论为空');
+    return;
+  }
+  if (!loginFlag.value || loginFlag.value === null) {
+    ElMessage.error('未登录');
     return;
   }
   axios
@@ -167,8 +196,37 @@ function submitComment() {
       }
     });
 }
+// 页码改变
 function changePage(pageNum: number) {
   axios.get(`api/comment/selNoteCommentList?noteId=${noteId}&page=${pageNum}`);
+}
+function isUserNoteCollect() {
+  const result = ref();
+  axios
+    .get(`api/collects/isUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
+    .then((res) => {
+      result.value = res.data.data;
+    })
+    .then(() => {
+      if (result.value === 'true') showCollect.value = true;
+      else showCollect.value = false;
+    });
+}
+// 用户收藏笔记
+function insUserNoteCollect() {
+  const result = ref();
+  if (loginFlag.value) {
+    axios
+      .get(`api/collects/insUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
+      .then((res) => {
+        result.value = res.data;
+      })
+      .then(() => {
+        isUserNoteCollect();
+      });
+  } else {
+    ElMessage.error('未登录');
+  }
 }
 onMounted(() => {
   const result = ref();
