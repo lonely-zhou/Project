@@ -11,7 +11,8 @@ const props = defineProps({
 });
 
 function goBack() {
-  router.go(-1);
+  if (props.path === 'undefined') router.push(`/${props.path}`);
+  else router.go(-1);
 }
 </script>
 <style scoped>

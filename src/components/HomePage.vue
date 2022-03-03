@@ -124,6 +124,7 @@
             layout="prev, pager, next"
             :total="total"
             background
+            hide-on-single-page
           />
         </el-col>
         <el-col :span="6">
@@ -185,6 +186,7 @@ const search = ref();
 // 剪贴板操作
 const clipboardObj = navigator.clipboard;
 const labelValuesList = ref();
+const editorStyle = ref();
 const noteList = ref([
   {
     id: '', // 笔记ID
@@ -264,10 +266,17 @@ function changePage(num: number) {
     noteList.value = res.data.data.records;
   });
 }
+function selUserSettingsList() {
+  axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
+    editorStyle.value = res.data.data.editor_style;
+  });
+}
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
-  if (loginFlag.value) router.push('/write');
-  else {
+  if (loginFlag.value) {
+    if (editorStyle.value === 'noteEditor') router.push('/write');
+    else router.push('/mdEditor');
+  } else {
     ElMessage.error('请登录');
   }
 }
@@ -340,6 +349,7 @@ function shareUrl(noteId: string) {
     ElMessage.error('复制失败');
   }
 }
+// 跳转搜索结果页
 function toSearch() {
   router.push({ name: 'SearchPage', query: { q: search.value } });
 }
@@ -356,6 +366,7 @@ function clickTag(tagName: string) {
 }
 onActivated(() => {
   loginFlag.value = store.loginFlag;
+  selUserSettingsList();
 });
 onMounted(() => {
   if (user !== null) {
@@ -378,9 +389,15 @@ onMounted(() => {
       noteListEmpty.value = false;
     });
   // 标签列表
-  axios.get('api/note/selLabelValuesList').then((res) => {
-    labelValuesList.value = res.data.data;
-  });
+  axios
+    .get('api/note/selLabelValuesList')
+    .then((res) => {
+      labelValuesList.value = res.data.data;
+    })
+    .then(() => {
+      if (labelValuesList.value.indexOf('') !== -1) labelValuesList.value.splice(labelValuesList.value.indexOf(''), 1);
+    });
+  selUserSettingsList();
 
   console.log(
     // eslint-disable-next-line operator-linebreak

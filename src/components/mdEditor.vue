@@ -1,6 +1,6 @@
 <template>
   <!-- <el-page-header content="写笔记" @back="goIndex" title="返回" /> -->
-  <page-header-vue :detail="detail" :path="path" />
+  <page-header-vue :detail="detail" />
   <div class="box">
     <div class="mdEditor">
       <div>
@@ -10,22 +10,19 @@
           placeholder="请输入标题（建议10字以内）"
           style="overflow-y: hidden; height: 64px"
         />
-        <router-link to="/write"><el-button type="primary">切换至普通编辑器</el-button></router-link>
       </div>
       <mavon-editor v-model="note.text" :toolbars="toolbars" />
       <div class="noteType">
         <el-row>
           <el-col :span="24"><p>选择分类</p></el-col>
           <el-col :span="24">
-            <el-radio-group v-model="note.select_categories">
+            <el-radio-group v-model="note.select_type">
               <el-radio-button label="生活杂谈"></el-radio-button>
               <el-radio-button label="学习分享"></el-radio-button>
               <el-radio-button label="工作经验"></el-radio-button>
             </el-radio-group>
           </el-col>
-          <!-- <el-col :span="24"><p>输入标签</p></el-col> -->
           <el-col :span="24">
-            <!-- <el-input v-model="note.label_values" placeholder="标签" /> -->
             <el-tag
               v-for="tag in note.label_values"
               :key="tag"
@@ -60,6 +57,8 @@
       </div>
     </div>
   </div>
+  {{ note.text }}
+  {{ note.textHtml }}
 </template>
 <script lang="ts" setup>
 // eslint-disable-next-line object-curly-newline
@@ -73,8 +72,6 @@ import api from '../api/index';
 
 const { cookies } = useCookies();
 const userInfo = cookies.get('userInfo') as any;
-const store = api.store();
-const path = 'index';
 const detail = '写笔记';
 const inputValue = ref('');
 const inputVisible = ref(false);
@@ -82,12 +79,15 @@ const InputRef = ref<InstanceType<typeof ElInput>>();
 const note = reactive({
   title: '', // 标题
   text: '', // 正文
+  textHtml: '',
   user_id: userInfo.id, // 作者ID
   name: userInfo.username, // 作者
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: 0, // 是否公开 0公开
-  select_categories: '', // 分类
-  label_values: [], // 标签
+  select_type: '', // 分类
+  label_values: '', // 标签
+  label: [], // 标签
+  note_type: 'md',
 });
 const toolbars = {
   bold: true, // 粗体
@@ -124,27 +124,15 @@ const toolbars = {
   subfield: true, // 单双栏模式
   preview: true, // 预览
 };
-
-// function goIndex() {
-//   router.push('/index');
-// }
-// function changeEditor() {
-//   router.push('/write');
-// }
 function insNote() {
   const result = ref();
   if (note.title === '') {
     ElMessage.error('请输入标题');
   } else {
     axios
-      .post('api/note/insNote', note, {
-        headers: {
-          Authorization: store.jwtToken,
-        },
-      })
+      .post('api/note/insNote', note)
       .then((res) => {
         result.value = res.data;
-        // console.log(res);
       })
       .then(() => {
         if (result.value.code === 200) {
@@ -157,7 +145,7 @@ function insNote() {
   }
 }
 const handleClose = (tag: string) => {
-  note.label_values.splice(note.label_values.indexOf(tag as never), 1);
+  note.label.splice(note.label.indexOf(tag as never), 1);
 };
 
 const showInput = () => {
@@ -169,7 +157,7 @@ const showInput = () => {
 
 const handleInputConfirm = () => {
   if (inputValue.value) {
-    note.label_values.push(inputValue.value as never);
+    note.label.push(inputValue.value as never);
   }
   inputVisible.value = false;
   inputValue.value = '';

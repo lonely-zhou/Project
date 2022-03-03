@@ -109,7 +109,7 @@
               </el-col>
               <el-col :span="12" style="text-align: right">
                 <el-button type="primary" plain @click="updUserNote(i)">修改</el-button>
-                <el-button type="primary" plain @click="delUserNote(v.id)">删除</el-button>
+                <el-button type="primary" plain @click="delUserNote(v.id, i)">删除</el-button>
               </el-col>
             </el-row>
             <el-pagination
@@ -215,7 +215,13 @@
             />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="其他">Task</el-tab-pane>
+        <el-tab-pane label="其他">
+          <p>更改默认编辑器</p>
+          <el-radio-group v-model="userSettings.editor_style" @change="change(userSettings.editor_style)">
+            <el-radio label="noteEditor">普通编辑器</el-radio>
+            <el-radio label="mdEditor">Markdown编辑器</el-radio>
+          </el-radio-group>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -223,7 +229,8 @@
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
-import { computed, reactive, ref } from 'vue';
+// eslint-disable-next-line object-curly-newline
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -238,6 +245,7 @@ const userInfo = cookies.get('userInfo') as any;
 const router = useRouter();
 const uploadData = { username: userInfo.username };
 const show = ref(true);
+const userSettings = ref({ editor_style: '' });
 const myData = reactive({
   myNoteList: [
     {
@@ -374,7 +382,7 @@ function updUserNote(index: number) {
   router.push('/updUserNote');
 }
 // 删除用户笔记
-function delUserNote(noteId: string) {
+function delUserNote(noteId: string, index: number) {
   const result = ref();
   axios
     .get(`api/note/delUserNote?noteId=${noteId}`)
@@ -382,7 +390,9 @@ function delUserNote(noteId: string) {
       result.value = res.data;
     })
     .then(() => {
-      clickTap();
+      if (result.value.code === 200) {
+        myData.myNoteList.splice(index, 1);
+      }
     });
 }
 function changePageMyNote(pageMyNoteNum: number) {
@@ -477,6 +487,27 @@ function delUserLikeNote(noteId: string, index: number) {
       }
     });
 }
+function selUserSettingsList() {
+  axios.get(`api/settings/selUserSettingsList?userId=${userInfo.id}`).then((res) => {
+    userSettings.value = res.data.data;
+  });
+}
+function change(editorText: string) {
+  const result = ref();
+  axios
+    .get(`api/settings/updUserEditorStyle?userId=${userInfo.id}&editor=${editorText}`)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      selUserSettingsList();
+      if (result.value.code === 200) ElMessage.success('编辑器已更改');
+    });
+}
+
+onMounted(() => {
+  selUserSettingsList();
+});
 </script>
 <style scoped>
 .box {

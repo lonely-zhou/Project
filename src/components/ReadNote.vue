@@ -11,7 +11,16 @@
         <span class="iconfont icon-user"> {{ note.name }}</span>
       </div>
     </div>
-    <div class="note" v-html="note.text" />
+    <!-- 笔记正文 -->
+    <div class="note" v-html="note.text" v-if="!showEditor" />
+    <mavon-editor
+      v-model="note.text"
+      v-if="showEditor"
+      :editable="false"
+      :subfield="false"
+      defaultOpen="preview"
+      :toolbarsFlag="false"
+    />
     <div style="margin-top: 40px">
       <el-button type="primary" plain class="iconfont icon-like" v-show="!isLike" @click="addLike">
         &nbsp;点赞
@@ -66,11 +75,13 @@
       />
     </div>
   </div>
+  {{ menuList }}
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
-import { onMounted, reactive, ref } from 'vue';
+// eslint-disable-next-line object-curly-newline
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
 import cookies from '../api/cookies';
@@ -89,6 +100,7 @@ const clipboardObj = navigator.clipboard;
 const noteCommentList = ref();
 const total = ref(); // 分页数
 const page = ref(1);
+const menuList = ref();
 const comment = reactive({
   message: '',
   user_id: user.id,
@@ -113,8 +125,14 @@ const note = ref({
   collection: '', // 收藏数
   user_id: '', // 作者ID
   avatar_url: '', // 头像
+  note_type: '',
 });
 const noteCommentCount = ref();
+
+const showEditor = computed(() => {
+  if (note.value.note_type === 'md') return true;
+  return false;
+});
 
 // 查询笔记评论数
 function getNoteCommentCount() {
