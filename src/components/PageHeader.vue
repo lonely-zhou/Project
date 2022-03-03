@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 function goBack() {
-  router.push(`/${props.path}`);
+  router.go(-1);
 }
 </script>
 <style scoped>

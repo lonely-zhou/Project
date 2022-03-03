@@ -253,7 +253,7 @@ onMounted(() => {
   width: 60%;
   margin: 0 auto;
 }
-.note >>> code {
+.note:deep() code {
   -webkit-font-smoothing: antialiased;
   font-weight: normal;
   outline: 0;
@@ -276,7 +276,7 @@ onMounted(() => {
 .info span {
   margin-right: 6px;
 }
-.note >>> img {
+.note:deep() img {
   width: 100%;
 }
 .text {

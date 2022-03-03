@@ -30,21 +30,30 @@ onMounted(() => {
 });
 </script>
 <template>
-  <el-affix>
-    <el-progress
-      :percentage="percentage"
-      :indeterminate="true"
-      :show-text="false"
-      :stroke-width="3"
-      v-show="showProgress"
-    />
-  </el-affix>
-  <router-view v-slot="{ Component }">
-    <transition name="fade">
+  <div id="id">
+    <el-affix>
+      <el-progress
+        :percentage="percentage"
+        :indeterminate="true"
+        :show-text="false"
+        :stroke-width="3"
+        v-show="showProgress"
+      />
+    </el-affix>
+    <!-- <router-view v-slot="{ Component }">
+    <transition name="fade"></transition>
       <component :is="Component" />
     </transition>
-  </router-view>
-  <!-- <router-view /> -->
+  </router-view> -->
+    <router-view v-slot="{ Component }">
+      <keep-alive :max="3">
+        <component :is="Component" v-if="$route.meta.keepAlive" :key="$route.name" />
+      </keep-alive>
+      <component :is="Component" v-if="!$route.meta.keepAlive" :key="$route.name" />
+    </router-view>
+
+    <!-- <router-view /> -->
+  </div>
 </template>
 
 <style>

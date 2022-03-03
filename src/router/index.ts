@@ -6,7 +6,12 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/readNote', name: 'ReadNote', component: () => import('../components/ReadNote.vue') },
   { path: '/updUserNote', name: 'UpdUserNote', component: () => import('../components/UpdUserNote.vue') },
   { path: '/updPE/:showInfo', name: 'UpdPE', component: () => import('../components/UpdPE.vue') },
-  { path: '/personalCenter', name: 'PersonalCenter', component: () => import('../components/PersonalCenter.vue') },
+  {
+    path: '/personalCenter',
+    name: 'PersonalCenter',
+    component: () => import('../components/PersonalCenter.vue'),
+    meta: { keepAlive: true },
+  },
   { path: '/mdEditor', name: 'MdEditor', component: () => import('../components/MdEditor.vue') },
   { path: '/login', name: 'Login', component: () => import('../components/Login.vue') },
   { path: '/signup', name: 'SignUp', component: () => import('../components/SignUp.vue') },
@@ -18,6 +23,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home',
     alias: '/index',
     component: () => import('../components/HomePage.vue'),
+    meta: { keepAlive: true },
   },
 ];
 

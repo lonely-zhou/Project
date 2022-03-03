@@ -161,13 +161,12 @@
       </el-row>
     </div>
   </div>
-
   <el-backtop />
   <footer-vue />
 </template>
 <script lang="ts" setup>
 // eslint-disable-next-line object-curly-newline
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onActivated, onMounted, reactive, ref } from 'vue';
 import { ArrowRightBold, Search } from '@element-plus/icons-vue';
 import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
@@ -210,19 +209,6 @@ const noteList = ref([
 const noteListEmpty = ref();
 const total = ref(); // 分页数
 const page = ref(1);
-console.log(
-  // eslint-disable-next-line operator-linebreak
-  '  _____                        _                    _  _____ _                    \n' +
-    // eslint-disable-next-line operator-linebreak
-    ' |  __ \\                      | |   /\\             | |/ ____| |                   \n' +
-    // eslint-disable-next-line operator-linebreak
-    ' | |__) |___  ___ ___  _ __ __| |  /  \\   _ __   __| | (___ | |__   __ _ _ __ ___ \n' +
-    // eslint-disable-next-line operator-linebreak
-    " |  _  // _ \\/ __/ _ \\| '__/ _` | / /\\ \\ | '_ \\ / _` |\\___ \\| '_ \\ / _` | '__/ _ \\\n" +
-    // eslint-disable-next-line operator-linebreak
-    ' | | \\ \\  __/ (_| (_) | | | (_| |/ ____ \\| | | | (_| |____) | | | | (_| | | |  __/\n' +
-    ' |_|  \\_\\___|\\___\\___/|_|  \\__,_/_/    \\_\\_| |_|\\__,_|_____/|_| |_|\\__,_|_|  \\___|    \n',
-);
 
 const showAvatar = computed(() => {
   if (loginFlag.value) return true;
@@ -272,32 +258,6 @@ const showEmptyNote = computed(() => {
 const showNoteList = computed(() => {
   if (showEmptyNote.value) return false;
   return true;
-});
-
-onMounted(() => {
-  if (user !== null) {
-    if (user.phone === '0' && loginFlag.value) {
-      ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
-    }
-    if (loginFlag.value) {
-      circleUrl.value = user.avatar_url;
-    }
-  }
-  // 笔记列表
-  axios
-    .get(`api/note/getNoteList?page=${1}`)
-    .then((res) => {
-      noteList.value = res.data.data.records;
-      total.value = Number(res.data.msg);
-      noteListEmpty.value = true;
-    })
-    .catch(() => {
-      noteListEmpty.value = false;
-    });
-  // 标签列表
-  axios.get('api/note/selLabelValuesList').then((res) => {
-    labelValuesList.value = res.data.data;
-  });
 });
 function changePage(num: number) {
   axios.get(`api/note/getNoteList?page=${num}`).then((res) => {
@@ -394,6 +354,48 @@ function setColor() {
 function clickTag(tagName: string) {
   router.push({ name: 'SearchPage', query: { tagName } });
 }
+onActivated(() => {
+  loginFlag.value = store.loginFlag;
+});
+onMounted(() => {
+  if (user !== null) {
+    if (user.phone === '0' && loginFlag.value) {
+      ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
+    }
+    if (loginFlag.value) {
+      circleUrl.value = user.avatar_url;
+    }
+  }
+  // 笔记列表
+  axios
+    .get(`api/note/getNoteList?page=${1}`)
+    .then((res) => {
+      noteList.value = res.data.data.records;
+      total.value = Number(res.data.msg);
+      noteListEmpty.value = true;
+    })
+    .catch(() => {
+      noteListEmpty.value = false;
+    });
+  // 标签列表
+  axios.get('api/note/selLabelValuesList').then((res) => {
+    labelValuesList.value = res.data.data;
+  });
+
+  console.log(
+    // eslint-disable-next-line operator-linebreak
+    '  _____                        _                    _  _____ _                    \n' +
+      // eslint-disable-next-line operator-linebreak
+      ' |  __ \\                      | |   /\\             | |/ ____| |                   \n' +
+      // eslint-disable-next-line operator-linebreak
+      ' | |__) |___  ___ ___  _ __ __| |  /  \\   _ __   __| | (___ | |__   __ _ _ __ ___ \n' +
+      // eslint-disable-next-line operator-linebreak
+      " |  _  // _ \\/ __/ _ \\| '__/ _` | / /\\ \\ | '_ \\ / _` |\\___ \\| '_ \\ / _` | '__/ _ \\\n" +
+      // eslint-disable-next-line operator-linebreak
+      ' | | \\ \\  __/ (_| (_) | | | (_| |/ ____ \\| | | | (_| |____) | | | | (_| | | |  __/\n' +
+      ' |_|  \\_\\___|\\___\\___/|_|  \\__,_/_/    \\_\\_| |_|\\__,_|_____/|_| |_|\\__,_|_|  \\___|    \n',
+  );
+});
 </script>
 <style scoped>
 .box {
