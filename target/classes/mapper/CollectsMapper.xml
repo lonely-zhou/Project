@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="note.recordAndShare.mapper.CollectsMapper">
+
+    <select id="selUserCollectList" resultType="note.recordAndShare.entity.dto.CollectsDto">
+        select c.*, n.title
+        from collects c
+                 join note n on n.id = c.note_id
+        where c.user_id = #{userId}
+    </select>
+</mapper>

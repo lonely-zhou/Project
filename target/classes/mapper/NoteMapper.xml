@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="note.recordAndShare.mapper.NoteMapper">
+    <select id="selectNotePage" resultType="note.recordAndShare.entity.dto.NoteDto">
+        SELECT n.*, u.avatar_url
+        FROM note n
+                 join user u on u.id = n.user_id
+        where n.message = '0'
+
+    </select>
+    <select id="selectUserNote" resultType="note.recordAndShare.entity.dto.NoteDto">
+        SELECT n.*, u.avatar_url
+        FROM note n
+        join user u on u.id = n.user_id
+        where n.user_id = #{userid}
+        <if test="message != null">
+            and n.message = #{message}
+        </if>
+    </select>
+    <select id="selSearchNote" resultType="note.recordAndShare.entity.dto.NoteDto">
+        <bind name="q" value="'%'+q+'%'"/>
+        select n.*, u.avatar_url
+        from note n
+        join user u on u.id = n.user_id
+        where n.message = 0
+
+        <if test="label == 'undefined'">
+            and n.title like #{q}
+        </if>
+        <if test="label != 'undefined'">
+            and n.label_values like #{q}
+        </if>
+        <if test="groupBy != ''">
+            and n.select_type = #{groupBy}
+        </if>
+        <choose>
+            <when test="orderBy == 'look'">
+                order by look desc
+            </when>
+            <when test="orderBy == 'likes'">
+                order by likes desc
+            </when>
+        </choose>
+    </select>
+</mapper>
