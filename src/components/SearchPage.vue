@@ -18,15 +18,15 @@
         </el-col>
         <el-col :span="24">
           <el-radio-group v-model="orderBy" size="small" @change="changeOrderBy(orderBy)">
-            <el-radio-button label="默认排序" style="margin-right: 10px"></el-radio-button>
-            <el-radio-button label="最多浏览"></el-radio-button>
-            <el-radio-button label="最多点赞"></el-radio-button>
+            <el-radio-button label="" style="margin-right: 10px">默认排序</el-radio-button>
+            <el-radio-button label="look">最多浏览</el-radio-button>
+            <el-radio-button label="likes">最多点赞</el-radio-button>
             <el-radio-button label="最多评论"></el-radio-button>
           </el-radio-group>
         </el-col>
         <el-col :span="24">
           <el-radio-group v-model="groupBy" size="small" @change="changeGroupBy(groupBy)">
-            <el-radio-button label="全部分类" style="margin-right: 10px"></el-radio-button>
+            <el-radio-button label="" style="margin-right: 10px">全部分类</el-radio-button>
             <el-radio-button label="生活杂谈"></el-radio-button>
             <el-radio-button label="学习分享"></el-radio-button>
             <el-radio-button label="工作经验"></el-radio-button>
@@ -87,8 +87,8 @@ const route = useRoute();
 const { q, tagName } = route.query;
 const searchResultCount = ref();
 const search = ref(q);
-const orderBy = ref('默认排序');
-const groupBy = ref('全部分类');
+const orderBy = ref();
+const groupBy = ref();
 const page = ref(1);
 const searchResult = ref([
   {
@@ -146,7 +146,22 @@ function selSearchNote() {
 function changePage(pageNum: number) {
   const result = ref();
   axios
-    .get(`api/note/selSearchNote?q=${search.value}&page=${pageNum}`)
+    .get(`api/note/selSearchNote?q=${search.value}&page=${pageNum}&orderBy=${orderBy.value}&groupBy=${groupBy.value}&label=${tagName}`)
+    .then((res) => {
+      result.value = res.data;
+      searchResult.value = result.value.data.records;
+      searchResultCount.value = Number(result.value.msg);
+    })
+    .then(() => {
+      if (searchResultCount.value > 1000) {
+        searchResultCount.value = '1000+';
+      }
+    });
+}
+function selSearchNoteA(order: string, group: string) {
+  const result = ref();
+  axios
+    .get(`api/note/selSearchNote?q=${search.value}&page=1&orderBy=${order}&groupBy=${group}&label=${tagName}`)
     .then((res) => {
       result.value = res.data;
       searchResult.value = result.value.data.records;
@@ -160,7 +175,6 @@ function changePage(pageNum: number) {
 }
 // 排序
 function changeOrderBy(order: string) {
-  const result = ref();
   if (order === '最多评论') {
     const commentOrderByList = searchResult.value;
     for (let i = 0; i < commentOrderByList.length - 1; i += 1) {
@@ -174,35 +188,12 @@ function changeOrderBy(order: string) {
     }
     searchResult.value = commentOrderByList;
   } else {
-    axios
-      .get(`api/note/selSearchNote?q=${search.value}&page=1&orderBy=${order}&label=${tagName}`)
-      .then((res) => {
-        result.value = res.data;
-        searchResult.value = result.value.data.records;
-        searchResultCount.value = Number(result.value.msg);
-      })
-      .then(() => {
-        if (searchResultCount.value > 1000) {
-          searchResultCount.value = '1000+';
-        }
-      });
+    selSearchNoteA(orderBy.value, groupBy.value);
   }
 }
 // 分组
 function changeGroupBy(group: string) {
-  const result = ref();
-  axios
-    .get(`api/note/selSearchNote?q=${search.value}&page=1&groupBy=${group}&label=${tagName}`)
-    .then((res) => {
-      result.value = res.data;
-      searchResult.value = result.value.data.records;
-      searchResultCount.value = Number(result.value.msg);
-    })
-    .then(() => {
-      if (searchResultCount.value > 1000) {
-        searchResultCount.value = '1000+';
-      }
-    });
+  selSearchNoteA(orderBy.value, group);
 }
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });

@@ -267,9 +267,11 @@ function changePage(num: number) {
   });
 }
 function selUserSettingsList() {
-  axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
-    editorStyle.value = res.data.data.editor_style;
-  });
+  if (user !== null) {
+    axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
+      editorStyle.value = res.data.data.editor_style;
+    });
+  }
 }
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
@@ -283,7 +285,9 @@ function toWrite(): void {
 // 跳转阅读全文
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
-  axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
+  if (loginFlag.value === true) {
+    axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
+  }
 }
 function isUserLikeNote(noteId: string) {
   const result = ref();
@@ -367,14 +371,15 @@ function clickTag(tagName: string) {
 onActivated(() => {
   loginFlag.value = store.loginFlag;
   selUserSettingsList();
+  if (loginFlag.value) {
+    circleUrl.value = user.avatar_url;
+  }
 });
+
 onMounted(() => {
   if (user !== null) {
     if (user.phone === '0' && loginFlag.value) {
       ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
-    }
-    if (loginFlag.value) {
-      circleUrl.value = user.avatar_url;
     }
   }
   // 笔记列表

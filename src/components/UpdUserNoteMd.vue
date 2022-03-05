@@ -50,7 +50,7 @@
             </el-radio-group>
           </el-col>
           <el-col :span="24">
-            <el-button type="primary" plain @click="insNote">保存</el-button>
+            <el-button type="primary" plain @click="updNote">更新</el-button>
           </el-col>
         </el-row>
       </div>
@@ -58,31 +58,28 @@
   </div>
 </template>
 <script lang="ts" setup>
-// eslint-disable-next-line object-curly-newline
 import { reactive, ref, nextTick } from 'vue';
-import { useCookies } from 'vue3-cookies';
 import { ElMessage, ElInput } from 'element-plus';
 import axios from 'axios';
-import router from '../router';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
-const { cookies } = useCookies();
-const userInfo = cookies.get('userInfo') as any;
+const store = api.store();
 const detail = '写笔记';
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
+const userNote = JSON.parse(store.getUserNote);
 const note = reactive({
-  title: '', // 标题
-  text: '', // 正文
-  textHtml: '',
-  user_id: userInfo.id, // 作者ID
-  name: userInfo.username, // 作者
+  id: userNote.id,
+  title: userNote.title, // 标题
+  text: userNote.text, // 正文
+  user_id: userNote.user_id, // 作者ID
+  name: userNote.name, // 作者
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
-  message: 0, // 是否公开 0公开
-  select_type: '', // 分类
-  label_values: '', // 标签
+  message: userNote.message, // 是否公开 0公开
+  select_type: userNote.select_type, // 分类
+  label_values: userNote.label_values as string, // 标签
   label: [], // 标签
   note_type: 'md',
 });
@@ -121,25 +118,17 @@ const toolbars = {
   subfield: true, // 单双栏模式
   preview: true, // 预览
 };
-function insNote() {
+function updNote() {
   const result = ref();
-  if (note.title === '') {
-    ElMessage.error('请输入标题');
-  } else {
-    axios
-      .post('api/note/insNote', note)
-      .then((res) => {
-        result.value = res.data;
-      })
-      .then(() => {
-        if (result.value.code === 200) {
-          ElMessage.success('保存成功');
-          router.go(0);
-        } else {
-          ElMessage.error(result.value.msg);
-        }
-      });
-  }
+  note.label_values = note.label.toString();
+  axios
+    .post('api/note/updUserNote', note)
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) ElMessage.success('更新成功');
+    });
 }
 const handleClose = (tag: string) => {
   note.label.splice(note.label.indexOf(tag as never), 1);

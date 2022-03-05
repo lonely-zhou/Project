@@ -103,7 +103,7 @@ const page = ref(1);
 const menuList = ref();
 const comment = reactive({
   message: '',
-  user_id: user.id,
+  user_id: user === null ? '' : user.id,
   note_id: noteId,
   time: api.dateFormat.getDateFormatYHD(),
 });

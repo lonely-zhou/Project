@@ -5,6 +5,7 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/reportPage', name: 'ReportPage', component: () => import('../components/ReportPage.vue') },
   { path: '/readNote', name: 'ReadNote', component: () => import('../components/ReadNote.vue') },
   { path: '/updUserNote', name: 'UpdUserNote', component: () => import('../components/UpdUserNote.vue') },
+  { path: '/updUserNoteMd', name: 'UpdUserNoteMd', component: () => import('../components/UpdUserNoteMd.vue') },
   { path: '/updPE/:showInfo', name: 'UpdPE', component: () => import('../components/UpdPE.vue') },
   {
     path: '/personalCenter',

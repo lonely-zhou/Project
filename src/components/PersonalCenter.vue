@@ -88,12 +88,21 @@
         <el-tab-pane label="我的笔记" name="我的笔记">
           <el-empty description="无笔记" v-if="showMyNote" />
           <div class="myNote" v-if="show">
+            <el-radio-group v-model="noteMessage" size="small" @change="changeMessage">
+              <el-radio-button label="">全部笔记</el-radio-button>
+              <el-radio-button label="0">公开笔记</el-radio-button>
+              <el-radio-button label="1">私密笔记</el-radio-button>
+            </el-radio-group>
             <el-row v-for="(v, i) in myData.myNoteList" :key="i" class="userNoteList">
               <el-col :span="12">
                 <el-row>
                   <!-- 标题 -->
                   <el-col :span="24" class="title">
-                    {{ i + 1 + '.' }} {{ v.title }} <span class="createTime">{{ v.create_time }}</span>
+                    {{ i + 1 + '.' }} {{ v.title }}
+                    <span class="createTime">
+                      {{ v.create_time }}
+                      <span v-if="v.message === '1'">私密</span>
+                    </span>
                   </el-col>
                   <el-col :span="24" class="info">
                     <el-row>
@@ -246,6 +255,7 @@ const router = useRouter();
 const uploadData = { username: userInfo.username };
 const show = ref(true);
 const userSettings = ref({ editor_style: '' });
+const noteMessage = ref();
 const myData = reactive({
   myNoteList: [
     {
@@ -255,6 +265,8 @@ const myData = reactive({
       likes: '',
       collection: '',
       id: '',
+      message: '',
+      note_type: '',
     },
   ],
   myCommentList: [
@@ -379,7 +391,10 @@ function clickTap() {
 }
 function updUserNote(index: number) {
   store.setUserNote(JSON.stringify(myData.myNoteList[index]));
-  router.push('/updUserNote');
+  console.log(myData.myNoteList[index]);
+
+  if (myData.myNoteList[index].note_type === 'md') router.push('/updUserNoteMd');
+  else router.push('/updUserNote');
 }
 // 删除用户笔记
 function delUserNote(noteId: string, index: number) {
@@ -504,7 +519,12 @@ function change(editorText: string) {
       if (result.value.code === 200) ElMessage.success('编辑器已更改');
     });
 }
-
+function changeMessage() {
+  axios.get(`api/note/selUserNote?userid=${userInfo.id}&page=1&message=${noteMessage.value}`).then((res) => {
+    myData.myNoteList = res.data.data.records;
+    paginationData.totalMyNote = Number(res.data.msg);
+  });
+}
 onMounted(() => {
   selUserSettingsList();
 });
