@@ -60,15 +60,15 @@
 <script lang="ts" setup>
 // eslint-disable-next-line object-curly-newline
 import { reactive, ref, nextTick } from 'vue';
-import { useCookies } from 'vue3-cookies';
+// import { useCookies } from 'vue3-cookies';
 import { ElMessage, ElInput } from 'element-plus';
 import axios from 'axios';
 import router from '../router';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
-const { cookies } = useCookies();
-const userInfo = cookies.get('userInfo') as any;
+// const { cookies } = useCookies();
+// const userInfo = JSON.parse(sessionStorage.getItem('user') as string);
 const detail = '写笔记';
 const inputValue = ref('');
 const inputVisible = ref(false);
@@ -77,8 +77,8 @@ const note = reactive({
   title: '', // 标题
   text: '', // 正文
   textHtml: '',
-  user_id: userInfo.id, // 作者ID
-  name: userInfo.username, // 作者
+  // user_id: userInfo.id, // 作者ID
+  // name: userInfo.username, // 作者
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: 0, // 是否公开 0公开
   select_type: '', // 分类

@@ -4,7 +4,6 @@
     <transition name="fade">
       <!-- 登录 外盒子 -->
       <div class="loginBox" v-show="showFP">
-        <!-- https://img.lonelyzhou.cn/RecordAndShare/logo_recordAndShare.jpg -->
         <img class="logoImg" src="https://img.lonelyzhou.cn/RecordAndShare/logo_recordAndShare.jpg" alt="logo" />
         <form action="" class="form-box">
           <el-input
@@ -25,7 +24,7 @@
         </form>
         <el-row :gutter="20" style="margin-top: 10px">
           <el-col :span="6" :offset="6">
-            <el-checkbox v-model="loginState.rememberPassword" label="记住密码" size="large" />
+            <el-checkbox v-model="loginState.rememberPassword" label="自动登录" size="large" />
           </el-col>
           <el-col :span="6">
             <el-checkbox v-model="loginState.adminLogin" label="管理员登录" size="large" />
@@ -61,8 +60,15 @@
           <el-input v-model="forgotPasswordInfo.password" placeholder="输入密码" clearable />
           <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable />
           <div style="display: flex">
-            <el-input :placeholder="phoneNumber" clearable disabled />
-            <el-button type="primary" style="width: 30%" :disabled="set60sDisabled" @click="set60s">
+            <el-button type="primary" style="width: 50%" @click="showPOrE('phone')" v-if="showPOrEButton">
+              手机
+            </el-button>
+            <el-button type="primary" style="width: 50%" @click="showPOrE('email')" v-if="showPOrEButton">
+              邮箱
+            </el-button>
+            <el-input :placeholder="phoneNumber" clearable disabled v-show="showPhone" />
+            <el-input :placeholder="email" clearable disabled v-show="showEmail" />
+            <el-button type="primary" style="width: 30%" :disabled="set60sDisabled" @click="set60s" v-show="showButton">
               <span class="wait_60s">
                 {{ wait60sText }}
                 <span v-show="wait60sShow">{{ wait60s }} </span>
@@ -91,11 +97,11 @@
 // 登录页
 import { Avatar, Unlock } from '@element-plus/icons-vue'; // element ui icon
 // eslint-disable-next-line object-curly-newline
-import { computed, reactive, ref, onMounted } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { Base64 } from 'js-base64';
-import { useCookies } from 'vue3-cookies';
+// import { Base64 } from 'js-base64';
+// import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
 import api from '../api';
 
@@ -103,23 +109,16 @@ const user = reactive({
   username: '',
   password: '',
 });
-const userInfo = ref({
-  id: '',
-  nickname: '',
-  username: '',
-  phone: '',
-  sex: '',
-  lastTime: '',
-  email: '',
-  avatarUrl: '',
-});
 const loginState = ref({ adminLogin: false, rememberPassword: false, password: '' });
-// const rememberPassword = ref();
-const jwtToken = ref();
 const store = api.store();
-const { cookies } = useCookies();
+// const { cookies } = useCookies();
 const showFP = ref(true);
+const showPhone = ref(false);
+const showEmail = ref(false);
+const showButton = ref(false);
+const showPOrEButton = ref();
 const phoneNumber = ref();
+const email = ref();
 const set60sDisabled = ref(false);
 const wait60s = ref(); // 60秒等待
 const wait60sText = ref('获取验证码');
@@ -156,39 +155,39 @@ const step2Button = computed(() => {
   if (forgotPasswordInfo.code !== '') return false;
   return true;
 });
-let temp: any;
+// let temp: any;
 
+// 登录按钮
 function onSubmit() {
-  const loginCode = ref();
-  const msg = ref();
+  const result = ref();
   // 登录
   axios
-    .post('api/user/login', user)
+    .post(`api/user/login?isAdmin=${loginState.value.adminLogin}`, user)
     .then((res) => {
-      jwtToken.value = res.data.data.Authorization;
-      userInfo.value = res.data.data.UserInfo;
-      phoneNumber.value = userInfo.value.phone;
-      loginCode.value = res.data.code;
-      msg.value = res.data.msg;
+      result.value = res.data;
     })
     .then(() => {
-      // phoneNumber.value = phoneNumber.value.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
-      if (loginCode.value === 200) {
+      if (result.value.code === 200) {
         ElMessage.success({
           message: '登录成功',
           onClose: () => {
-            store.setjwtToken(jwtToken.value);
-            loginState.value.password = Base64.encode(user.password);
-            // loginState.value.rememberPassword = rememberPassword.value;
-            cookies.set('userInfo', JSON.stringify(userInfo.value), '7d');
-            cookies.set('loginState', JSON.stringify(loginState.value), '7d');
-            store.setLoginFlag(true);
-            router.push('/index');
+            store.setIsLogin(true);
+            axios.get('api/user/isLogin').then((res) => {
+              store.setIsLogin(res.data.data.isLogin);
+              store.setUser(res.data.data.user);
+            });
+            // store.setjwtToken(result.value.data.Authorization);
+            // loginState.value.password = Base64.encode(user.password);
+            // cookies.set('userInfo', JSON.stringify(result.value.data.UserInfo), '7d');
+            // cookies.set('loginState', JSON.stringify(loginState.value), '7d');
+            // store.setLoginFlag(true);
+            if (loginState.value.adminLogin) router.push('admin');
+            else router.push('/index');
           },
         });
       } else {
         ElMessage.error({
-          message: `登录失败 ${msg.value}`,
+          message: `登录失败 ${result.value.msg}`,
         });
       }
     });
@@ -208,6 +207,7 @@ function nextStep() {
       stepShow.step3 = true;
       break;
     default:
+      stepShow.step3 = false;
       break;
   }
 }
@@ -217,14 +217,18 @@ function selUserName() {
     .get(`api/user/selUser?username=${forgotPasswordInfo.username}`)
     .then((res) => {
       result.value = res.data;
-      // console.log(res);
+      console.log(res);
     })
     .then(() => {
       if (result.value.code === 200) {
-        if (result.value.data.phone !== '0') {
+        if (result.value.data.phone !== '0' || result.value.data.email !== '0') {
           nextStep();
+          email.value = result.value.data.email;
           phoneNumber.value = result.value.data.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
-        } else ElMessage.error('该账户未绑定手机号');
+          if (phoneNumber.value !== '0' && email.value !== '0') showPOrEButton.value = true;
+          else if (phoneNumber.value !== '0') showPhone.value = true;
+          else showEmail.value = true;
+        } else ElMessage.error('该账户未绑定手机号或者邮箱');
       } else {
         ElMessage.error(result.value.msg);
       }
@@ -244,58 +248,106 @@ function set60s() {
     }
   }, 1000);
   const result = ref();
-  axios
-    .get(`api/user/sendSMSCode?username=${forgotPasswordInfo.username}`)
-    .then((res) => {
-      result.value = res.data;
-      console.log(result.value);
-    })
-    .then(() => {
-      if (result.value.code === 200) ElMessage.success('验证码发送成功');
-      else ElMessage.error('验证码发送失败');
-    });
+  if (showPhone.value) {
+    axios
+      .get(`api/user/sendSMSCode?username=${forgotPasswordInfo.username}`)
+      .then((res) => {
+        result.value = res.data;
+        console.log(result.value);
+      })
+      .then(() => {
+        if (result.value.code === 200) ElMessage.success('验证码发送成功');
+        else ElMessage.error('验证码发送失败');
+      });
+  } else {
+    axios
+      .get(`api/user/sendEmail?email=${email.value}`)
+      .then((res) => {
+        result.value = res.data;
+        console.log(result.value);
+      })
+      .then(() => {
+        if (result.value.code === 200) ElMessage.success('验证码发送成功');
+        else ElMessage.error('验证码发送失败');
+      });
+  }
 }
 function updatePassword() {
   const resultSMS = ref();
+  const resultEmail = ref();
   const resultUpdate = ref();
-  axios
-    .get(`api/user/getSMSCode?username=${forgotPasswordInfo.username}`)
-    .then((res) => {
-      resultSMS.value = res.data;
-    })
-    .then(() => {
-      if (resultSMS.value.code === 200) {
-        if (forgotPasswordInfo.code !== resultSMS.value.data) ElMessage.error('验证码错误');
-        axios
-          .post('api/user/updatePassword', forgotPasswordInfo)
-          .then((res) => {
-            resultUpdate.value = res.data;
-          })
-          .then(() => {
-            if (resultUpdate.value.code === 200) {
-              ElMessage.success('密码修改成功');
-              nextStep();
-            } else ElMessage.error('密码修改失败');
-          });
-      } else {
-        ElMessage.error(resultSMS.value.msg);
-      }
-    });
+  if (showPhone.value) {
+    console.log('phone');
+
+    axios
+      .get(`api/user/getSMSCode?username=${forgotPasswordInfo.username}`)
+      .then((res) => {
+        resultSMS.value = res.data;
+      })
+      .then(() => {
+        if (resultSMS.value.code === 200) {
+          if (forgotPasswordInfo.code !== resultSMS.value.data) ElMessage.error('验证码错误');
+          axios
+            .post('api/user/updatePassword', forgotPasswordInfo)
+            .then((res) => {
+              resultUpdate.value = res.data;
+            })
+            .then(() => {
+              if (resultUpdate.value.code === 200) {
+                ElMessage.success('密码修改成功');
+                nextStep();
+              } else ElMessage.error('密码修改失败');
+            });
+        } else {
+          ElMessage.error(resultSMS.value.msg);
+        }
+      });
+  } else {
+    axios
+      .get(`api/user/getEmailCode?username=${forgotPasswordInfo.username}`)
+      .then((res) => {
+        resultEmail.value = res.data;
+      })
+      .then(() => {
+        if (resultEmail.value.code === 200) {
+          if (forgotPasswordInfo.code !== resultEmail.value.data) ElMessage.error('验证码错误');
+          axios
+            .post('api/user/updPassword', forgotPasswordInfo)
+            .then((res) => {
+              resultUpdate.value = res.data;
+            })
+            .then(() => {
+              if (resultUpdate.value.code === 200) {
+                ElMessage.success('密码修改成功');
+                nextStep();
+              } else ElMessage.error('密码修改失败');
+            });
+        } else {
+          ElMessage.error(resultEmail.value.msg);
+        }
+      });
+  }
+}
+function showPOrE(str: string) {
+  if (str === 'phone') showPhone.value = true;
+  if (str === 'email') showEmail.value = true;
+  showPOrEButton.value = false;
+  showButton.value = true;
 }
 // 记住密码 读取cookie
-let loginStateTemp: any;
-onMounted(() => {
-  temp = cookies.get('userInfo');
-  loginStateTemp = cookies.get('loginState');
-  if (temp !== null) {
-    if (loginStateTemp.rememberPassword) {
-      user.username = temp.username;
-      user.password = Base64.decode(loginStateTemp.password);
-      loginState.value.rememberPassword = loginStateTemp.rememberPassword;
-      loginState.value.adminLogin = loginStateTemp.adminLogin;
-    }
-  }
-});
+// let loginStateTemp: any;
+// onMounted(() => {
+//   temp = cookies.get('userInfo');
+//   loginStateTemp = cookies.get('loginState');
+//   if (temp !== null) {
+//     if (loginStateTemp.rememberPassword) {
+//       user.username = temp.username;
+//       user.password = Base64.decode(loginStateTemp.password);
+//       loginState.value.rememberPassword = loginStateTemp.rememberPassword;
+//       loginState.value.adminLogin = loginStateTemp.adminLogin;
+//     }
+//   }
+// });
 </script>
 <style scoped>
 .box {

@@ -130,7 +130,7 @@ function getNoteCommentCount(noteId: string, index: number) {
 function selSearchNote() {
   const result = ref();
   axios
-    .get(`api/note/selSearchNote?q=${search.value}&page=1`)
+    .get(`api/note/selSearchNote?q=${search.value}&page=1&label=${tagName}`)
     .then((res) => {
       result.value = res.data;
       searchResult.value = result.value.data.records;
@@ -146,7 +146,9 @@ function selSearchNote() {
 function changePage(pageNum: number) {
   const result = ref();
   axios
-    .get(`api/note/selSearchNote?q=${search.value}&page=${pageNum}&orderBy=${orderBy.value}&groupBy=${groupBy.value}&label=${tagName}`)
+    .get(
+      `api/note/selSearchNote?q=${search.value}&page=${pageNum}&orderBy=${orderBy.value}&groupBy=${groupBy.value}&label=${tagName}`,
+    )
     .then((res) => {
       result.value = res.data;
       searchResult.value = result.value.data.records;

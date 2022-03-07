@@ -3,8 +3,8 @@ import { defineStore } from 'pinia';
 const useStore = defineStore({
   id: 'myGlobalState',
   state: () => ({
-    jwtToken: '',
-    loginFlag: false,
+    isLogin: false,
+    user: null,
     userNote: {},
   }),
   getters: {
@@ -13,14 +13,14 @@ const useStore = defineStore({
     },
   },
   actions: {
-    setjwtToken(jwt: string) {
-      this.jwtToken = jwt;
-    },
-    setLoginFlag(flag: boolean) {
-      this.loginFlag = flag;
+    setIsLogin(flag: boolean) {
+      this.isLogin = flag;
     },
     setUserNote(note: string) {
       this.userNote = note;
+    },
+    setUser(user: any) {
+      this.user = user;
     },
   },
 });

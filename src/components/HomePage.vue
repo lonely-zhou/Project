@@ -24,7 +24,7 @@
             <el-col :span="2" :xs="12">
               <!-- 头像 -->
               <el-dropdown @command="handleCommand">
-                <el-avatar :size="50" :src="circleUrl" v-if="showAvatar"></el-avatar>
+                <el-avatar :size="50" :src="avatarUrl" v-if="showAvatar"></el-avatar>
                 <el-avatar :size="50" v-if="!showAvatar">登录</el-avatar>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -70,7 +70,7 @@
                       <el-col :span="3">
                         <el-tooltip effect="light" content="点赞" show-after="3000" placement="bottom">
                           <el-button type="text" style="color: black" @click="addLike(item.id, index)">
-                            {{ isUserLikeNote(item.id) }}
+                            <!-- {{ isUserLikeNote(item.id) }} -->
                             <span class="iconfont icon-like" :id="item.id" />
                           </el-button>
                         </el-tooltip>
@@ -88,8 +88,8 @@
                       <!-- 举报按钮 -->
                       <el-col :span="3">
                         <el-tooltip effect="light" content="举报" show-after="3000" placement="bottom">
-                          <el-button type="text" style="color: black" @click="toReportPage(item.id)"
-                            ><span class="iconfont icon-flag" />
+                          <el-button type="text" style="color: black" @click="toReportPage(item.id)">
+                            <span class="iconfont icon-flag" />
                           </el-button>
                         </el-tooltip>
                       </el-col>
@@ -166,22 +166,20 @@
   <footer-vue />
 </template>
 <script lang="ts" setup>
-// eslint-disable-next-line object-curly-newline
 import { computed, onActivated, onMounted, reactive, ref } from 'vue';
 import { ArrowRightBold, Search } from '@element-plus/icons-vue';
-import { useCookies } from 'vue3-cookies';
+// import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
 
-const { cookies } = useCookies();
+// const { cookies } = useCookies();
 const store = api.store();
-const loginFlag = ref(store.loginFlag);
-const circleUrl = ref(); // 头像url
+const user = ref();
+const avatarUrl = ref(''); // 头像url
 const router = useRouter();
-const user = cookies.get('userInfo') as any;
 const search = ref();
 // 剪贴板操作
 const clipboardObj = navigator.clipboard;
@@ -213,7 +211,7 @@ const total = ref(); // 分页数
 const page = ref(1);
 
 const showAvatar = computed(() => {
-  if (loginFlag.value) return true;
+  if (store.isLogin) return true;
   return false;
 });
 // 下拉列表点击事件
@@ -225,7 +223,7 @@ function handleCommand(command: string) {
     case 'toLogout':
       axios.get('api/user/logout');
       // cookies.set('loginFlag', 'false', '1d');
-      store.setLoginFlag(false);
+      store.setIsLogin(false);
       router.go(0);
       break;
     case 'toPersonalCenter':
@@ -243,7 +241,7 @@ const dawDate = reactive({
 });
 // '去登陆'是否显示
 const showLogin = computed(() => {
-  if (loginFlag.value || !loginFlag.value === null) return false;
+  if (store.isLogin || !store.isLogin === null) return false;
   return true;
 });
 // 个人中心是否显示
@@ -266,18 +264,18 @@ function changePage(num: number) {
     noteList.value = res.data.data.records;
   });
 }
-function selUserSettingsList() {
-  if (user !== null) {
-    axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
-      editorStyle.value = res.data.data.editor_style;
-    });
-  }
-}
 // 跳转写笔记 判断是否登录
 function toWrite(): void {
-  if (loginFlag.value) {
-    if (editorStyle.value === 'noteEditor') router.push('/write');
-    else router.push('/mdEditor');
+  if (store.isLogin) {
+    axios
+      .get('api/settings/selUserSettingsList')
+      .then((res) => {
+        editorStyle.value = res.data.data.editor_style;
+      })
+      .then(() => {
+        if (editorStyle.value === 'noteEditor') router.push('/write');
+        else router.push('/mdEditor');
+      });
   } else {
     ElMessage.error('请登录');
   }
@@ -285,40 +283,40 @@ function toWrite(): void {
 // 跳转阅读全文
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
-  if (loginFlag.value === true) {
-    axios.get(`api/looks/insUserLook?userId=${user.id}&noteId=${noteId}`);
+  if (store.isLogin === true) {
+    axios.get(`api/looks/insUserLook?userId=${user.value.id}&noteId=${noteId}`);
   }
 }
-function isUserLikeNote(noteId: string) {
-  const result = ref();
-  if (loginFlag.value) {
-    axios
-      .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
-      .then((res) => {
-        result.value = res.data;
-      })
-      .then(() => {
-        const span = document.getElementById(noteId) as HTMLElement;
-        if (result.value.data === 'true') {
-          span.style.color = 'red';
-        } else {
-          span.style.color = 'black';
-        }
-      });
-  }
-}
+// function isUserLikeNote(noteId: string) {
+//   const result = ref();
+//   if (store.isLogin) {
+//     axios
+//       .get(`api/likes/isUserLikeNote?userId=${user.value.id}&noteId=${noteId}`)
+//       .then((res) => {
+//         result.value = res.data;
+//       })
+//       .then(() => {
+//         const span = document.getElementById(noteId) as HTMLElement;
+//         if (result.value.data === 'true') {
+//           span.style.color = 'red';
+//         } else {
+//           span.style.color = 'black';
+//         }
+//       });
+//   }
+// }
 // 点赞
 function addLike(noteId: string, index: number) {
-  if (loginFlag.value === true) {
+  if (store.isLogin === true) {
     const result = ref();
     axios
-      .get(`api/likes/addLike?userId=${user.id}&noteId=${noteId}`)
+      .get(`api/likes/addLike?userId=${user.value.id}&noteId=${noteId}`)
       .then((res) => {
         result.value = res.data;
       })
       .then(() => {
         noteList.value[index].likes = result.value.data;
-        isUserLikeNote(noteId);
+        // isUserLikeNote(noteId);
       });
   } else {
     ElNotification({
@@ -333,8 +331,8 @@ function toReportPage(noteId: string) {
   router.push({ name: 'ReportPage', query: { noteId } });
 }
 function insUserCollect(noteId: string, index: number) {
-  if (loginFlag.value === true) {
-    axios.get(`api/collects/insUserNoteCollect?userId=${user.id}&noteId=${noteId}`).then((res) => {
+  if (store.isLogin === true) {
+    axios.get(`api/collects/insUserNoteCollect?userId=${user.value.id}&noteId=${noteId}`).then((res) => {
       noteList.value[index].collection = res.data.data;
     });
   } else {
@@ -357,8 +355,8 @@ function shareUrl(noteId: string) {
 function toSearch() {
   router.push({ name: 'SearchPage', query: { q: search.value } });
 }
+// 随机颜色
 function setColor() {
-  // 随机颜色
   const R = Math.floor(Math.random() * 130 + 110);
   const G = Math.floor(Math.random() * 130 + 110);
   const B = Math.floor(Math.random() * 130 + 110);
@@ -369,19 +367,25 @@ function clickTag(tagName: string) {
   router.push({ name: 'SearchPage', query: { tagName } });
 }
 onActivated(() => {
-  loginFlag.value = store.loginFlag;
-  selUserSettingsList();
-  if (loginFlag.value) {
-    circleUrl.value = user.avatar_url;
-  }
+  const result = ref();
+  axios
+    .get('api/user/isLogin')
+    .then((res) => {
+      result.value = res.data;
+      store.setIsLogin(result.value.data.isLogin);
+      store.setUser(result.value.data.user);
+      user.value = result.value.data.user;
+    })
+    .then(() => {
+      user.value = store.user;
+      if (user.value != null) avatarUrl.value = user.value.avatar_url;
+    });
 });
 
 onMounted(() => {
-  if (user !== null) {
-    if (user.phone === '0' && loginFlag.value) {
-      ElNotification.warning({ title: '未设置手机号', message: '手机号是找回密码的重要凭证' });
-    }
-  }
+  // if (user.value.phone === '0' && store.isLogin) {
+  //   ElNotification.warning({ title: '未设置手机号或邮箱', message: '手机号或邮箱是找回密码的重要凭证' });
+  // }
   // 笔记列表
   axios
     .get(`api/note/getNoteList?page=${1}`)
@@ -402,7 +406,6 @@ onMounted(() => {
     .then(() => {
       if (labelValuesList.value.indexOf('') !== -1) labelValuesList.value.splice(labelValuesList.value.indexOf(''), 1);
     });
-  selUserSettingsList();
 
   console.log(
     // eslint-disable-next-line operator-linebreak

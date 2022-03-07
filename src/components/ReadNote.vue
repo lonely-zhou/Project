@@ -84,7 +84,7 @@ import { ElMessage, ElNotification } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
-import cookies from '../api/cookies';
+// import cookies from '../api/cookies';
 import api from '../api/index';
 
 const route = useRoute();
@@ -92,10 +92,10 @@ const detail = '阅读全文';
 const path = 'index';
 const store = api.store();
 const { noteId } = route.query;
-const user = cookies.get('userInfo') as any;
+const user = store.user as any;
 const isLike = ref();
 const showCollect = ref();
-const loginFlag = ref(store.loginFlag);
+const loginFlag = ref(store.isLogin);
 const clipboardObj = navigator.clipboard;
 const noteCommentList = ref();
 const total = ref(); // 分页数
@@ -146,7 +146,7 @@ function getNote() {
 function isUserLikeNote() {
   const result = ref();
   axios
-    .get(`api/likes/isUserLikeNote?userId=${user.id}&noteId=${noteId}`)
+    .get(`api/likes/isUserLikeNote?noteId=${noteId}`)
     .then((res) => {
       result.value = res.data.data;
     })

@@ -7,16 +7,16 @@
           <el-row>
             <el-col :span="8">
               <el-row>
-                <el-col :span="24"><el-avatar :size="50" :src="userInfo.avatar_url" /></el-col>
+                <el-col :span="24"><el-avatar :size="50" :src="user.avatar_url" /></el-col>
               </el-row>
             </el-col>
             <el-col :span="8">
               <el-row>
                 <el-col :span="24">
                   <el-row style="text-align: left">
-                    <el-col :span="24" :pull="19" style="font-size: large">{{ userInfo.nickname }}</el-col>
+                    <el-col :span="24" :pull="19" style="font-size: large">{{ user.nickname }}</el-col>
                     <el-col :span="24" :pull="19" style="font-size: small; margin-top: 9px">
-                      用户名：{{ userInfo.username }}
+                      用户名：{{ user.username }}
                     </el-col>
                   </el-row>
                 </el-col>
@@ -29,8 +29,8 @@
                 </el-col>
               </el-row>
             </el-col>
-            <!-- <el-col :span="4">{{ userInfo.username }}</el-col>
-            <el-col :span="4">{{ userInfo.username }}</el-col> -->
+            <!-- <el-col :span="4">{{ user.username }}</el-col>
+            <el-col :span="4">{{ user.username }}</el-col> -->
             <el-divider style="margin: 12px 0" />
             <el-row>
               <el-col :span="24"> <p>账户安全</p></el-col>
@@ -46,22 +46,20 @@
         <el-tab-pane label="我的信息" name="我的信息">
           <el-row style="width: 40%" class="myInfo">
             <el-col :span="24">
-              <el-input v-model="updUserInfo.nickname" maxlength="8" show-word-limit :placeholder="userInfo.nickname">
+              <el-input v-model="upduser.nickname" maxlength="8" show-word-limit :placeholder="user.nickname">
                 <template #prepend>昵称</template>
               </el-input>
             </el-col>
             <el-col :span="24" style="margin-top: 20px">
               性别：
-              <el-radio-group v-model="updUserInfo.sex">
+              <el-radio-group v-model="upduser.sex">
                 <el-radio label="男"></el-radio>
                 <el-radio label="女"></el-radio>
                 <el-radio label="保密"></el-radio>
               </el-radio-group>
             </el-col>
             <el-col :span="24" style="margin-top: 20px">
-              <el-button type="primary" plain @click="updUser" :disabled="disUpdUser" style="width: 100%">
-                保存
-              </el-button>
+              <el-button type="primary" plain @click="updUser" style="width: 100%"> 保存 </el-button>
             </el-col>
           </el-row>
         </el-tab-pane>
@@ -79,20 +77,20 @@
             </el-col>
             <el-col :span="12">
               <el-row style="margin-top: 30px">
-                <el-col :span="24"><el-avatar :size="80" :src="userInfo.avatar_url" /></el-col>
+                <el-col :span="24"><el-avatar :size="80" :src="user.avatar_url" /></el-col>
                 <el-col :span="24">当前头像</el-col>
               </el-row>
             </el-col>
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="我的笔记" name="我的笔记">
-          <el-empty description="无笔记" v-if="showMyNote" />
           <div class="myNote" v-if="show">
             <el-radio-group v-model="noteMessage" size="small" @change="changeMessage">
               <el-radio-button label="">全部笔记</el-radio-button>
               <el-radio-button label="0">公开笔记</el-radio-button>
               <el-radio-button label="1">私密笔记</el-radio-button>
             </el-radio-group>
+            <el-empty description="无笔记" v-if="showMyNote" />
             <el-row v-for="(v, i) in myData.myNoteList" :key="i" class="userNoteList">
               <el-col :span="12">
                 <el-row>
@@ -234,25 +232,25 @@
       </el-tabs>
     </div>
   </div>
-  {{ userInfo }}
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
 // eslint-disable-next-line object-curly-newline
 import { computed, onMounted, reactive, ref } from 'vue';
-import { useCookies } from 'vue3-cookies';
+// import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
 const detail = '个人中心';
+const store = api.store();
 const activeName = ref('首页');
-const { cookies } = useCookies();
+// const { cookies } = useCookies();
 const path = 'index';
-const userInfo = cookies.get('userInfo') as any;
+const user = store.user as any;
 const router = useRouter();
-const uploadData = { username: userInfo.username };
+const uploadData = { username: user.username };
 const show = ref(true);
 const userSettings = ref({ editor_style: '' });
 const noteMessage = ref();
@@ -281,7 +279,6 @@ const myData = reactive({
   myCollectList: [{ note_id: '', time: '', title: '' }],
   myLikeList: [{ note_id: '', time: '', title: '' }],
 });
-const store = api.store();
 const paginationData = reactive({
   totalMyNote: 0,
   pageMyNote: 1,
@@ -293,18 +290,18 @@ const paginationData = reactive({
   pageMyLike: 1,
 });
 
-const updUserInfo = reactive({
-  username: userInfo.username,
+const upduser = reactive({
+  username: user.username,
   nickname: '',
-  sex: userInfo.sex,
+  sex: user.sex,
 });
 
 const isPhone = computed(() => {
-  if (userInfo.phone !== '0') return userInfo.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+  if (user.phone !== '0') return user.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
   return '未绑定';
 });
 const isEmail = computed(() => {
-  if (userInfo.email !== '0') return userInfo.email;
+  if (user.email !== '0') return user.email;
   return '未绑定';
 });
 const isPhoneText = computed(() => {
@@ -314,10 +311,6 @@ const isPhoneText = computed(() => {
 const isEmailText = computed(() => {
   if (isEmail.value === '未绑定') return '绑定';
   return '修改';
-});
-const disUpdUser = computed(() => {
-  if (updUserInfo.nickname === '') return true;
-  return false;
 });
 const showMyComment = computed(() => {
   if (myData.myCommentList.length === 0) return true;
@@ -339,13 +332,13 @@ const showMyLike = computed(() => {
 function updUser() {
   const result = ref();
   axios
-    .post('api/user/updUser', updUserInfo)
+    .post('api/user/updUser', upduser)
     .then((res) => {
       result.value = res.data;
-      cookies.set('userInfo', JSON.stringify(result.value.data), '7d');
     })
     .then(() => {
       if (result.value.code === 200) {
+        store.setUser(result.value.data);
         ElMessage.success('信息修改成功！');
         router.go(0);
       } else ElMessage.error('信息修改失败！');
@@ -360,21 +353,21 @@ function uploadSuccess() {
 function clickTap() {
   show.value = false;
   if (activeName.value === '我的笔记') {
-    axios.get(`api/note/selUserNote?userid=${userInfo.id}&page=1`).then((res) => {
+    axios.get(`api/note/selUserNote?userid=${user.id}&page=1`).then((res) => {
       myData.myNoteList = res.data.data.records;
       paginationData.totalMyNote = Number(res.data.msg);
       show.value = true;
     });
   }
   if (activeName.value === '我的评论') {
-    axios.get(`api/comment/selUserCommentList?userId=${userInfo.id}&page=1`).then((res) => {
+    axios.get(`api/comment/selUserCommentList?userId=${user.id}&page=1`).then((res) => {
       myData.myCommentList = res.data.data.records;
       paginationData.totalMyComment = Number(res.data.msg);
       show.value = true;
     });
   }
   if (activeName.value === '我的收藏') {
-    axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=1`).then((res) => {
+    axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=1`).then((res) => {
       myData.myCollectList = res.data.data.records;
       // paginationData.totalMyCollect = Number(res.data.msg);
       paginationData.totalMyCollect = Number(res.data.msg);
@@ -382,7 +375,7 @@ function clickTap() {
     });
   }
   if (activeName.value === '我的点赞') {
-    axios.get(`api/likes/selUserLikeList?userId=${userInfo.id}&page=1`).then((res) => {
+    axios.get(`api/likes/selUserLikeList?userId=${user.id}&page=1`).then((res) => {
       myData.myLikeList = res.data.data.records;
       paginationData.totalMyLike = Number(res.data.msg);
       show.value = true;
@@ -411,24 +404,24 @@ function delUserNote(noteId: string, index: number) {
     });
 }
 function changePageMyNote(pageMyNoteNum: number) {
-  axios.get(`api/?userid=${userInfo.id}&page=${pageMyNoteNum}`).then((res) => {
+  axios.get(`api/?userid=${user.id}&page=${pageMyNoteNum}`).then((res) => {
     myData.myNoteList = res.data.data.records;
   });
 }
 function changePageMyComment(pageMyCommentNum: number) {
-  axios.get(`api/?userid=${userInfo.id}&page=${pageMyCommentNum}`).then((res) => {
+  axios.get(`api/?userid=${user.id}&page=${pageMyCommentNum}`).then((res) => {
     myData.myCommentList = res.data.data.records;
   });
 }
 function changePageMyCollect(pageMyCollectNum: number) {
-  axios.get(`api/collects/selUserNoteCollectList?userId=${userInfo.id}&page=${pageMyCollectNum}`).then((res) => {
+  axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=${pageMyCollectNum}`).then((res) => {
     myData.myCollectList = res.data.data.records;
   });
 }
 function delUserNoteCollect(noteId: string, index: number) {
   const result = ref();
   axios
-    .delete(`api/collects/delUserNoteCollect?userId=${userInfo.id}&noteId=${noteId}`)
+    .delete(`api/collects/delUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
     .then((res) => {
       result.value = res.data;
     })
@@ -492,7 +485,7 @@ function delMyComment(index: number, id: string) {
 function delUserLikeNote(noteId: string, index: number) {
   const result = ref();
   axios
-    .delete(`api/likes/delUserLikeNote?userId=${userInfo.id}&noteId=${noteId}`)
+    .delete(`api/likes/delUserLikeNote?userId=${user.id}&noteId=${noteId}`)
     .then((res) => {
       result.value = res.data;
     })
@@ -503,14 +496,14 @@ function delUserLikeNote(noteId: string, index: number) {
     });
 }
 function selUserSettingsList() {
-  axios.get(`api/settings/selUserSettingsList?userId=${userInfo.id}`).then((res) => {
+  axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
     userSettings.value = res.data.data;
   });
 }
 function change(editorText: string) {
   const result = ref();
   axios
-    .get(`api/settings/updUserEditorStyle?userId=${userInfo.id}&editor=${editorText}`)
+    .get(`api/settings/updUserEditorStyle?userId=${user.id}&editor=${editorText}`)
     .then((res) => {
       result.value = res.data;
     })
@@ -520,7 +513,7 @@ function change(editorText: string) {
     });
 }
 function changeMessage() {
-  axios.get(`api/note/selUserNote?userid=${userInfo.id}&page=1&message=${noteMessage.value}`).then((res) => {
+  axios.get(`api/note/selUserNote?userid=${user.id}&page=1&message=${noteMessage.value}`).then((res) => {
     myData.myNoteList = res.data.data.records;
     paginationData.totalMyNote = Number(res.data.msg);
   });

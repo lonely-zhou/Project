@@ -1,6 +1,16 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/admin',
+    name: 'AdminPage',
+    redirect: '/admin/analysis',
+    component: () => import('../components/admin/AdminPage.vue'),
+    children: [
+      { path: 'account', name: 'AccountPage', component: () => import('../components/admin/AccountPage.vue') },
+      { path: 'analysis', name: 'AnalysisPage', component: () => import('../components/admin/AnalysisPage.vue') },
+    ],
+  },
   { path: '/search', name: 'SearchPage', component: () => import('../components/SearchPage.vue') },
   { path: '/reportPage', name: 'ReportPage', component: () => import('../components/ReportPage.vue') },
   { path: '/readNote', name: 'ReadNote', component: () => import('../components/ReadNote.vue') },

@@ -65,7 +65,7 @@
 // eslint-disable-next-line object-curly-newline
 import { onMounted, onBeforeUnmount, ref, reactive, nextTick } from 'vue';
 import WangEditor from 'wangeditor';
-import { useCookies } from 'vue3-cookies';
+// import { useCookies } from 'vue3-cookies';
 import { ElInput, ElMessage } from 'element-plus';
 import axios from 'axios';
 import PageHeaderVue from './PageHeader.vue';
@@ -75,9 +75,9 @@ import api from '../api/index';
 const editor = ref();
 const path = 'index';
 const detail = '写笔记';
-const store = api.store();
-const { cookies } = useCookies();
-const userInfo = cookies.get('userInfo') as any;
+// const store = api.store();
+// const { cookies } = useCookies();
+// const userInfo = JSON.parse(sessionStorage.getItem('user') as string);
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
@@ -85,8 +85,8 @@ const InputRef = ref<InstanceType<typeof ElInput>>();
 const note = reactive({
   title: '', // 标题
   text: '', // 正文
-  user_id: userInfo.id, // 作者ID
-  name: userInfo.username, // 作者
+  // user_id: userInfo.id, // 作者ID
+  // name: userInfo.username, // 作者
   create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: 0, // 是否公开 0公开
   select_type: '', // 分类
@@ -137,14 +137,9 @@ function insNote() {
   } else {
     note.label_values = note.label.toString();
     axios
-      .post('api/note/insNote', note, {
-        headers: {
-          Authorization: store.jwtToken,
-        },
-      })
+      .post('api/note/insNote', note)
       .then((res) => {
         result.value = res.data;
-        // console.log(res);
       })
       .then(() => {
         if (result.value.code === 200) {

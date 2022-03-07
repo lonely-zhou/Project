@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import api from './api/index';
 import router from './router';
@@ -16,17 +17,26 @@ router.afterEach(() => {
   showProgress.value = false;
 });
 onMounted(() => {
-  // 在页面加载时读取sessionStorage里的状态信息
-  // if (sessionStorage.getItem('jwtToken')) {
-  store.setjwtToken(JSON.parse(sessionStorage.getItem('jwtToken') as string));
-  store.setLoginFlag(JSON.parse(sessionStorage.getItem('loginFlag') as string));
-  // }
+  const result = ref();
+  axios
+    .get('/api/user/isLogin')
+    .then((res) => {
+      result.value = res.data;
+    })
+    .then(() => {
+      if (result.value.code === 200) {
+        store.setIsLogin(result.value.data.isLogin);
+        store.setUser(result.value.data.user);
+      }
+    });
+  // // 在页面加载时读取sessionStorage里的状态信息
+  // store.setUser(JSON.parse(sessionStorage.getItem('user') as string));
+  // // }
 
-  // 在页面刷新时将vuex里的信息保存到sessionStorage里
-  window.addEventListener('beforeunload', () => {
-    sessionStorage.setItem('jwtToken', JSON.stringify(store.jwtToken));
-    sessionStorage.setItem('loginFlag', JSON.stringify(store.loginFlag));
-  });
+  // // 在页面刷新时将vuex里的信息保存到sessionStorage里
+  // window.addEventListener('beforeunload', () => {
+  //   sessionStorage.setItem('user', JSON.stringify(store.user));
+  // });
 });
 </script>
 <template>

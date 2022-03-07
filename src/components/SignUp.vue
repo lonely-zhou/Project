@@ -1,7 +1,6 @@
 <template>
   <div class="box">
     <div class="signup-box">
-      <!-- https://img.lonelyzhou.cn/RecordAndShare/logo_recordAndShare.jpg -->
       <img class="logo" src="https://img.lonelyzhou.cn/RecordAndShare/logo_recordAndShare.jpg" alt="logo" />
       <form action="" class="form-box">
         <el-input class="form-input" v-model="user.username" placeholder="请输入账号" :prefix-icon="Avatar" clearable />
@@ -9,7 +8,7 @@
         <el-input
           class="form-input"
           v-model="user.password"
-          placeholder="请输入密码"
+          placeholder="请输入密码 最少6位"
           :prefix-icon="Unlock"
           clearable
           show-password
@@ -33,9 +32,9 @@ import { computed, reactive, ref } from 'vue';
 // import { useRouter } from "vue-router";
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import router from '../router';
 
 const res = ref();
-// const router = useRouter();
 // 表单信息
 const user = reactive({
   username: '', // 账户名
@@ -61,6 +60,7 @@ function onSubmit() {
       // 总是会执行
       if (res.value.code === 200) {
         ElMessage.success('注册成功');
+        router.push('/login');
       } else {
         ElMessage.error(`失败 ${res.value.msg}`);
       }
@@ -70,7 +70,7 @@ function onSubmit() {
 // 注册按钮状态 disabled
 const disabled = computed(() => {
   if (user.password === '' || user.username === '') return true;
-  if (user.password === user.repassword) return false;
+  if (user.password === user.repassword && user.password.length > 5) return false;
   return true;
 });
 </script>
@@ -83,7 +83,6 @@ const disabled = computed(() => {
   top: 0;
   right: 0;
   background-size: cover;
-  /* https://img.lonelyzhou.cn/RecordAndShare/wallpaper.jpg */
   background-image: url('https://img.lonelyzhou.cn/RecordAndShare/wallpaper.jpg');
   /* 背景图片 -- end */
 }

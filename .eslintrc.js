@@ -31,5 +31,6 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'max-len': ['error', { code: 300 }],
+    'object-curly-newline': 0,
   },
 };
