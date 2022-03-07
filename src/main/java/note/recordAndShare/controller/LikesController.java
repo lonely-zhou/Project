@@ -11,6 +11,7 @@ import note.recordAndShare.mapper.LikesMapper;
 import note.recordAndShare.mapper.NoteMapper;
 import note.utils.NoteResultUtil;
 import note.utils.TimeUtil;
+import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -73,13 +74,12 @@ public class LikesController {
     /**
      * 用户是否点赞笔记
      *
-     * @param userId 用户ID
      * @param noteId 笔记ID
      * @return 是否
      */
     @GetMapping("/isUserLikeNote")
-    public NoteResultUtil isUserLikeNote(@RequestParam("userId") String userId, @RequestParam("noteId") String noteId) {
-        int count = likesMapper.selectCount(new QueryWrapper<Likes>().eq("user_id", userId).eq("note_id", noteId)).intValue();
+    public NoteResultUtil isUserLikeNote(@RequestParam("noteId") String noteId) {
+        int count = likesMapper.selectCount(new QueryWrapper<Likes>().eq("user_id", UserUtil.selUserId()).eq("note_id", noteId)).intValue();
         if (count != 1) {
             return NoteResultUtil.success("false");
         }

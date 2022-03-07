@@ -1,6 +1,9 @@
 package note.recordAndShare.controller;
 
 
+import cn.dev33.satoken.secure.SaSecureUtil;
+import cn.dev33.satoken.stp.SaLoginConfig;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -17,7 +20,6 @@ import note.recordAndShare.mapper.UserMapper;
 import note.recordAndShare.service.UserService;
 import note.utils.*;
 import note.utils.sms.SMSService;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +41,7 @@ import static note.utils.UpYunUtil.testSync;
  */
 @RestController
 @Data
-@RequestMapping("/recordAndShare/user")
+@RequestMapping("/recordAndShare/user/")
 public class UserController {
 
     private final UserMapper userMapper;
@@ -56,38 +58,36 @@ public class UserController {
      * @param user 用户米与密码
      * @return ok
      */
-    @PostMapping("/login")
-    public NoteResultUtil login(@RequestBody User user) {
-        User userSql = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername()));
-        if (userSql == null) {
+    @PostMapping("login")
+    public NoteResultUtil login(@RequestBody User user, @RequestParam(value = "isAdmin", required = false) boolean isAdmin) {
+        int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername())).getRoleId();
+        if (isAdmin) {
+            if (role != 1) {
+                return NoteResultUtil.error("无管理员权限");
+            }
+        }
+        try {
+            User userForMySql = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername()));
+            String password = userForMySql.getPassword();
+            String userId = userForMySql.getId();
+            if (password.equals(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()))) {
+                StpUtil.login(user.getUsername(), SaLoginConfig.setExtra("user_id", userId));
+                return NoteResultUtil.success(StpUtil.getTokenInfo());
+            } else {
+                return NoteResultUtil.error("密码错误");
+            }
+        } catch (Exception e) {
             return NoteResultUtil.error("用户名不存在");
         }
-        user.setPassword(String.valueOf(Md5Util.setMd5(user.getUsername(), user.getPassword())));
-        if (userSql.getPassword().equals(user.getPassword())) {
-            UserDto userDto = new UserDto();
-            BeanUtil.copyProperties(userSql, userDto);
-            userSql.setLastTime(new TimeUtil().getFormatDateForFive());
-            userMapper.updateById(userSql);
-            /*从缓存中找*/
-            if (redisUtil.hsize(ConstantUtil.USER_TOKEN + user.getUsername()) != 0) {
-                if (redisUtil.hasHkey(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername())) {
-                    return NoteResultUtil.success(MapUtil.builder()
-                            .put("UserInfo", userDto)
-                            .put("Authorization", redisUtil.hget(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername()))
-                            .map());
-                }
-            }
-            // 存入缓存
-            String token = JwtUtil.sign(user.getUsername(), user.getPassword());
-            redisUtil.hset(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername(), token);
-            redisUtil.expire(ConstantUtil.USER_TOKEN + user.getUsername(), 120 * 60);
-            return NoteResultUtil.success(MapUtil.builder()
-                    .put("UserInfo", userDto)
-                    .put("Authorization", token)
-                    .map()
-            );
-        }
-        return NoteResultUtil.error(500, "密码错误");
+    }
+
+    @GetMapping("isLogin")
+    public NoteResultUtil isLogin() {
+        String username = StpUtil.getLoginId().toString();
+        UserDto userDto = new UserDto();
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        BeanUtil.copyProperties(user, userDto);
+        return NoteResultUtil.success(MapUtil.builder().put("user", userDto).put("isLogin", StpUtil.isLogin()).map());
     }
 
     /**
@@ -95,9 +95,9 @@ public class UserController {
      *
      * @return ok
      */
-    @GetMapping("/logout")
+    @GetMapping("logout")
     public NoteResultUtil logout() {
-        SecurityUtils.getSubject().logout();
+        StpUtil.logout();
         return NoteResultUtil.success();
     }
 
@@ -131,13 +131,13 @@ public class UserController {
      * @param username 用户名
      * @return 手机号
      */
-    @GetMapping("/selUser")
-    public NoteResultUtil selUser(String username) {
+    @GetMapping("selUser")
+    public NoteResultUtil selUser(@RequestParam("username") String username) {
         if (redisUtil.hasHkey(ConstantUtil.USER_NAME, username)) {
-            return NoteResultUtil.success(userMapper.selectOne(new QueryWrapper<User>().eq("username", username).select("phone")));
+            return NoteResultUtil.success(userMapper.selectOne(new QueryWrapper<User>().eq("username", username)));
         } else {
             if (userService.selUser(username) == 1) {
-                return NoteResultUtil.success(userMapper.selectOne(new QueryWrapper<User>().eq("username", username).select("phone")));
+                return NoteResultUtil.success(userMapper.selectOne(new QueryWrapper<User>().eq("username", username)));
             }
         }
         return NoteResultUtil.error("用户不存在");
@@ -176,35 +176,30 @@ public class UserController {
         }
     }
 
+    @GetMapping("getEmailCode")
+    public NoteResultUtil getEmailCode(@RequestParam("username") String username) {
+        String email = userMapper.selectOne(new QueryWrapper<User>().eq("username", username).select("email")).getEmail();
+        if (redisUtil.hasKey(ConstantUtil.USER_EMAIL + email)) {
+            return NoteResultUtil.success(redisUtil.get(ConstantUtil.USER_EMAIL + email));
+        } else {
+            redisUtil.del(ConstantUtil.USER_EMAIL + email);
+            return NoteResultUtil.error("验证码失效");
+        }
+    }
+
     /**
      * 密码重置 - 更新密码
      *
      * @param user username password
      * @return ""
      */
-    @PostMapping("/updPassword")
+    @PostMapping("updPassword")
     public NoteResultUtil updPassword(@RequestBody User user) {
         int i = userService.updPassword(user);
         if (i > 0) {
             return NoteResultUtil.success();
         }
         return NoteResultUtil.error("修改密码失败");
-    }
-
-    public NoteResultUtil delayToken(User user) {
-        // todo jwt延期问题
-        long remainingTime = 20 * 60;
-        if (redisUtil.hasHkey(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername())) {
-            if (redisUtil.ttl(ConstantUtil.USER_TOKEN + user.getUsername()) < remainingTime) {
-                {
-                    String newToken = JwtUtil.sign(user.getUsername(), user.getPassword());
-                    redisUtil.hset(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername(), newToken);
-                    redisUtil.expire(ConstantUtil.USER_TOKEN + user.getUsername(), 120 * 60);
-                    return NoteResultUtil.success(newToken);
-                }
-            }
-        }
-        return NoteResultUtil.success(redisUtil.hget(ConstantUtil.USER_TOKEN + user.getUsername(), user.getUsername()));
     }
 
     /**
@@ -321,6 +316,9 @@ public class UserController {
     private NoteResultUtil getNoteResultUtil(@RequestBody User user) {
         userMapper.update(user, new QueryWrapper<User>().eq("username", user.getUsername()));
         User user1 = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername()));
+        if ("".equals(user.getNickname())) {
+            user.setNickname(user1.getNickname());
+        }
         UserDto userDto = new UserDto();
         BeanUtil.copyProperties(user1, userDto);
         return NoteResultUtil.success(userDto);

@@ -7,6 +7,7 @@ import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.NoteService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import note.utils.BuildArticleTabloidUtil;
+import note.utils.UserUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,6 +25,8 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
 
     @Override
     public int insNote(Note note) {
+        note.setUserId(UserUtil.selUser().getId());
+        note.setName(UserUtil.selUser().getUsername());
         note.setId(note.getName() + "-" + UUID.randomUUID());
         note.setArticleTabled(new BuildArticleTabloidUtil().buildArticleTabloid(note.getText()));
         return noteMapper.insert(note);

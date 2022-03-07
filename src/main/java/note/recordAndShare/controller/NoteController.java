@@ -7,7 +7,6 @@ import note.recordAndShare.entity.Note;
 import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.NoteService;
 import note.utils.NoteResultUtil;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -53,7 +52,6 @@ public class NoteController {
      */
     @PostMapping("/insNote")
     public NoteResultUtil insNote(@RequestBody Note note) {
-
         if (noteService.insNote(note) > 0) {
             return NoteResultUtil.success();
         }
@@ -164,9 +162,4 @@ public class NoteController {
         return NoteResultUtil.success(labelSet);
     }
 
-    @GetMapping("/token")
-    @RequiresAuthentication
-    public NoteResultUtil token(){
-        return NoteResultUtil.success();
-    }
 }

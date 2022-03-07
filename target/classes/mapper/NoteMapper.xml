@@ -6,7 +6,6 @@
         FROM note n
                  join user u on u.id = n.user_id
         where n.message = '0'
-
     </select>
     <select id="selectUserNote" resultType="note.recordAndShare.entity.dto.NoteDto">
         SELECT n.*, u.avatar_url

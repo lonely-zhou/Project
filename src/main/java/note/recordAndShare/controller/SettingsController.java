@@ -6,6 +6,7 @@ import lombok.Data;
 import note.recordAndShare.entity.Settings;
 import note.recordAndShare.mapper.SettingsMapper;
 import note.utils.NoteResultUtil;
+import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -49,7 +50,7 @@ public class SettingsController {
     }
 
     @GetMapping("/selUserSettingsList")
-    public NoteResultUtil selUserSettingsList(@RequestParam("userId") String userId) {
-        return NoteResultUtil.success(settingsMapper.selectById(userId));
+    public NoteResultUtil selUserSettingsList() {
+        return NoteResultUtil.success(settingsMapper.selectById(UserUtil.selUserId()));
     }
 }

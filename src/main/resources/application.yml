@@ -68,3 +68,11 @@ spring:
     expose-session-attributes: true
     suffix: .fti
     template-loader-path: classpath:/templates/
+sa-token:
+  token-name: satoken
+  timeout: 7200
+  activity-timeout: 1800
+  is-concurrent: false
+  is-share: false
+  is-log: false
+  jwt-secret-key: recordandshare@lonelyzhou

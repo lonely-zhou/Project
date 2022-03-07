@@ -1,5 +1,6 @@
 package note.recordAndShare.serviceImpl;
 
+import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -11,7 +12,6 @@ import note.recordAndShare.mapper.UserMapper;
 import note.recordAndShare.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import note.utils.ConstantUtil;
-import note.utils.Md5Util;
 import note.utils.RedisUtil;
 import note.utils.TimeUtil;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public int insUser(User user) {
         user.setId(UUID.randomUUID().toString());
-        user.setPassword(String.valueOf(Md5Util.setMd5(user.getUsername(), user.getPassword())));
+        user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(),user.getUsername()));
         user.setLastTime(new TimeUtil().getFormatDateForFive());
         redisUtil.hset(ConstantUtil.USER_NAME, user.getUsername(), user.getUsername());
         Settings settings = new Settings();
@@ -70,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public int updPassword(User user) {
-        user.setPassword(String.valueOf(Md5Util.setMd5(user.getUsername(), user.getPassword())));
+        user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(),user.getUsername()));
         return userMapper.update(user, new UpdateWrapper<User>().eq("username", user.getUsername()));
     }
 }
