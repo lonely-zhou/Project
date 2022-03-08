@@ -1,5 +1,6 @@
 package note.recordAndShare.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
@@ -50,6 +51,7 @@ public class NoteController {
      * @param note 笔记
      * @return ok
      */
+    @SaCheckLogin
     @PostMapping("/insNote")
     public NoteResultUtil insNote(@RequestBody Note note) {
         if (noteService.insNote(note) > 0) {

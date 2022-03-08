@@ -14,8 +14,10 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.Data;
+import note.recordAndShare.entity.Role;
 import note.recordAndShare.entity.User;
 import note.recordAndShare.entity.dto.UserDto;
+import note.recordAndShare.mapper.RoleMapper;
 import note.recordAndShare.mapper.UserMapper;
 import note.recordAndShare.service.UserService;
 import note.utils.*;
@@ -49,6 +51,7 @@ public class UserController {
     private final RedisUtil redisUtil;
     private final SMSService smsService;
     private final EmailUtil emailUtil;
+    private final RoleMapper roleMapper;
 
     String ok = "OK";
 
@@ -61,6 +64,7 @@ public class UserController {
     @PostMapping("login")
     public NoteResultUtil login(@RequestBody User user, @RequestParam(value = "isAdmin", required = false) boolean isAdmin) {
         int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername())).getRoleId();
+        String rname = roleMapper.selectOne(new QueryWrapper<Role>().eq("rid", role)).getRname();
         if (isAdmin) {
             if (role != 1) {
                 return NoteResultUtil.error("无管理员权限");
@@ -72,7 +76,7 @@ public class UserController {
             String userId = userForMySql.getId();
             if (password.equals(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()))) {
                 StpUtil.login(user.getUsername(), SaLoginConfig.setExtra("user_id", userId));
-                return NoteResultUtil.success(StpUtil.getTokenInfo());
+                return NoteResultUtil.success();
             } else {
                 return NoteResultUtil.error("密码错误");
             }
@@ -84,10 +88,12 @@ public class UserController {
     @GetMapping("isLogin")
     public NoteResultUtil isLogin() {
         String username = StpUtil.getLoginId().toString();
+        int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", username)).getRoleId();
+        String rname = roleMapper.selectOne(new QueryWrapper<Role>().eq("rid", role)).getRname();
         UserDto userDto = new UserDto();
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
         BeanUtil.copyProperties(user, userDto);
-        return NoteResultUtil.success(MapUtil.builder().put("user", userDto).put("isLogin", StpUtil.isLogin()).map());
+        return NoteResultUtil.success(MapUtil.builder().put("user", userDto).put("role",rname).put("isLogin", StpUtil.isLogin()).map());
     }
 
     /**

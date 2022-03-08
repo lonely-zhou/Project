@@ -31,7 +31,7 @@ public interface NoteMapper extends BaseMapper<Note> {
 
     /**
      * 用户笔记查询
-     *
+     * @param message 是否公开
      * @param page   页码
      * @param userid userid
      * @return 笔记列表

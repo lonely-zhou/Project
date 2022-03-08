@@ -1,5 +1,6 @@
 package note.recordAndShare.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class AdminController {
     private final NoteMapper noteMapper;
     private final CommentMapper commentMapper;
 
+    @SaCheckRole("admin")
     @GetMapping("selAnalysis")
     public NoteResultUtil selAnalysis() {
         int userCount = userMapper.selectCount(new QueryWrapper<>()).intValue();
