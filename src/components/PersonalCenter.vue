@@ -7,7 +7,7 @@
           <el-row>
             <el-col :span="8">
               <el-row>
-                <el-col :span="24"><el-avatar :size="50" :src="user.avatar_url" /></el-col>
+                <el-col :span="24"><el-avatar :size="50" :src="user.avatarUrl" /></el-col>
               </el-row>
             </el-col>
             <el-col :span="8">
@@ -77,7 +77,7 @@
             </el-col>
             <el-col :span="12">
               <el-row style="margin-top: 30px">
-                <el-col :span="24"><el-avatar :size="80" :src="user.avatar_url" /></el-col>
+                <el-col :span="24"><el-avatar :size="80" :src="user.avatarUrl" /></el-col>
                 <el-col :span="24">当前头像</el-col>
               </el-row>
             </el-col>
@@ -224,7 +224,7 @@
         </el-tab-pane>
         <el-tab-pane label="其他">
           <p>更改默认编辑器</p>
-          <el-radio-group v-model="userSettings.editor_style" @change="change(userSettings.editor_style)">
+          <el-radio-group v-model="userSettings.editorStyle" @change="change(userSettings.editorStyle)">
             <el-radio label="noteEditor">普通编辑器</el-radio>
             <el-radio label="mdEditor">Markdown编辑器</el-radio>
           </el-radio-group>
@@ -252,7 +252,7 @@ const user = store.user as any;
 const router = useRouter();
 const uploadData = { username: user.username };
 const show = ref(true);
-const userSettings = ref({ editor_style: '' });
+const userSettings = ref({ editorStyle: '' });
 const noteMessage = ref();
 const myData = reactive({
   myNoteList: [

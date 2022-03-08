@@ -175,6 +175,7 @@ function onSubmit() {
             axios.get('api/user/isLogin').then((res) => {
               store.setIsLogin(res.data.data.isLogin);
               store.setUser(res.data.data.user);
+              sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
             });
             // store.setjwtToken(result.value.data.Authorization);
             // loginState.value.password = Base64.encode(user.password);

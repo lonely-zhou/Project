@@ -83,6 +83,12 @@ const note = reactive({
   label: [], // 标签
   note_type: 'md',
 });
+if (userNote.label_values !== '' && userNote.label_values !== undefined) {
+  const labelList = note.label_values.split(',');
+  for (let index = 0; index < labelList.length; index += 1) {
+    note.label.push(labelList[index] as never);
+  }
+}
 const toolbars = {
   bold: true, // 粗体
   italic: true, // 斜体

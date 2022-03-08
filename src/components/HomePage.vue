@@ -54,14 +54,14 @@
                 <el-col :span="24">
                   <div class="noteText" @click="toReadNote(item.id)">
                     <div class="noteTextTitle">{{ item.title }}</div>
-                    <div class="noteTextSyn">{{ item.article_tabled }}</div>
+                    <div class="noteTextSyn">{{ item.articleTabled }}</div>
                   </div>
                 </el-col>
                 <el-col :span="24">
                   <div class="noteNav">
                     <el-row>
                       <!-- 头像 -->
-                      <el-col :span="3"><el-avatar :size="40" :src="item.avatar_url" /></el-col>
+                      <el-col :span="3"><el-avatar :size="40" :src="item.avatarUrl" /></el-col>
                       <!-- 作者 -->
                       <el-col :span="3"> {{ item.name }} </el-col>
                       <!-- 浏览数 -->
@@ -190,20 +190,20 @@ const noteList = ref([
     id: '', // 笔记ID
     title: '', // 标题
     text: '', // 正文
-    label_values: '', // 标签
-    select_type: '', // 笔记类型
-    select_categories: '', // 笔记分类
-    select_grade: '', // 笔记等级
-    original_author: '', // 原作者
+    labelValues: '', // 标签
+    selectType: '', // 笔记类型
+    selectCategories: '', // 笔记分类
+    selectGrade: '', // 笔记等级
+    originalAuthor: '', // 原作者
     message: '', // 是否公开
-    create_time: '', // 创建时间
+    createTime: '', // 创建时间
     likes: '', // 点赞数
     name: '', // 作者名
-    article_tabled: '', // 笔记摘要
+    articleTabled: '', // 笔记摘要
     look: '', // 浏览次数
     collection: '', // 收藏数
-    user_id: '', // 作者ID
-    avatar_url: '', // 头像
+    userId: '', // 作者ID
+    avatarUrl: '', // 头像
   },
 ]);
 const noteListEmpty = ref();
@@ -270,7 +270,7 @@ function toWrite(): void {
     axios
       .get('api/settings/selUserSettingsList')
       .then((res) => {
-        editorStyle.value = res.data.data.editor_style;
+        editorStyle.value = res.data.data.editorStyle;
       })
       .then(() => {
         if (editorStyle.value === 'noteEditor') router.push('/write');
@@ -374,11 +374,12 @@ onActivated(() => {
       result.value = res.data;
       store.setIsLogin(result.value.data.isLogin);
       store.setUser(result.value.data.user);
+      sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
       user.value = result.value.data.user;
     })
     .then(() => {
       user.value = store.user;
-      if (user.value != null) avatarUrl.value = user.value.avatar_url;
+      if (user.value != null) avatarUrl.value = user.value.avatarUrl;
     });
 });
 
