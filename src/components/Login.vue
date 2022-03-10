@@ -24,7 +24,7 @@
         </form>
         <el-row :gutter="20" style="margin-top: 10px">
           <el-col :span="6" :offset="6">
-            <el-checkbox v-model="loginState.rememberPassword" label="自动登录" size="large" />
+            <el-checkbox v-model="loginState.autoLogin" label="7天自动登录" size="large" />
           </el-col>
           <el-col :span="6">
             <el-checkbox v-model="loginState.adminLogin" label="管理员登录" size="large" />
@@ -109,7 +109,7 @@ const user = reactive({
   username: '',
   password: '',
 });
-const loginState = ref({ adminLogin: false, rememberPassword: false, password: '' });
+const loginState = ref({ adminLogin: false, autoLogin: true, password: '' });
 const store = api.store();
 // const { cookies } = useCookies();
 const showFP = ref(true);
@@ -162,7 +162,7 @@ function onSubmit() {
   const result = ref();
   // 登录
   axios
-    .post(`api/user/login?isAdmin=${loginState.value.adminLogin}`, user)
+    .post(`api/user/login?autoLogin=${loginState.value.autoLogin}&isAdmin=${loginState.value.adminLogin}`, user)
     .then((res) => {
       result.value = res.data;
     })
@@ -175,6 +175,7 @@ function onSubmit() {
             axios.get('api/user/isLogin').then((res) => {
               store.setIsLogin(res.data.data.isLogin);
               store.setUser(res.data.data.user);
+              store.setRole(res.data.data.role);
               sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
             });
             // store.setjwtToken(result.value.data.Authorization);

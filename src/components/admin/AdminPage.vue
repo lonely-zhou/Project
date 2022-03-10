@@ -1,14 +1,15 @@
 <template>
   <div class="box">
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="auto">
         <el-menu
+          class="menu"
           active-text-color="#ffd04b"
           background-color="#545c64"
           :default-active="$route.path"
           text-color="#fff"
           router
-          :collapse="isCollapse"
+          :collapse="store.isCollapse"
         >
           <el-menu-item><span class="title">记享</span></el-menu-item>
           <el-menu-item index="/admin/analysis">
@@ -38,34 +39,46 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>
-          <el-button type="text" v-if="showButton" @click="changeIsCollapse">
-            <span class="iconfont icon-indent" />
-          </el-button>
-          <el-button type="text" v-if="!showButton" @click="changeIsCollapse">
-            <span class="iconfont icon-outdent" />
-          </el-button>
+        <el-header style="display: flex; align-items: center">
+          <div>
+            <el-button type="text" v-if="showButton" @click="changeIsCollapse">
+              <span class="iconfont icon-indent" />
+            </el-button>
+            <el-button type="text" v-if="!showButton" @click="changeIsCollapse">
+              <span class="iconfont icon-outdent" />
+            </el-button>
+          </div>
           <el-breadcrumb separator="/">
             <el-breadcrumb-item v-for="(item, index) in $route.path.split('/')" :key="index">
               {{ item }}
             </el-breadcrumb-item>
           </el-breadcrumb>
         </el-header>
-        <el-main><router-view></router-view></el-main>
+        <el-main>
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 <script lang="ts" setup>
 import { EditPen, Setting, ChatDotRound, Files } from '@element-plus/icons-vue';
+import anime from 'animejs';
 import { ref } from 'vue';
+import api from '../../api';
 
-const isCollapse = ref(false);
+const store = api.store();
+// const isCollapse = ref();
 const showButton = ref(false);
 
 function changeIsCollapse() {
-  isCollapse.value = !isCollapse.value;
+  store.setIsCollapse();
+  // isCollapse.value = !isCollapse.value;
   showButton.value = !showButton.value;
+  anime({
+    targets: '.el-aside',
+    duration: 1000,
+  });
 }
 </script>
 <style scoped>
@@ -76,4 +89,15 @@ function changeIsCollapse() {
   font-size: x-large;
   font-family: 'Courier New', Courier, monospace;
 }
+.menu:not(.el-menu--collapse) {
+  height: 100vh;
+  width: 200px;
+}
+/* .el-aside {
+  transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -moz-transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -o-transition: width 0.25s;
+} */
 </style>

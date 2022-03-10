@@ -367,6 +367,7 @@ function clickTag(tagName: string) {
   router.push({ name: 'SearchPage', query: { tagName } });
 }
 onActivated(() => {
+  // getPermissionRouter();
   const result = ref();
   axios
     .get('api/user/isLogin')
@@ -380,13 +381,36 @@ onActivated(() => {
     .then(() => {
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
+    })
+    .catch(() => {
+      store.setIsLogin(false);
+      sessionStorage.setItem('role', JSON.stringify('guest'));
     });
 });
 
 onMounted(() => {
-  // if (user.value.phone === '0' && store.isLogin) {
-  //   ElNotification.warning({ title: '未设置手机号或邮箱', message: '手机号或邮箱是找回密码的重要凭证' });
-  // }
+  const result = ref();
+  axios
+    .get('api/user/isLogin')
+    .then((res) => {
+      result.value = res.data;
+      store.setIsLogin(result.value.data.isLogin);
+      store.setUser(result.value.data.user);
+      sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
+      user.value = result.value.data.user;
+    })
+    .then(() => {
+      user.value = store.user;
+      if (user.value != null) avatarUrl.value = user.value.avatarUrl;
+      if ((user.value.phone === '0' || user.value.email === '0') && store.isLogin) {
+        ElNotification.warning({ title: '未设置手机号或邮箱', message: '手机号或邮箱是找回密码的重要凭证' });
+      }
+    })
+    .catch(() => {
+      store.setIsLogin(false);
+    });
+  console.log(router.getRoutes());
+
   // 笔记列表
   axios
     .get(`api/note/getNoteList?page=${1}`)

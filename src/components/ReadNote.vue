@@ -4,7 +4,7 @@
     <div class="noteInfo">
       <h1 class="title">{{ note.title }}</h1>
       <div class="info">
-        <span class="iconfont icon-time-circle"> {{ note.create_time }}</span>
+        <span class="iconfont icon-time-circle"> {{ note.createTime }}</span>
         <span class="iconfont icon-comment"> {{ noteCommentCount }}</span>
         <span class="iconfont icon-eye"> {{ note.look }}</span>
         <span class="iconfont icon-like"> {{ note.likes }}</span>
@@ -103,7 +103,7 @@ const page = ref(1);
 const menuList = ref();
 const comment = reactive({
   message: '',
-  user_id: user === null ? '' : user.id,
+  userId: user === null ? '' : user.id,
   note_id: noteId,
   time: api.dateFormat.getDateFormatYHD(),
 });
@@ -111,26 +111,26 @@ const note = ref({
   id: '', // 笔记ID
   title: '', // 标题
   text: '', // 正文
-  label_values: '', // 标签
-  select_type: '', // 笔记类型
-  select_categories: '', // 笔记分类
-  select_grade: '', // 笔记等级
-  original_author: '', // 原作者
+  labelValues: '', // 标签
+  selectType: '', // 笔记类型
+  selectCategories: '', // 笔记分类
+  selectGrade: '', // 笔记等级
+  originalAuthor: '', // 原作者
   message: '', // 是否公开
-  create_time: '', // 创建时间
+  createTime: '', // 创建时间
   likes: '', // 点赞数
   name: '', // 作者名
-  article_tabled: '', // 笔记摘要
+  articleTabled: '', // 笔记摘要
   look: '', // 浏览次数
   collection: '', // 收藏数
-  user_id: '', // 作者ID
-  avatar_url: '', // 头像
-  note_type: '',
+  userId: '', // 作者ID
+  avatarUrl: '', // 头像
+  noteType: '',
 });
 const noteCommentCount = ref();
 
 const showEditor = computed(() => {
-  if (note.value.note_type === 'md') return true;
+  if (note.value.noteType === 'md') return true;
   return false;
 });
 

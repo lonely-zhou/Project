@@ -223,11 +223,20 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="其他">
-          <p>更改默认编辑器</p>
-          <el-radio-group v-model="userSettings.editorStyle" @change="change(userSettings.editorStyle)">
-            <el-radio label="noteEditor">普通编辑器</el-radio>
-            <el-radio label="mdEditor">Markdown编辑器</el-radio>
-          </el-radio-group>
+          <el-row>
+            <el-col :spqn="24">
+              <p>更改默认编辑器</p>
+              <el-radio-group v-model="userSettings.editorStyle" @change="change(userSettings.editorStyle)">
+                <el-radio label="noteEditor">普通编辑器</el-radio>
+                <el-radio label="mdEditor">Markdown编辑器</el-radio>
+              </el-radio-group>
+            </el-col>
+            <el-col :span="24">
+              <router-link to="admin">
+                <el-button type="text" v-if="showAdminButton">网站管理后台</el-button>
+              </router-link>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -326,6 +335,12 @@ const showMyCollect = computed(() => {
 });
 const showMyLike = computed(() => {
   if (myData.myLikeList.length === 0) return true;
+  return false;
+});
+
+const showAdminButton = computed(() => {
+  const role = JSON.parse(sessionStorage.getItem('role') as string);
+  if (role === 'admin') return true;
   return false;
 });
 
