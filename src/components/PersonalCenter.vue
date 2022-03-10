@@ -339,8 +339,7 @@ const showMyLike = computed(() => {
 });
 
 const showAdminButton = computed(() => {
-  const role = JSON.parse(sessionStorage.getItem('role') as string);
-  if (role === 'admin') return true;
+  if (store.role === 'admin') return true;
   return false;
 });
 

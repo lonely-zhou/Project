@@ -67,8 +67,6 @@ import router from '../router';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api/index';
 
-// const { cookies } = useCookies();
-// const userInfo = JSON.parse(sessionStorage.getItem('user') as string);
 const detail = '写笔记';
 const inputValue = ref('');
 const inputVisible = ref(false);

@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
-import { createPinia } from 'pinia';
 import mavonEditor from 'mavon-editor';
+import store from './pinia';
 import App from './App.vue';
 import router from './router';
 import 'mavon-editor/dist/css/index.css';
@@ -14,6 +14,6 @@ import './assets/icon/iconfont.css';
 createApp(App)
   .use(router)
   .use(ElementPlus)
-  .use(createPinia())
+  .use(store)
   .use(mavonEditor)
   .mount('#app');

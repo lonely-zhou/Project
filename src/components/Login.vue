@@ -103,6 +103,7 @@ import axios from 'axios';
 // import { Base64 } from 'js-base64';
 // import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
+import { setRoutes } from '../router';
 import api from '../api';
 
 const user = reactive({
@@ -176,13 +177,8 @@ function onSubmit() {
               store.setIsLogin(res.data.data.isLogin);
               store.setUser(res.data.data.user);
               store.setRole(res.data.data.role);
-              sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
+              setRoutes(store.role);
             });
-            // store.setjwtToken(result.value.data.Authorization);
-            // loginState.value.password = Base64.encode(user.password);
-            // cookies.set('userInfo', JSON.stringify(result.value.data.UserInfo), '7d');
-            // cookies.set('loginState', JSON.stringify(loginState.value), '7d');
-            // store.setLoginFlag(true);
             if (loginState.value.adminLogin) router.push('admin');
             else router.push('/index');
           },

@@ -1,12 +1,8 @@
 <script lang="ts" setup>
-// import axios from 'axios';
 import { onMounted } from 'vue';
 import NProgress from 'nprogress';
-import api from './api/index';
 import router from './router';
 import 'nprogress/nprogress.css';
-
-const store = api.store();
 
 router.beforeEach(() => {
   NProgress.start();
@@ -14,32 +10,7 @@ router.beforeEach(() => {
 router.afterEach(() => {
   NProgress.done();
 });
-onMounted(() => {
-  // const result = ref();
-  // axios
-  //   .get('/api/user/isLogin')
-  //   .then((res) => {
-  //     result.value = res.data;
-  //   })
-  //   .then(() => {
-  //     if (result.value.code === 200) {
-  //       store.setIsLogin(result.value.data.isLogin);
-  //       store.setUser(result.value.data.user);
-  //     }
-  //   });
-  // 在页面加载时读取sessionStorage里的状态信息
-  store.setUser(JSON.parse(sessionStorage.getItem('user') as string));
-  store.setIsLogin(JSON.parse(sessionStorage.getItem('isLogin') as string));
-  store.setRole(JSON.parse(sessionStorage.getItem('role') as string));
-  // }
-
-  // 在页面刷新时将vuex里的信息保存到sessionStorage里
-  window.addEventListener('beforeunload', () => {
-    sessionStorage.setItem('user', JSON.stringify(store.user));
-    sessionStorage.setItem('isLogin', JSON.stringify(store.isLogin));
-    sessionStorage.setItem('role', JSON.stringify(store.role));
-  });
-});
+onMounted(() => {});
 </script>
 <template>
   <div id="id">
@@ -54,8 +25,6 @@ onMounted(() => {
       </keep-alive>
       <component :is="Component" v-if="!$route.meta.keepAlive" :key="$route.name" />
     </router-view>
-
-    <!-- <router-view /> -->
   </div>
 </template>
 

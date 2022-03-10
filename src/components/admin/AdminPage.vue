@@ -21,10 +21,17 @@
               <el-icon><setting /></el-icon>
               <span>系统管理</span>
             </template>
+            <el-menu-item index="/admin/account"></el-menu-item>
+          </el-sub-menu>
+          <!--  <el-sub-menu index="2">
+            <template #title>
+              <el-icon><setting /></el-icon>
+              <span>系统管理</span>
+            </template>
             <el-menu-item index="/admin/account">账号管理</el-menu-item>
             <el-menu-item index="1-2">角色管理</el-menu-item>
           </el-sub-menu>
-          <el-menu-item index="3">
+        <el-menu-item index="3">
             <el-icon><edit-pen /></el-icon>
             <span>笔记管理</span>
           </el-menu-item>
@@ -35,7 +42,7 @@
           <el-menu-item index="5">
             <el-icon><span class="iconfont icon-flag" /></el-icon>
             <span>举报管理</span>
-          </el-menu-item>
+          </el-menu-item> -->
         </el-menu>
       </el-aside>
       <el-container>
@@ -62,14 +69,17 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { EditPen, Setting, ChatDotRound, Files } from '@element-plus/icons-vue';
+// import { EditPen, Setting, ChatDotRound, Files } from '@element-plus/icons-vue';
 import anime from 'animejs';
 import { ref } from 'vue';
 import api from '../../api';
+import router from '../../router';
 
 const store = api.store();
 // const isCollapse = ref();
 const showButton = ref(false);
+const menuList = router.getRoutes().filter((item) => item.meta.menu);
+console.log(menuList);
 
 function changeIsCollapse() {
   store.setIsCollapse();

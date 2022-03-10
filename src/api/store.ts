@@ -34,6 +34,9 @@ const useStore = defineStore({
       this.role = role;
     },
   },
+  persist: {
+    enabled: true,
+  },
 });
 
 export default useStore;

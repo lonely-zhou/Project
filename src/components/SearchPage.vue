@@ -36,20 +36,21 @@
       </el-row>
 
       <el-empty description="无数据" v-if="showEmpty" />
+      <!-- <el-skeleton :rows="5" v-if="showEmpty" animated class="noteInfo" /> -->
       <div v-for="(item, index) in searchResult" :key="index" class="noteInfo">
         <el-row @click="toReadNote(item.id)" style="cursor: pointer">
           <el-col :span="24" style="margin-bottom: 10px">
             <span class="title"> {{ item.title }} </span>
           </el-col>
           <el-col :span="24" style="margin-bottom: 10px">
-            <span class="articleTabled"> {{ item.article_tabled }} </span>
+            <span class="articleTabled"> {{ item.articleTabled }} </span>
           </el-col>
           <el-col :span="24">
             <el-row>
               <el-col :span="6" style="display: flex; align-items: flex-end">
-                <el-avatar :src="item.avatar_url" style="margin-right: 5px" /> <span>{{ item.name }}</span>
+                <el-avatar :src="item.avatarUrl" style="margin-right: 5px" /> <span>{{ item.name }}</span>
               </el-col>
-              <el-col :span="6"> {{ item.select_categories }} </el-col>
+              <el-col :span="6"> {{ item.selectCategories }} </el-col>
               <el-col :span="4"> <span class="iconfont icon-eye" />{{ item.look }} </el-col>
               <el-col :span="4"> <span class="iconfont icon-like" />{{ item.likes }} </el-col>
               <el-col :span="4">
@@ -95,20 +96,20 @@ const searchResult = ref([
     id: '', // 笔记ID
     title: '', // 标题
     text: '', // 正文
-    label_values: '', // 标签
-    select_type: '', // 笔记类型
-    select_categories: '', // 笔记分类
-    select_grade: '', // 笔记等级
-    original_author: '', // 原作者
+    labelValues: '', // 标签
+    selectType: '', // 笔记类型
+    selectCategories: '', // 笔记分类
+    selectGrade: '', // 笔记等级
+    originalAuthor: '', // 原作者
     message: '', // 是否公开
-    create_time: '', // 创建时间
+    createTime: '', // 创建时间
     likes: '', // 点赞数
     name: '', // 作者名
-    article_tabled: '', // 笔记摘要
+    articleTabled: '', // 笔记摘要
     look: '', // 浏览次数
     collection: '', // 收藏数
-    user_id: '', // 作者ID
-    avatar_url: '', // 头像
+    userId: '', // 作者ID
+    avatarUrl: '', // 头像
     noteCommentCount: 0, // 评论数
   },
 ]);

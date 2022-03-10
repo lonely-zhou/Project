@@ -168,14 +168,13 @@
 <script lang="ts" setup>
 import { computed, onActivated, onMounted, reactive, ref } from 'vue';
 import { ArrowRightBold, Search } from '@element-plus/icons-vue';
-// import { useCookies } from 'vue3-cookies';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
+import { setRoutes } from '../router';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
 
-// const { cookies } = useCookies();
 const store = api.store();
 const user = ref();
 const avatarUrl = ref(''); // 头像url
@@ -222,7 +221,6 @@ function handleCommand(command: string) {
       break;
     case 'toLogout':
       axios.get('api/user/logout');
-      // cookies.set('loginFlag', 'false', '1d');
       store.setIsLogin(false);
       router.go(0);
       break;
@@ -367,7 +365,6 @@ function clickTag(tagName: string) {
   router.push({ name: 'SearchPage', query: { tagName } });
 }
 onActivated(() => {
-  // getPermissionRouter();
   const result = ref();
   axios
     .get('api/user/isLogin')
@@ -375,16 +372,16 @@ onActivated(() => {
       result.value = res.data;
       store.setIsLogin(result.value.data.isLogin);
       store.setUser(result.value.data.user);
-      sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
-      user.value = result.value.data.user;
+      store.setRole(res.data.data.role);
     })
     .then(() => {
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
+      setRoutes(store.role);
     })
     .catch(() => {
+      store.setRole('guest');
       store.setIsLogin(false);
-      sessionStorage.setItem('role', JSON.stringify('guest'));
     });
 });
 
@@ -396,10 +393,11 @@ onMounted(() => {
       result.value = res.data;
       store.setIsLogin(result.value.data.isLogin);
       store.setUser(result.value.data.user);
-      sessionStorage.setItem('role', JSON.stringify(res.data.data.role));
-      user.value = result.value.data.user;
+      // user.value = result.value.data.user;
+      store.setRole(res.data.data.role);
     })
     .then(() => {
+      setRoutes(store.role);
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
       if ((user.value.phone === '0' || user.value.email === '0') && store.isLogin) {
@@ -407,9 +405,9 @@ onMounted(() => {
       }
     })
     .catch(() => {
+      store.setRole('guest');
       store.setIsLogin(false);
     });
-  console.log(router.getRoutes());
 
   // 笔记列表
   axios
