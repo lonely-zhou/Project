@@ -2,7 +2,7 @@ package note.recordAndShare.controller;
 
 
 import cn.dev33.satoken.secure.SaSecureUtil;
-import cn.dev33.satoken.stp.SaLoginConfig;
+import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.map.MapUtil;
@@ -62,20 +62,23 @@ public class UserController {
      * @return ok
      */
     @PostMapping("login")
-    public NoteResultUtil login(@RequestBody User user, @RequestParam(value = "isAdmin", required = false) boolean isAdmin) {
-        int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername())).getRoleId();
-        String rname = roleMapper.selectOne(new QueryWrapper<Role>().eq("rid", role)).getRname();
-        if (isAdmin) {
-            if (role != 1) {
-                return NoteResultUtil.error("无管理员权限");
-            }
-        }
+    public NoteResultUtil login(@RequestBody User user, @RequestParam("autoLogin") boolean autoLogin,
+                                @RequestParam(value = "isAdmin", required = false) boolean isAdmin) {
         try {
+            int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername())).getRoleId();
+            if (isAdmin) {
+                if (role != 1) {
+                    return NoteResultUtil.error("无管理员权限");
+                }
+            }
+
             User userForMySql = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername()));
             String password = userForMySql.getPassword();
             String userId = userForMySql.getId();
             if (password.equals(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()))) {
-                StpUtil.login(user.getUsername(), SaLoginConfig.setExtra("user_id", userId));
+                StpUtil.login(user.getUsername(), new SaLoginModel().setExtra("user_id", userId).setIsLastingCookie(autoLogin));
+                user.setLastTime(new TimeUtil().getFormatDateForFive());
+                userMapper.update(user,new QueryWrapper<User>().eq("username",user.getUsername()));
                 return NoteResultUtil.success();
             } else {
                 return NoteResultUtil.error("密码错误");
@@ -93,7 +96,7 @@ public class UserController {
         UserDto userDto = new UserDto();
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
         BeanUtil.copyProperties(user, userDto);
-        return NoteResultUtil.success(MapUtil.builder().put("user", userDto).put("role",rname).put("isLogin", StpUtil.isLogin()).map());
+        return NoteResultUtil.success(MapUtil.builder().put("user", userDto).put("role", rname).put("isLogin", StpUtil.isLogin()).map());
     }
 
     /**

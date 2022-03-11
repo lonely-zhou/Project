@@ -49,7 +49,17 @@ spring:
     host: 81.70.92.142
     password: zhoudong@980208
     port: 6379
-    connect-timeout: 5000
+    timeout: 3000
+    lettuce:
+      pool:
+        max-wait: 20000
+        max-idle: 30
+        min-idle: 10
+        max-active: 30
+      cluster:
+        refresh:
+          adaptive: true
+          period: 600000
   servlet:
     multipart:
       max-file-size: 5MB
@@ -71,7 +81,7 @@ spring:
 sa-token:
   token-name: satoken
   timeout: 604800
-  activity-timeout: 7200
+  activity-timeout: 604800
   is-concurrent: false
   is-share: false
   is-log: false

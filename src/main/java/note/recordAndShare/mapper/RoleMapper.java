@@ -22,6 +22,6 @@ public interface RoleMapper extends BaseMapper<Role> {
      *
      * @return 权限列表
      */
-    @Select("select role from rname")
+    @Select("select rname from role")
     List<String> selAllRole();
 }

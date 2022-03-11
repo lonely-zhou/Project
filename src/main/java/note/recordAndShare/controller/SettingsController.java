@@ -49,6 +49,10 @@ public class SettingsController {
         return NoteResultUtil.success();
     }
 
+    /**
+     * 查询用户所有设置
+     * @return 用户所有设置
+     */
     @GetMapping("/selUserSettingsList")
     public NoteResultUtil selUserSettingsList() {
         return NoteResultUtil.success(settingsMapper.selectById(UserUtil.selUserId()));
