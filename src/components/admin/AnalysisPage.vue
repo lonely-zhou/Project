@@ -25,6 +25,14 @@
         </template>
         {{ count2.commentCount }}
       </el-card>
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>浏览数</span>
+          </div>
+        </template>
+        {{ count2.lookCount }}
+      </el-card>
     </div>
   </div>
 </template>
@@ -33,8 +41,8 @@ import anime from 'animejs';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
-const count = ref({ commentCount: 0, noteCount: 0, userCount: 0 });
-const count2 = ref({ commentCount: 0, noteCount: 0, userCount: 0 });
+const count = ref({ commentCount: 0, noteCount: 0, userCount: 0, lookCount: 0 });
+const count2 = ref({ commentCount: 0, noteCount: 0, userCount: 0, lookCount: 0 });
 
 onMounted(() => {
   const result = ref();
@@ -50,6 +58,7 @@ onMounted(() => {
         userCount: count.value.userCount,
         noteCount: count.value.noteCount,
         commentCount: count.value.commentCount,
+        lookCount: count.value.lookCount,
         round: 1,
         easing: 'linear',
       });

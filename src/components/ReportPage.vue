@@ -11,37 +11,51 @@
             <span>作者: {{ noteInfo.name }}</span>
           </el-col>
           <el-col :span="8">
-            <span>分类: {{ noteInfo.select_categories }}</span>
+            <span>分类: {{ noteInfo.selectType }}</span>
           </el-col>
         </el-row>
       </div>
       <el-divider style="width: 90%; margin: 24px auto" content-position="center">〻〻〻</el-divider>
       <p class="text">举报理由.</p>
       <el-input
-        v-model="report.text"
+        v-model="report.message"
         :autosize="{ minRows: 2, maxRows: 4 }"
         type="textarea"
         placeholder="说点什么吧！"
       />
       <el-input v-model="report.email" placeholder="输入邮箱" style="margin-top: 20px" />
-      <el-button type="primary" plain style="width: 100%; margin-top: 40px">提交</el-button>
+      <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import Result from '../api/common';
 
 const route = useRoute();
 const { noteId } = route.query;
-const noteInfo = ref({ name: '', title: '', select_categories: '' });
+const noteInfo = ref({ name: '', title: '', selectType: '' });
 const report = reactive({
   email: '',
-  text: '',
-  time: '',
+  message: '',
+  noteId,
 });
 
+function insReportNote() {
+  let result: Result;
+  axios
+    .post('api/report-note/insReportNote', report)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      if (result.code === 200) ElMessage.success('举报成功');
+      else ElMessage.error('举报失败');
+    });
+}
 onMounted(() => {
   const result = ref();
   axios.get(`api/note/selNote?noteId=${noteId}`).then((res) => {

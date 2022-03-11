@@ -1,5 +1,6 @@
 // import { ElMessage } from 'element-plus';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import store from '../api/store';
 
 const publicRoutes: Array<RouteRecordRaw> = [
   {
@@ -53,7 +54,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     name: 'AdminPage',
     redirect: '/admin/analysis',
     component: () => import('../components/admin/AdminPage.vue'),
-    meta: { title: '系统管理', roles: ['admin'], menu: true },
+    meta: { title: '系统管理', roles: ['admin', 'su-admin'], menu: true },
     children: [
       {
         path: 'account',
@@ -65,7 +66,19 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         path: 'analysis',
         name: 'AnalysisPage',
         component: () => import('../components/admin/AnalysisPage.vue'),
-        meta: { title: '分析页', roles: ['admin'], menu: false },
+        meta: { title: '分析页', roles: ['admin', 'su-admin'], menu: false },
+      },
+      {
+        path: 'note',
+        name: 'ntoePage',
+        component: () => import('../components/admin/notePage.vue'),
+        meta: { title: '笔记管理', roles: ['admin', 'su-admin'], menu: true },
+      },
+      {
+        path: 'feedback',
+        name: 'feedbackPage',
+        component: () => import('../components/admin/feedbackPage.vue'),
+        meta: { title: '反馈管理', roles: ['admin', 'su-admin'], menu: true },
       },
     ],
   },
@@ -111,13 +124,13 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: publicRoutes,
 });
-export function setRoutes(role: string) {
+function setRoutes(role: string) {
   for (let i = 0; i < asyncRoutes.length; i += 1) {
     const roles: string[] = asyncRoutes[i].meta!.roles as string[];
     if (roles.indexOf(role) !== -1) {
       router.addRoute(asyncRoutes[i]);
     }
-    if (asyncRoutes[i].children) {
+    if (asyncRoutes[i].children?.length) {
       const childrenRouter: RouteRecordRaw[] = asyncRoutes[i].children as RouteRecordRaw[];
       const tempRouter: RouteRecordRaw[] = [];
       for (let j = 0; j < childrenRouter.length; j += 1) {
@@ -126,26 +139,29 @@ export function setRoutes(role: string) {
           tempRouter.push(childrenRouter[j]);
         }
       }
-      router.addRoute({
-        name: asyncRoutes[i].name as string,
-        path: asyncRoutes[i].path,
-        meta: asyncRoutes[i].meta,
-        component: asyncRoutes[i].component as any,
-        children: tempRouter,
-      });
+      if (tempRouter.length) {
+        router.addRoute({
+          name: asyncRoutes[i].name as string,
+          path: asyncRoutes[i].path,
+          meta: asyncRoutes[i].meta,
+          redirect: asyncRoutes[i].redirect,
+          component: asyncRoutes[i].component as any,
+          children: tempRouter,
+        });
+      }
     }
   }
-  router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
+  // router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
 }
 
 router.beforeEach((to, from, next) => {
-  const myGlobalState = JSON.parse(sessionStorage.getItem('myGlobalState') as string);
-  let role: string;
-  if (myGlobalState === null) {
-    role = 'guest';
-  } else {
-    role = myGlobalState.role as string;
-  }
+  // const myGlobalState = JSON.parse(sessionStorage.getItem('myGlobalState') as string);
+  // let role: string;
+  // if (myGlobalState === null) {
+  //   role = 'guest';
+  // } else {
+  //   role = myGlobalState.role as string;
+  // }
 
   // const roles: string[] = to.meta.roles as string[];
   // for (let i = 0; i < asyncRoutes.length; i += 1) {
@@ -154,12 +170,15 @@ router.beforeEach((to, from, next) => {
   //     router.addRoute(asyncRoutes[i]);
   //   }
   // }
-  setRoutes(role);
-  if (to.matched.length === 0) next({ path: to.path });
-  else next();
-
+  const state = store();
+  setRoutes(state.role);
+  if (to.matched.length === 0) {
+    next({ path: to.fullPath });
+  } else next();
   // console.log(router.getRoutes());
   document.title = (to.meta.title ? to.meta.title : '记享') as string;
+  router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
+  return to.fullPath;
   // next();
   // if (roles.indexOf(myGlobalState.role) === -1) {
   //   ElMessage.error('无权限');

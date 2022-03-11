@@ -16,14 +16,7 @@
             <el-icon><files /></el-icon>
             <span>网站数据</span>
           </el-menu-item>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-icon><setting /></el-icon>
-              <span>系统管理</span>
-            </template>
-            <el-menu-item index="/admin/account"></el-menu-item>
-          </el-sub-menu>
-          <!--  <el-sub-menu index="2">
+          <el-sub-menu index="2" v-if="showSystemAdmin">
             <template #title>
               <el-icon><setting /></el-icon>
               <span>系统管理</span>
@@ -31,35 +24,46 @@
             <el-menu-item index="/admin/account">账号管理</el-menu-item>
             <el-menu-item index="1-2">角色管理</el-menu-item>
           </el-sub-menu>
-        <el-menu-item index="3">
+          <el-menu-item index="/admin/note">
             <el-icon><edit-pen /></el-icon>
             <span>笔记管理</span>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="/admin/feedback">
             <el-icon><chat-dot-round /></el-icon>
             <span>反馈管理</span>
           </el-menu-item>
-          <el-menu-item index="5">
+          <el-menu-item index="5" v-if="showSystemAdmin">
             <el-icon><span class="iconfont icon-flag" /></el-icon>
             <span>举报管理</span>
-          </el-menu-item> -->
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header style="display: flex; align-items: center">
-          <div>
-            <el-button type="text" v-if="showButton" @click="changeIsCollapse">
-              <span class="iconfont icon-indent" />
-            </el-button>
-            <el-button type="text" v-if="!showButton" @click="changeIsCollapse">
-              <span class="iconfont icon-outdent" />
-            </el-button>
+        <el-header style="display: flex; align-items: center; justify-content: space-between">
+          <div style="display: flex; align-items: center">
+            <div>
+              <el-button type="text" v-if="showButton" @click="changeIsCollapse">
+                <span class="iconfont icon-indent" />
+              </el-button>
+              <el-button type="text" v-if="!showButton" @click="changeIsCollapse">
+                <span class="iconfont icon-outdent" />
+              </el-button>
+            </div>
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item v-for="(item, index) in $route.path.split('/')" :key="index">
+                {{ item }}
+              </el-breadcrumb-item>
+            </el-breadcrumb>
           </div>
-          <el-breadcrumb separator="/">
-            <el-breadcrumb-item v-for="(item, index) in $route.path.split('/')" :key="index">
-              {{ item }}
-            </el-breadcrumb-item>
-          </el-breadcrumb>
+          <el-dropdown @command="handleCommand">
+            <el-avatar :size="50" :src="store.user.avatarUrl" />
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="toIndex">返回前台</el-dropdown-item>
+                <el-dropdown-item command="toLogout">退出系统</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </el-header>
         <el-main>
           <router-view></router-view>
@@ -69,26 +73,48 @@
   </div>
 </template>
 <script lang="ts" setup>
-// import { EditPen, Setting, ChatDotRound, Files } from '@element-plus/icons-vue';
+import { EditPen, Setting, ChatDotRound, Files } from '@element-plus/icons-vue';
 import anime from 'animejs';
-import { ref } from 'vue';
+import axios from 'axios';
+import { computed, ref } from 'vue';
 import api from '../../api';
 import router from '../../router';
 
 const store = api.store();
-// const isCollapse = ref();
 const showButton = ref(false);
 const menuList = router.getRoutes().filter((item) => item.meta.menu);
-console.log(menuList);
 
+const showSystemAdmin = computed(() => {
+  if (
+    menuList.filter((item) => item.children === item.children.filter((item2) => item2.name === 'AccountPage'))
+      .length !== 0
+  ) {
+    return true;
+  }
+  return false;
+});
 function changeIsCollapse() {
   store.setIsCollapse();
-  // isCollapse.value = !isCollapse.value;
   showButton.value = !showButton.value;
   anime({
     targets: '.el-aside',
     duration: 1000,
   });
+}
+// 下拉列表点击事件
+function handleCommand(command: string) {
+  switch (command) {
+    case 'toIndex':
+      router.push('/index');
+      break;
+    case 'toLogout':
+      axios.get('/api/user/logout');
+      store.setIsLogin(false);
+      router.replace('/index');
+      break;
+    default:
+      break;
+  }
 }
 </script>
 <style scoped>

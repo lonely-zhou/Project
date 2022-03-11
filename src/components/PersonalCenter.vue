@@ -98,7 +98,7 @@
                   <el-col :span="24" class="title">
                     {{ i + 1 + '.' }} {{ v.title }}
                     <span class="createTime">
-                      {{ v.create_time }}
+                      {{ v.createTime }}
                       <span v-if="v.message === '1'">私密</span>
                     </span>
                   </el-col>
@@ -180,11 +180,11 @@
           <el-empty description="无点赞" v-if="showMyLike" />
           <div class="myLike" v-if="show">
             <el-row v-for="(item, index) in myData.myLikeList" :key="index" class="userLikeList">
-              <el-col :span="20" @click="toReadNote(item.note_id)" class="toReadNote">
+              <el-col :span="20" @click="toReadNote(item.noteId)" class="toReadNote">
                 {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
               </el-col>
               <el-col :span="4">
-                <el-button type="primary" plain @click="delUserLikeNote(item.note_id, index)">删除</el-button>
+                <el-button type="primary" plain @click="delUserLikeNote(item.noteId, index)">删除</el-button>
               </el-col>
             </el-row>
             <el-pagination
@@ -203,11 +203,11 @@
           <el-empty description="无收藏" v-if="showMyCollect" />
           <div class="myCollect" v-if="show">
             <el-row v-for="(item, index) in myData.myCollectList" :key="index" class="userCollectList">
-              <el-col :span="20" @click="toReadNote(item.note_id)" class="toReadNote">
+              <el-col :span="20" @click="toReadNote(item.noteId)" class="toReadNote">
                 {{ index + 1 }}.&nbsp;{{ item.title }} <span style="font-size: smaller">{{ item.time }}</span>
               </el-col>
               <el-col :span="4">
-                <el-button type="primary" plain @click="delUserNoteCollect(item.note_id, index)">删除</el-button>
+                <el-button type="primary" plain @click="delUserNoteCollect(item.noteId, index)">删除</el-button>
               </el-col>
             </el-row>
             <el-pagination
@@ -267,13 +267,13 @@ const myData = reactive({
   myNoteList: [
     {
       title: '',
-      create_time: '',
+      createTime: '',
       look: '',
       likes: '',
       collection: '',
       id: '',
       message: '',
-      note_type: '',
+      noteType: '',
     },
   ],
   myCommentList: [
@@ -282,11 +282,11 @@ const myData = reactive({
       title: '',
       time: '',
       message: '',
-      note_id: '',
+      noteId: '',
     },
   ],
-  myCollectList: [{ note_id: '', time: '', title: '' }],
-  myLikeList: [{ note_id: '', time: '', title: '' }],
+  myCollectList: [{ noteId: '', time: '', title: '' }],
+  myLikeList: [{ noteId: '', time: '', title: '' }],
 });
 const paginationData = reactive({
   totalMyNote: 0,
@@ -343,6 +343,7 @@ const showAdminButton = computed(() => {
   return false;
 });
 
+// 更新信息
 function updUser() {
   const result = ref();
   axios
@@ -396,11 +397,11 @@ function clickTap() {
     });
   }
 }
+// 修改笔记
 function updUserNote(index: number) {
   store.setUserNote(JSON.stringify(myData.myNoteList[index]));
-  console.log(myData.myNoteList[index]);
 
-  if (myData.myNoteList[index].note_type === 'md') router.push('/updUserNoteMd');
+  if (myData.myNoteList[index].noteType === 'md') router.push('/updUserNoteMd');
   else router.push('/updUserNote');
 }
 // 删除用户笔记

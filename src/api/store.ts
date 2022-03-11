@@ -4,7 +4,16 @@ const useStore = defineStore({
   id: 'myGlobalState',
   state: () => ({
     isLogin: false,
-    user: null,
+    user: {
+      avatarUrl: '',
+      email: '',
+      id: '',
+      lastTime: '',
+      nickname: '',
+      phone: '',
+      sex: '',
+      username: '',
+    },
     userNote: {},
     isCollapse: false, // 侧边栏展开or折叠
     role: '',

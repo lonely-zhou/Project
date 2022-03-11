@@ -57,8 +57,8 @@
         </div>
         <!-- step2 -->
         <div class="step2" v-show="stepShow.step2">
-          <el-input v-model="forgotPasswordInfo.password" placeholder="输入密码" clearable />
-          <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable />
+          <el-input v-model="forgotPasswordInfo.password" placeholder="输入密码" clearable show-password />
+          <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable show-password />
           <div style="display: flex">
             <el-button type="primary" style="width: 50%" @click="showPOrE('phone')" v-if="showPOrEButton">
               手机
@@ -103,7 +103,6 @@ import axios from 'axios';
 // import { Base64 } from 'js-base64';
 // import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
-import { setRoutes } from '../router';
 import api from '../api';
 
 const user = reactive({
@@ -144,7 +143,6 @@ const forgotPasswordInfo = reactive({
   password: '',
   repassword: '',
   code: '',
-  phone: '',
 });
 // 忘记密码step1按钮状态
 const step1Button = computed(() => {
@@ -173,14 +171,22 @@ function onSubmit() {
           message: '登录成功',
           onClose: () => {
             store.setIsLogin(true);
-            axios.get('api/user/isLogin').then((res) => {
-              store.setIsLogin(res.data.data.isLogin);
-              store.setUser(res.data.data.user);
-              store.setRole(res.data.data.role);
-              setRoutes(store.role);
-            });
-            if (loginState.value.adminLogin) router.push('admin');
-            else router.push('/index');
+            const role = ref();
+            axios
+              .get('api/user/isLogin')
+              .then((res) => {
+                store.setIsLogin(res.data.data.isLogin);
+                store.setUser(res.data.data.user);
+                store.setRole(res.data.data.role);
+                role.value = res.data.data.role;
+              })
+              .then(() => {
+                if (loginState.value.adminLogin) {
+                  if (store.getRole === role.value) {
+                    router.push('/admin');
+                  }
+                } else router.push('/index');
+              });
           },
         });
       } else {
@@ -209,6 +215,13 @@ function nextStep() {
       break;
   }
 }
+// 判断 显示获取手机还是邮箱验证码
+function showPOrE(str: string) {
+  if (str === 'phone') showPhone.value = true;
+  if (str === 'email') showEmail.value = true;
+  showPOrEButton.value = false;
+  showButton.value = true;
+}
 function selUserName() {
   const result = ref();
   axios
@@ -224,8 +237,8 @@ function selUserName() {
           email.value = result.value.data.email;
           phoneNumber.value = result.value.data.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'); // 手机号中间4位加密
           if (phoneNumber.value !== '0' && email.value !== '0') showPOrEButton.value = true;
-          else if (phoneNumber.value !== '0') showPhone.value = true;
-          else showEmail.value = true;
+          else if (phoneNumber.value !== '0') showPOrE('phone');
+          else showPOrE('email');
         } else ElMessage.error('该账户未绑定手机号或者邮箱');
       } else {
         ElMessage.error(result.value.msg);
@@ -325,12 +338,6 @@ function updatePassword() {
         }
       });
   }
-}
-function showPOrE(str: string) {
-  if (str === 'phone') showPhone.value = true;
-  if (str === 'email') showEmail.value = true;
-  showPOrEButton.value = false;
-  showButton.value = true;
 }
 // 记住密码 读取cookie
 // let loginStateTemp: any;

@@ -171,7 +171,7 @@ import { ArrowRightBold, Search } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
-import { setRoutes } from '../router';
+// import { setRoutes } from '../router';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
 
@@ -377,7 +377,7 @@ onActivated(() => {
     .then(() => {
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
-      setRoutes(store.role);
+      // setRoutes(store.role);
     })
     .catch(() => {
       store.setRole('guest');
@@ -397,7 +397,7 @@ onMounted(() => {
       store.setRole(res.data.data.role);
     })
     .then(() => {
-      setRoutes(store.role);
+      // setRoutes(store.role);
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
       if ((user.value.phone === '0' || user.value.email === '0') && store.isLogin) {
