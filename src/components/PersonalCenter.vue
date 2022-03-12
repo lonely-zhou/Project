@@ -339,7 +339,7 @@ const showMyLike = computed(() => {
 });
 
 const showAdminButton = computed(() => {
-  if (store.role === 'admin') return true;
+  if (store.role === 'admin' || store.role === 'su-admin') return true;
   return false;
 });
 
@@ -399,7 +399,8 @@ function clickTap() {
 }
 // 修改笔记
 function updUserNote(index: number) {
-  store.setUserNote(JSON.stringify(myData.myNoteList[index]));
+  // store.setUserNote(JSON.stringify(myData.myNoteList[index]));
+  store.setUserNote(myData.myNoteList[index]);
 
   if (myData.myNoteList[index].noteType === 'md') router.push('/updUserNoteMd');
   else router.push('/updUserNote');

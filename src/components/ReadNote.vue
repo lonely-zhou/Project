@@ -101,10 +101,11 @@ const noteCommentList = ref();
 const total = ref(); // 分页数
 const page = ref(1);
 const menuList = ref();
+
 const comment = reactive({
   message: '',
   userId: user === null ? '' : user.id,
-  note_id: noteId,
+  noteId,
   time: api.dateFormat.getDateFormatYHD(),
 });
 const note = ref({
@@ -199,6 +200,8 @@ function submitComment() {
     ElMessage.error('未登录');
     return;
   }
+  console.log(comment);
+
   axios
     .post('api/comment/insNoteComment', comment)
     .then((res) => {

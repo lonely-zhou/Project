@@ -14,7 +14,7 @@
         <el-row>
           <el-col :span="24"><p>选择分类</p></el-col>
           <el-col :span="24">
-            <el-radio-group v-model="note.select_type">
+            <el-radio-group v-model="note.selectType">
               <el-radio-button label="生活杂谈"></el-radio-button>
               <el-radio-button label="学习分享"></el-radio-button>
               <el-radio-button label="工作经验"></el-radio-button>
@@ -72,21 +72,22 @@ const store = api.store();
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
-const userNote = JSON.parse(store.getUserNote);
+// const userNote = JSON.parse(store.getUserNote);
+const userNote = store.getUserNote;
 const note = reactive({
   id: userNote.id,
   title: userNote.title, // 标题
   text: '', // 正文
-  user_id: userNote.user_id, // 作者ID
+  userId: userNote.userId, // 作者ID
   name: userNote.name, // 作者
-  create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
+  createTime: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: userNote.message, // 是否公开 0公开
-  select_type: userNote.select_type, // 分类
-  label_values: userNote.label_values as string, // 标签
+  selectType: userNote.selectType, // 分类
+  labelValues: userNote.labelValues as string, // 标签
   label: [], // 标签
 });
-if (userNote.label_values !== '' && userNote.label_values !== undefined) {
-  const labelList = note.label_values.split(',');
+if (userNote.labelValues !== '' && userNote.labelValues !== undefined) {
+  const labelList = note.labelValues.split(',');
   for (let index = 0; index < labelList.length; index += 1) {
     note.label.push(labelList[index] as never);
   }
@@ -131,7 +132,7 @@ const handleInputConfirm = () => {
 };
 function updNote() {
   const result = ref();
-  note.label_values = note.label.toString();
+  note.labelValues = note.label.toString();
   axios
     .post('api/note/updUserNote', note)
     .then((res) => {

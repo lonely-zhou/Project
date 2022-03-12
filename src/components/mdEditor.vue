@@ -15,7 +15,7 @@
         <el-row>
           <el-col :span="24"><p>选择分类</p></el-col>
           <el-col :span="24">
-            <el-radio-group v-model="note.select_type">
+            <el-radio-group v-model="note.selectType">
               <el-radio-button label="生活杂谈"></el-radio-button>
               <el-radio-button label="学习分享"></el-radio-button>
               <el-radio-button label="工作经验"></el-radio-button>
@@ -77,12 +77,12 @@ const note = reactive({
   textHtml: '',
   // user_id: userInfo.id, // 作者ID
   // name: userInfo.username, // 作者
-  create_time: api.dateFormat.getDateFormatYHD(), // 创建时间
+  createTime: api.dateFormat.getDateFormatYHD(), // 创建时间
   message: 0, // 是否公开 0公开
-  select_type: '', // 分类
-  label_values: '', // 标签
+  selectType: '', // 分类
+  labelValues: '', // 标签
   label: [], // 标签
-  note_type: 'md',
+  noteType: 'md',
 });
 const toolbars = {
   bold: true, // 粗体

@@ -400,7 +400,7 @@ onMounted(() => {
       // setRoutes(store.role);
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
-      if ((user.value.phone === '0' || user.value.email === '0') && store.isLogin) {
+      if ((user.value.phone === '0' && user.value.email === '0') && store.isLogin) {
         ElNotification.warning({ title: '未设置手机号或邮箱', message: '手机号或邮箱是找回密码的重要凭证' });
       }
     })

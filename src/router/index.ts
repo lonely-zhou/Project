@@ -33,12 +33,6 @@ const publicRoutes: Array<RouteRecordRaw> = [
     component: () => import('../components/SignUp.vue'),
     meta: { title: '注册', roles: ['admin', 'user', 'guest'] },
   },
-  {
-    path: '/404',
-    name: 'Page_404',
-    component: () => import('../components/Page_404.vue'),
-    meta: { title: '404', roles: ['admin', 'user', 'guest'] },
-  },
   // { path: '/:pathMatch(.*)', redirect: '/404' },
   {
     path: '/',
@@ -86,37 +80,43 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     path: '/updUserNote',
     name: 'UpdUserNote',
     component: () => import('../components/UpdUserNote.vue'),
-    meta: { title: '更新笔记', roles: ['admin', 'user'] },
+    meta: { title: '更新笔记', roles: ['admin', 'user', 'su-admin'] },
   },
   {
     path: '/updUserNoteMd',
     name: 'UpdUserNoteMd',
     component: () => import('../components/UpdUserNoteMd.vue'),
-    meta: { title: '更新笔记', roles: ['admin', 'user'] },
+    meta: { title: '更新笔记', roles: ['admin', 'user', 'su-admin'] },
   },
   {
     path: '/updPE/:showInfo',
     name: 'UpdPE',
     component: () => import('../components/UpdPE.vue'),
-    meta: { title: '更新信息', roles: ['admin', 'user'] },
+    meta: { title: '更新信息', roles: ['admin', 'user', 'su-admin'] },
   },
   {
     path: '/personalCenter',
     name: 'PersonalCenter',
     component: () => import('../components/PersonalCenter.vue'),
-    meta: { keepAlive: true, title: '个人中心', roles: ['admin', 'user'] },
+    meta: { keepAlive: true, title: '个人中心', roles: ['admin', 'user', 'su-admin'] },
   },
   {
     path: '/mdEditor',
     name: 'MdEditor',
     component: () => import('../components/MdEditor.vue'),
-    meta: { title: '编辑笔记', roles: ['admin', 'user'] },
+    meta: { title: '编辑笔记', roles: ['admin', 'user', 'su-admin'] },
   },
   {
     path: '/write',
     name: 'WriteNote',
     component: () => import('../components/NoteEditor.vue'),
-    meta: { title: '写笔记', roles: ['admin', 'user'] },
+    meta: { title: '写笔记', roles: ['admin', 'user', 'su-admin'] },
+  },
+  {
+    path: '/404',
+    name: 'Page_404',
+    component: () => import('../components/Page_404.vue'),
+    meta: { title: '404', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
 ];
 
@@ -170,15 +170,16 @@ router.beforeEach((to, from, next) => {
   //     router.addRoute(asyncRoutes[i]);
   //   }
   // }
+  document.title = (to.meta.title ? to.meta.title : '记享') as string;
   const state = store();
+
   setRoutes(state.role);
   if (to.matched.length === 0) {
     next({ path: to.fullPath });
+    router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
   } else next();
   // console.log(router.getRoutes());
-  document.title = (to.meta.title ? to.meta.title : '记享') as string;
-  router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
-  return to.fullPath;
+  // return to.fullPath;
   // next();
   // if (roles.indexOf(myGlobalState.role) === -1) {
   //   ElMessage.error('无权限');

@@ -19,6 +19,7 @@
             placeholder="请输入密码"
             :prefix-icon="Unlock"
             clearable
+            @keydown.enter="onSubmit"
             show-password
           />
         </form>
@@ -57,8 +58,10 @@
         </div>
         <!-- step2 -->
         <div class="step2" v-show="stepShow.step2">
-          <el-input v-model="forgotPasswordInfo.password" placeholder="输入密码" clearable show-password />
-          <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable show-password />
+          <form action="">
+            <el-input v-model="forgotPasswordInfo.password" placeholder="输入密码" clearable show-password />
+            <el-input v-model="forgotPasswordInfo.repassword" placeholder="确认密码" clearable show-password />
+          </form>
           <div style="display: flex">
             <el-button type="primary" style="width: 50%" @click="showPOrE('phone')" v-if="showPOrEButton">
               手机

@@ -14,7 +14,7 @@ const useStore = defineStore({
       sex: '',
       username: '',
     },
-    userNote: {},
+    userNote: [{}],
     isCollapse: false, // 侧边栏展开or折叠
     role: '',
   }),
@@ -30,7 +30,7 @@ const useStore = defineStore({
     setIsLogin(flag: boolean) {
       this.isLogin = flag;
     },
-    setUserNote(note: string) {
+    setUserNote(note: any) {
       this.userNote = note;
     },
     setUser(user: any) {

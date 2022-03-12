@@ -86,13 +86,14 @@ const menuList = router.getRoutes().filter((item) => item.meta.menu);
 
 const showSystemAdmin = computed(() => {
   if (
-    menuList.filter((item) => item.children === item.children.filter((item2) => item2.name === 'AccountPage'))
+    menuList.filter((item) => item.children.length !== 0)[0].children.filter((item) => item.name === 'AccountPage')
       .length !== 0
   ) {
     return true;
   }
   return false;
 });
+
 function changeIsCollapse() {
   store.setIsCollapse();
   showButton.value = !showButton.value;
