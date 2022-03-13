@@ -61,6 +61,8 @@ public class UserDto {
     @TableField("avatar_url")
     private String avatarUrl;
 
+    private String rname;
+
 
 }
 

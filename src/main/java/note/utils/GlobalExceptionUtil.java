@@ -1,6 +1,7 @@
 package note.utils;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotRoleException;
 import lombok.extern.slf4j.Slf4j;
 //import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class GlobalExceptionUtil {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public NoteResultUtil exception(RuntimeException e) {
-        log.error("运行时异常: " + e.getCause());
+        log.error("运行时异常: " + e);
         return NoteResultUtil.error(Integer.valueOf(HttpStatus.BAD_REQUEST.toString().split(" ")[0]), e.getMessage());
     }
 
@@ -48,6 +49,13 @@ public class GlobalExceptionUtil {
         }
         // 返回给前端
         return NoteResultUtil.error(Integer.valueOf(HttpStatus.BAD_REQUEST.toString().split(" ")[0]), message);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = NotRoleException.class)
+    public NoteResultUtil exception(NotRoleException e) {
+        log.error("角色异常: " + e.getMessage());
+        return NoteResultUtil.error(Integer.valueOf(HttpStatus.BAD_REQUEST.toString().split(" ")[0]), e.getMessage());
     }
 
 

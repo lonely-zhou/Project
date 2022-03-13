@@ -44,7 +44,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.26</version>
         </dependency>
 
         <!--mybatis plus 代码生成器-->
@@ -89,31 +88,22 @@
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-starter</artifactId>
-            <version>1.29.0</version>
+            <version>1.29.1.trial</version>
         </dependency>
 
         <!-- Sa-Token 整合 jwt -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-jwt</artifactId>
-            <version>1.29.0</version>
+            <version>1.29.1.trial</version>
         </dependency>
 
         <!-- Sa-Token 整合 Redis （使用jdk默认序列化方式） -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-dao-redis</artifactId>
-            <version>1.29.0</version>
+            <version>1.29.1.trial</version>
         </dependency>
-
-
-
-        <!--shiro+redis缓存插件 -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.crazycake</groupId>-->
-        <!--            <artifactId>shiro-redis</artifactId>-->
-        <!--            <version>3.3.1</version>-->
-        <!--        </dependency>-->
 
         <!--腾讯云 短信-->
         <dependency>
@@ -145,7 +135,7 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.20</version>
+            <version>5.7.22</version>
         </dependency>
 
         <!--又拍云-->

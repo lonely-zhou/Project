@@ -3,10 +3,13 @@ package note.saToken;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import note.recordAndShare.entity.Role;
+import note.recordAndShare.entity.User;
 import note.recordAndShare.mapper.RoleMapper;
+import note.recordAndShare.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 import cn.dev33.satoken.stp.StpInterface;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class StpInterfaceImpl implements StpInterface {
 
     private final RoleMapper roleMapper;
+    private final UserMapper userMapper;
 
     /**
      * 返回一个账号所拥有的权限码集合
@@ -45,7 +49,11 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        return roleMapper.selAllRole();
+        List<String> roles = new ArrayList<String>();
+        int rid = userMapper.selectOne(new QueryWrapper<User>().eq("username", StpUtil.getLoginId().toString())).getRoleId();
+        String rname = roleMapper.selectOne(new QueryWrapper<Role>().eq("rid", rid)).getRname();
+        roles.add(rname);
+        return roles;
     }
 
 }

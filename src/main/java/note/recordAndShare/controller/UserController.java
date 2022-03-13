@@ -67,7 +67,7 @@ public class UserController {
         try {
             int role = userMapper.selectOne(new QueryWrapper<User>().eq("username", user.getUsername())).getRoleId();
             if (isAdmin) {
-                if (role != 1) {
+                if (role != 1 && role != 4) {
                     return NoteResultUtil.error("无管理员权限");
                 }
             }
@@ -77,6 +77,7 @@ public class UserController {
             String userId = userForMySql.getId();
             if (password.equals(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()))) {
                 StpUtil.login(user.getUsername(), new SaLoginModel().setExtra("user_id", userId).setIsLastingCookie(autoLogin));
+                user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()));
                 user.setLastTime(new TimeUtil().getFormatDateForFive());
                 userMapper.update(user,new QueryWrapper<User>().eq("username",user.getUsername()));
                 return NoteResultUtil.success();
