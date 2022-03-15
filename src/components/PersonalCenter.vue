@@ -177,7 +177,8 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="我的点赞" name="我的点赞">
-          <el-empty description="无点赞" v-if="showMyLike" />
+          <my-likes-vue></my-likes-vue>
+          <!-- <el-empty description="无点赞" v-if="showMyLike" />
           <div class="myLike" v-if="show">
             <el-row v-for="(item, index) in myData.myLikeList" :key="index" class="userLikeList">
               <el-col :span="20" @click="toReadNote(item.noteId)" class="toReadNote">
@@ -197,7 +198,7 @@
               hide-on-single-page
               background
             />
-          </div>
+          </div> -->
         </el-tab-pane>
         <el-tab-pane label="我的收藏" name="我的收藏">
           <el-empty description="无收藏" v-if="showMyCollect" />
@@ -223,7 +224,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="其他">
-          <el-row>
+          <other-vue />
+          <!-- <el-row>
             <el-col :spqn="24">
               <p>更改默认编辑器</p>
               <el-radio-group v-model="userSettings.editorStyle" @change="change(userSettings.editorStyle)">
@@ -236,7 +238,7 @@
                 <el-button type="text" v-if="showAdminButton">网站管理后台</el-button>
               </router-link>
             </el-col>
-          </el-row>
+          </el-row> -->
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -244,24 +246,23 @@
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
-// eslint-disable-next-line object-curly-newline
-import { computed, onMounted, reactive, ref } from 'vue';
-// import { useCookies } from 'vue3-cookies';
+import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
+import otherVue from './PersonalCenter/other.vue';
+import myLikesVue from './PersonalCenter/myLikes.vue';
 import api from '../api/index';
 
 const detail = '个人中心';
 const store = api.store();
 const activeName = ref('首页');
-// const { cookies } = useCookies();
 const path = 'index';
 const user = store.user as any;
 const router = useRouter();
 const uploadData = { username: user.username };
 const show = ref(true);
-const userSettings = ref({ editorStyle: '' });
+// const userSettings = ref({ editorStyle: '' });
 const noteMessage = ref();
 const myData = reactive({
   myNoteList: [
@@ -333,15 +334,15 @@ const showMyCollect = computed(() => {
   if (myData.myCollectList.length === 0) return true;
   return false;
 });
-const showMyLike = computed(() => {
-  if (myData.myLikeList.length === 0) return true;
-  return false;
-});
+// const showMyLike = computed(() => {
+//   if (myData.myLikeList.length === 0) return true;
+//   return false;
+// });
 
-const showAdminButton = computed(() => {
-  if (store.role === 'admin' || store.role === 'su-admin') return true;
-  return false;
-});
+// const showAdminButton = computed(() => {
+//   if (store.role === 'admin' || store.role === 'su-admin') return true;
+//   return false;
+// });
 
 // 更新信息
 function updUser() {
@@ -389,13 +390,13 @@ function clickTap() {
       show.value = true;
     });
   }
-  if (activeName.value === '我的点赞') {
-    axios.get(`api/likes/selUserLikeList?userId=${user.id}&page=1`).then((res) => {
-      myData.myLikeList = res.data.data.records;
-      paginationData.totalMyLike = Number(res.data.msg);
-      show.value = true;
-    });
-  }
+  // if (activeName.value === '我的点赞') {
+  //   axios.get(`api/likes/selUserLikeList?userId=${user.id}&page=1`).then((res) => {
+  //     myData.myLikeList = res.data.data.records;
+  //     paginationData.totalMyLike = Number(res.data.msg);
+  //     show.value = true;
+  //   });
+  // }
 }
 // 修改笔记
 function updUserNote(index: number) {
@@ -498,45 +499,42 @@ function delMyComment(index: number, id: string) {
       }
     });
 }
-function delUserLikeNote(noteId: string, index: number) {
-  const result = ref();
-  axios
-    .delete(`api/likes/delUserLikeNote?userId=${user.id}&noteId=${noteId}`)
-    .then((res) => {
-      result.value = res.data;
-    })
-    .then(() => {
-      if (result.value.code === 200) {
-        myData.myLikeList.splice(index, 1);
-      }
-    });
-}
-function selUserSettingsList() {
-  axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
-    userSettings.value = res.data.data;
-  });
-}
-function change(editorText: string) {
-  const result = ref();
-  axios
-    .get(`api/settings/updUserEditorStyle?userId=${user.id}&editor=${editorText}`)
-    .then((res) => {
-      result.value = res.data;
-    })
-    .then(() => {
-      selUserSettingsList();
-      if (result.value.code === 200) ElMessage.success('编辑器已更改');
-    });
-}
+// function delUserLikeNote(noteId: string, index: number) {
+//   const result = ref();
+//   axios
+//     .delete(`api/likes/delUserLikeNote?userId=${user.id}&noteId=${noteId}`)
+//     .then((res) => {
+//       result.value = res.data;
+//     })
+//     .then(() => {
+//       if (result.value.code === 200) {
+//         myData.myLikeList.splice(index, 1);
+//       }
+//     });
+// }
+// function selUserSettingsList() {
+//   axios.get(`api/settings/selUserSettingsList?userId=${user.id}`).then((res) => {
+//     userSettings.value = res.data.data;
+//   });
+// }
+// function change(editorText: string) {
+//   const result = ref();
+//   axios
+//     .get(`api/settings/updUserEditorStyle?userId=${user.id}&editor=${editorText}`)
+//     .then((res) => {
+//       result.value = res.data;
+//     })
+//     .then(() => {
+//       selUserSettingsList();
+//       if (result.value.code === 200) ElMessage.success('编辑器已更改');
+//     });
+// }
 function changeMessage() {
   axios.get(`api/note/selUserNote?userid=${user.id}&page=1&message=${noteMessage.value}`).then((res) => {
     myData.myNoteList = res.data.data.records;
     paginationData.totalMyNote = Number(res.data.msg);
   });
 }
-onMounted(() => {
-  selUserSettingsList();
-});
 </script>
 <style scoped>
 .box {

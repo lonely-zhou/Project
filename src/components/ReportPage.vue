@@ -17,14 +17,51 @@
       </div>
       <el-divider style="width: 90%; margin: 24px auto" content-position="center">〻〻〻</el-divider>
       <p class="text">举报理由.</p>
-      <el-input
+      <el-form :model="report" @validate="validate">
+        <el-form-item
+          prop="message"
+          :rules="{
+            required: true,
+            message: '请输入举报理由',
+            trigger: 'blur',
+          }"
+        >
+          <el-input
+            v-model="report.message"
+            :autosize="{ minRows: 2, maxRows: 4 }"
+            type="textarea"
+            placeholder="说点什么吧！"
+          />
+        </el-form-item>
+        <el-form-item
+          prop="email"
+          :rules="[
+            {
+              required: true,
+              message: '请输入邮箱',
+              trigger: 'blur',
+            },
+            {
+              type: 'email',
+              message: '邮箱格式不正确',
+              trigger: ['blur', 'change'],
+            },
+          ]"
+        >
+          <el-input v-model="report.email" placeholder="输入邮箱" style="margin-top: 20px" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- <el-input
         v-model="report.message"
         :autosize="{ minRows: 2, maxRows: 4 }"
         type="textarea"
         placeholder="说点什么吧！"
       />
       <el-input v-model="report.email" placeholder="输入邮箱" style="margin-top: 20px" />
-      <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button>
+      <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button> -->
     </div>
   </div>
 </template>
@@ -38,23 +75,40 @@ import Result from '../api/common';
 const route = useRoute();
 const { noteId } = route.query;
 const noteInfo = ref({ name: '', title: '', selectType: '' });
+const isMessageTrue = ref(false);
+const isEmailTrue = ref(false);
 const report = reactive({
   email: '',
   message: '',
   noteId,
 });
-
+// 举报笔记
 function insReportNote() {
   let result: Result;
-  axios
-    .post('api/report-note/insReportNote', report)
-    .then((res) => {
-      result = res.data;
-    })
-    .then(() => {
-      if (result.code === 200) ElMessage.success('举报成功');
-      else ElMessage.error('举报失败');
-    });
+  if (isMessageTrue.value && isEmailTrue.value) {
+    axios
+      .post('api/report-note/insReportNote', report)
+      .then((res) => {
+        result = res.data;
+      })
+      .then(() => {
+        if (result.code === 200) ElMessage.success('举报成功');
+        else ElMessage.error('举报失败');
+      });
+  } else if (!isMessageTrue.value) ElMessage.error('举报理由为空');
+  else if (!isEmailTrue.value) ElMessage.error('邮箱不正确');
+}
+function validate(prop: string, isValid: boolean) {
+  switch (prop) {
+    case 'message':
+      isMessageTrue.value = isValid;
+      break;
+    case 'email':
+      isEmailTrue.value = isValid;
+      break;
+    default:
+      break;
+  }
 }
 onMounted(() => {
   const result = ref();

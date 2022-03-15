@@ -70,8 +70,8 @@
                       <el-col :span="3">
                         <el-tooltip effect="light" content="点赞" show-after="3000" placement="bottom">
                           <el-button type="text" style="color: black" @click="addLike(item.id, index)">
-                            <!-- {{ isUserLikeNote(item.id) }} -->
-                            <span class="iconfont icon-like" :id="item.id" />
+                            <span class="iconfont icon-like" :id="`like${item.id}`" />
+                            {{ isUserLikeNote(item.id) }}
                           </el-button>
                         </el-tooltip>
                         {{ item.likes }}
@@ -80,7 +80,8 @@
                       <el-col :span="3">
                         <el-tooltip effect="light" content="收藏" show-after="3000" placement="bottom">
                           <el-button type="text" style="color: black" @click="insUserCollect(item.id, index)">
-                            <span class="iconfont icon-star" :id="item.id" />
+                            <span class="iconfont icon-star" :id="`collect${item.id}`" />
+                            {{ isUserNoteCollect(item.id) }}
                           </el-button>
                         </el-tooltip>
                         {{ item.collection }}
@@ -174,6 +175,7 @@ import { ElMessage, ElNotification } from 'element-plus';
 // import { setRoutes } from '../router';
 import FooterVue from './Footer.vue';
 import api from '../api/index';
+import Result from '../api/common';
 
 const store = api.store();
 const user = ref();
@@ -285,24 +287,44 @@ function toReadNote(noteId: string) {
     axios.get(`api/looks/insUserLook?userId=${user.value.id}&noteId=${noteId}`);
   }
 }
-// function isUserLikeNote(noteId: string) {
-//   const result = ref();
-//   if (store.isLogin) {
-//     axios
-//       .get(`api/likes/isUserLikeNote?userId=${user.value.id}&noteId=${noteId}`)
-//       .then((res) => {
-//         result.value = res.data;
-//       })
-//       .then(() => {
-//         const span = document.getElementById(noteId) as HTMLElement;
-//         if (result.value.data === 'true') {
-//           span.style.color = 'red';
-//         } else {
-//           span.style.color = 'black';
-//         }
-//       });
-//   }
-// }
+// 用户是否点赞笔记
+function isUserLikeNote(noteId: string) {
+  let result: Result;
+  if (store.isLogin) {
+    axios
+      .get(`api/likes/isUserLikeNote?noteId=${noteId}`)
+      .then((res) => {
+        result = res.data;
+      })
+      .then(() => {
+        const span = document.getElementById(`like${noteId}`) as HTMLElement;
+        if (result.data === 'true') {
+          span.style.color = 'red';
+        } else {
+          span.style.color = 'black';
+        }
+      });
+  }
+}
+// 用户是否收藏笔记
+function isUserNoteCollect(noteId: string) {
+  let result: Result;
+  if (store.isLogin) {
+    axios
+      .get(`api/collects/isUserNoteCollect?noteId=${noteId}`)
+      .then((res) => {
+        result = res.data;
+      })
+      .then(() => {
+        const span = document.getElementById(`collect${noteId}`) as HTMLElement;
+        if (result.data === 'true') {
+          span.style.color = 'red';
+        } else {
+          span.style.color = 'black';
+        }
+      });
+  }
+}
 // 点赞
 function addLike(noteId: string, index: number) {
   if (store.isLogin === true) {
@@ -314,33 +336,24 @@ function addLike(noteId: string, index: number) {
       })
       .then(() => {
         noteList.value[index].likes = result.value.data;
-        // isUserLikeNote(noteId);
+        isUserLikeNote(noteId);
       });
-  } else {
-    ElNotification({
-      title: 'Warning',
-      message: '登录才能点赞哦！',
-      type: 'warning',
-    });
-  }
+  } else ElMessage.error('登录才能点赞哦！');
 }
 // 跳转举报页
 function toReportPage(noteId: string) {
   router.push({ name: 'ReportPage', query: { noteId } });
 }
+// 收藏笔记
 function insUserCollect(noteId: string, index: number) {
   if (store.isLogin === true) {
     axios.get(`api/collects/insUserNoteCollect?userId=${user.value.id}&noteId=${noteId}`).then((res) => {
       noteList.value[index].collection = res.data.data;
+      isUserNoteCollect(noteId);
     });
-  } else {
-    ElNotification({
-      title: 'Warning',
-      message: '登录才能收藏哦！',
-      type: 'warning',
-    });
-  }
+  } else ElMessage.error('登录才能收藏哦！');
 }
+// 获取分享链接
 function shareUrl(noteId: string) {
   try {
     clipboardObj.writeText(`https://note.lonelyzhou.cn/readNote?noteId=${noteId}`);
@@ -400,7 +413,7 @@ onMounted(() => {
       // setRoutes(store.role);
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
-      if ((user.value.phone === '0' && user.value.email === '0') && store.isLogin) {
+      if (user.value.phone === '0' && user.value.email === '0' && store.isLogin) {
         ElNotification.warning({ title: '未设置手机号或邮箱', message: '手机号或邮箱是找回密码的重要凭证' });
       }
     })

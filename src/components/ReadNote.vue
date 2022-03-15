@@ -36,10 +36,10 @@
       </el-button>
       <el-button type="warning" plain class="iconfont icon-share" @click="shareUrl">&nbsp;分享</el-button>
       <el-button type="danger" plain class="iconfont icon-flag">&nbsp;举报</el-button>
+      <el-button type="info" plain class="iconfont icon-download" @click="download">&nbsp;下载</el-button>
     </div>
     <div class="insComment">
-      <p>发表评论</p>
-      <div style="margin: 20px 0"></div>
+      <p style="margin: 20px 0">发表评论</p>
       <el-input
         v-model="comment.message"
         maxlength="140"
@@ -75,17 +75,15 @@
       />
     </div>
   </div>
-  {{ menuList }}
+  <el-backtop />
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
-// eslint-disable-next-line object-curly-newline
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
-// import cookies from '../api/cookies';
-import api from '../api/index';
+import api from '../api';
 
 const route = useRoute();
 const detail = '阅读全文';
@@ -100,7 +98,6 @@ const clipboardObj = navigator.clipboard;
 const noteCommentList = ref();
 const total = ref(); // 分页数
 const page = ref(1);
-const menuList = ref();
 
 const comment = reactive({
   message: '',
@@ -248,6 +245,13 @@ function insUserNoteCollect() {
   } else {
     ElMessage.error('未登录');
   }
+}
+
+function download() {
+  let type: string;
+  if (note.value.noteType === 'note') type = 'html';
+  else type = 'md';
+  api.download(note.value.title, note.value.text, type);
 }
 onMounted(() => {
   const result = ref();

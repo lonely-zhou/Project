@@ -20,7 +20,7 @@
             title="将撤销该笔记的举报状态?"
             confirm-button-text="确定"
             cancel-button-text="取消"
-            @confirm="delRepotrNote(scope.row.id)"
+            @confirm="delRepotrNote(scope.$index, scope.row.noteId)"
           >
             <template #reference>
               <el-button size="small" type="warning">撤销</el-button>
@@ -67,6 +67,7 @@
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import { onMounted, ref } from 'vue';
 import Result from '../../api/common';
 
@@ -77,7 +78,7 @@ interface Note {
   message: string;
   title: string;
 }
-const allReportNote = ref();
+const allReportNote = ref([]);
 const search = ref();
 const dialogVisible = ref(false);
 const reportNoteInfo = ref();
@@ -91,16 +92,25 @@ function handleDelete(index: number) {
   console.log(index);
   axios.get(`api/note/delUserNote?noteId=${index}`);
 }
-function delRepotrNote(index: number) {
-  console.log(index);
+function delRepotrNote(index: number, noteId: string) {
+  allReportNote.value.splice(index, 1);
+  let result: Result;
+  axios
+    .delete(`/api/report-note/delReportNote?noteId=${noteId}`)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      if (result.code === 200) ElMessage.success('撤销成功');
+    });
 }
 
 onMounted(() => {
   let result: Result;
-  axios.get('/api/report-note/selAllReportNote?page=1').then((res) => {
+  axios.get('/api/report-note/selAllReportNote').then((res) => {
     result = res.data;
-    allReportNote.value = result.data.records;
-    console.log(result.data.records);
+    allReportNote.value = result.data;
+    console.log(result.data);
   });
 });
 </script>

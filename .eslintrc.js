@@ -32,5 +32,6 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'max-len': ['error', { code: 300 }],
     'object-curly-newline': 0,
+    'vue/multi-word-component-names': 0,
   },
 };
