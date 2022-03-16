@@ -1,6 +1,7 @@
-// import { ElMessage } from 'element-plus';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import NProgress from 'nprogress';
 import store from '../api/store';
+import 'nprogress/nprogress.css';
 
 const publicRoutes: Array<RouteRecordRaw> = [
   {
@@ -151,25 +152,10 @@ function setRoutes(role: string) {
       }
     }
   }
-  // router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
 }
 
 router.beforeEach((to, from, next) => {
-  // const myGlobalState = JSON.parse(sessionStorage.getItem('myGlobalState') as string);
-  // let role: string;
-  // if (myGlobalState === null) {
-  //   role = 'guest';
-  // } else {
-  //   role = myGlobalState.role as string;
-  // }
-
-  // const roles: string[] = to.meta.roles as string[];
-  // for (let i = 0; i < asyncRoutes.length; i += 1) {
-  //   const roles: string[] = asyncRoutes[i].meta!.roles as string[];
-  //   if (roles.indexOf(role) !== -1) {
-  //     router.addRoute(asyncRoutes[i]);
-  //   }
-  // }
+  NProgress.start();
   document.title = (to.meta.title ? to.meta.title : '记享') as string;
   const state = store();
 
@@ -178,16 +164,8 @@ router.beforeEach((to, from, next) => {
     next({ path: to.fullPath });
     router.addRoute({ path: '/:pathMatch(.*)', name: 'redirect404', redirect: '/404' });
   } else next();
-  // console.log(router.getRoutes());
-  // return to.fullPath;
-  // next();
-  // if (roles.indexOf(myGlobalState.role) === -1) {
-  //   ElMessage.error('无权限');
-  //   next(from.path);
-  // } else {
-  //   document.title = (to.meta.title ? to.meta.title : '记享') as string;
-  //   next();
-  // }
 });
-
+router.afterEach(() => {
+  NProgress.done();
+});
 export default router;

@@ -33,6 +33,7 @@ import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import api from '../../api';
+import Result from '../../api/common';
 
 const userSettings = ref({ editorStyle: '' });
 const store = api.store();
@@ -41,16 +42,18 @@ const feedbackInfo = reactive({
   text: '',
 });
 
+// 去管理后台按钮是否显示
 const showAdminButton = computed(() => {
   if (store.role === 'admin' || store.role === 'su-admin') return true;
   return false;
 });
-
+// 查询用户设置
 function selUserSettingsList() {
   axios.get('api/settings/selUserSettingsList').then((res) => {
     userSettings.value = res.data.data;
   });
 }
+// 改变编辑器
 function change(editorText: string) {
   const result = ref();
   axios
@@ -63,7 +66,19 @@ function change(editorText: string) {
       if (result.value.code === 200) ElMessage.success('编辑器已更改');
     });
 }
-function submitFeedbackInfo() {}
+// 提交反馈信息
+function submitFeedbackInfo() {
+  let result: Result;
+  axios
+    .post('api/feedback/insFeedback', feedbackInfo)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      if (result.code === 200) ElMessage.success('反馈成功');
+      else ElMessage.error('反馈失败');
+    });
+}
 onMounted(() => {
   selUserSettingsList();
 });

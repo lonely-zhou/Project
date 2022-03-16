@@ -1,6 +1,6 @@
 <template>
-  <el-empty description="无点赞" v-if="emptyMyLikes" />
-  <el-table :data="myLikes" v-loading="loading" stripe v-if="!emptyMyLikes">
+  <el-empty description="无收藏" v-if="emptyMyCollect" />
+  <el-table :data="myCollects" v-loading="loading" stripe v-if="!emptyMyCollect">
     <el-table-column type="index" label="序号" />
     <el-table-column prop="title" label="标题" />
     <el-table-column prop="time" label="时间" />
@@ -26,49 +26,40 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 import Result from '../../api/common';
 
-const myLikes = ref([{ noteId: '', time: '', title: '' }]);
 const loading = ref(false);
+const myCollects = ref([{ noteId: '', time: '', title: '' }]);
 const pagination = reactive({
   page: 1,
   total: 0,
 });
-
-const emptyMyLikes = computed(() => {
-  if (myLikes.value.length === 0) return true;
+// 空状态
+const emptyMyCollect = computed(() => {
+  if (myCollects.value.length === 0) return true;
   return false;
 });
-// 删除点赞笔记
+// 分页改变
+function changePage(pageNum: number) {
+  axios.get(`api/collects/selUserNoteCollectList?page=${pageNum}`).then((res) => {
+    myCollects.value = res.data.data.records;
+  });
+}
+// 删除收藏笔记
 function handleDelete(index: number, noteId: string) {
   let result: Result;
   axios
-    .delete(`api/likes/delUserLikeNote?noteId=${noteId}`)
+    .delete(`api/collects/delUserNoteCollect?noteId=${noteId}`)
     .then((res) => {
       result = res.data;
     })
     .then(() => {
-      if (result.code === 200) myLikes.value.splice(index, 1);
+      if (result.code === 200) myCollects.value.splice(index, 1);
     });
-}
-// 分页 页码改变
-function changePage(pageNum: number) {
-  axios.get(`api/collects/selUserNoteCollectList?page=${pageNum}`).then((res) => {
-    myLikes.value = res.data.data.records;
-  });
 }
 onMounted(() => {
-  let result: Result;
-  // 获取点赞笔记数据
-  axios
-    .get('api/likes/selUserLikeList?page=1')
-    .then((res) => {
-      loading.value = true;
-      result = res.data;
-    })
-    .then(() => {
-      myLikes.value = result.data.records;
-      loading.value = false;
-      pagination.total = Number(result.msg);
-    });
+  axios.get('api/collects/selUserNoteCollectList?page=1').then((res) => {
+    myCollects.value = res.data.data.records;
+    pagination.total = Number(res.data.msg);
+  });
 });
 </script>
 <style scoped></style>

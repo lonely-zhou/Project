@@ -1,17 +1,4 @@
-<script lang="ts" setup>
-import { onMounted } from 'vue';
-import NProgress from 'nprogress';
-import router from './router';
-import 'nprogress/nprogress.css';
-
-router.beforeEach(() => {
-  NProgress.start();
-});
-router.afterEach(() => {
-  NProgress.done();
-});
-onMounted(() => {});
-</script>
+<script lang="ts" setup></script>
 <template>
   <div id="id">
     <!-- <router-view v-slot="{ Component }">

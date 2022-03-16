@@ -201,7 +201,8 @@
           </div> -->
         </el-tab-pane>
         <el-tab-pane label="我的收藏" name="我的收藏">
-          <el-empty description="无收藏" v-if="showMyCollect" />
+          <my-collect-vue></my-collect-vue>
+          <!-- <el-empty description="无收藏" v-if="showMyCollect" />
           <div class="myCollect" v-if="show">
             <el-row v-for="(item, index) in myData.myCollectList" :key="index" class="userCollectList">
               <el-col :span="20" @click="toReadNote(item.noteId)" class="toReadNote">
@@ -221,7 +222,7 @@
               hide-on-single-page
               background
             />
-          </div>
+          </div> -->
         </el-tab-pane>
         <el-tab-pane label="其他">
           <other-vue />
@@ -252,6 +253,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
 import otherVue from './PersonalCenter/other.vue';
 import myLikesVue from './PersonalCenter/myLikes.vue';
+import myCollectVue from './PersonalCenter/myCollect.vue';
 import api from '../api/index';
 
 const detail = '个人中心';
@@ -330,10 +332,10 @@ const showMyNote = computed(() => {
   if (myData.myNoteList.length === 0) return true;
   return false;
 });
-const showMyCollect = computed(() => {
-  if (myData.myCollectList.length === 0) return true;
-  return false;
-});
+// const showMyCollect = computed(() => {
+//   if (myData.myCollectList.length === 0) return true;
+//   return false;
+// });
 // const showMyLike = computed(() => {
 //   if (myData.myLikeList.length === 0) return true;
 //   return false;
@@ -382,14 +384,14 @@ function clickTap() {
       show.value = true;
     });
   }
-  if (activeName.value === '我的收藏') {
-    axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=1`).then((res) => {
-      myData.myCollectList = res.data.data.records;
-      // paginationData.totalMyCollect = Number(res.data.msg);
-      paginationData.totalMyCollect = Number(res.data.msg);
-      show.value = true;
-    });
-  }
+  // if (activeName.value === '我的收藏') {
+  //   axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=1`).then((res) => {
+  //     myData.myCollectList = res.data.data.records;
+  //     // paginationData.totalMyCollect = Number(res.data.msg);
+  //     paginationData.totalMyCollect = Number(res.data.msg);
+  //     show.value = true;
+  //   });
+  // }
   // if (activeName.value === '我的点赞') {
   //   axios.get(`api/likes/selUserLikeList?userId=${user.id}&page=1`).then((res) => {
   //     myData.myLikeList = res.data.data.records;
@@ -430,27 +432,27 @@ function changePageMyComment(pageMyCommentNum: number) {
     myData.myCommentList = res.data.data.records;
   });
 }
-function changePageMyCollect(pageMyCollectNum: number) {
-  axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=${pageMyCollectNum}`).then((res) => {
-    myData.myCollectList = res.data.data.records;
-  });
-}
-function delUserNoteCollect(noteId: string, index: number) {
-  const result = ref();
-  axios
-    .delete(`api/collects/delUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
-    .then((res) => {
-      result.value = res.data;
-    })
-    .then(() => {
-      if (result.value.code === 200) {
-        myData.myCollectList.splice(index, 1);
-      }
-    });
-}
-function toReadNote(noteId: string) {
-  router.push({ name: 'ReadNote', query: { noteId } });
-}
+// function changePageMyCollect(pageMyCollectNum: number) {
+//   axios.get(`api/collects/selUserNoteCollectList?userId=${user.id}&page=${pageMyCollectNum}`).then((res) => {
+//     myData.myCollectList = res.data.data.records;
+//   });
+// }
+// function delUserNoteCollect(noteId: string, index: number) {
+//   const result = ref();
+//   axios
+//     .delete(`api/collects/delUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
+//     .then((res) => {
+//       result.value = res.data;
+//     })
+//     .then(() => {
+//       if (result.value.code === 200) {
+//         myData.myCollectList.splice(index, 1);
+//       }
+//     });
+// }
+// function toReadNote(noteId: string) {
+//   router.push({ name: 'ReadNote', query: { noteId } });
+// }
 // 修改我的评论
 function updMyComment(index: number, commentId: string) {
   ElMessageBox.prompt('输入评论', '评论', {
