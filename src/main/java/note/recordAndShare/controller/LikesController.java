@@ -88,13 +88,12 @@ public class LikesController {
     /**
      * 删除用户点赞笔记
      *
-     * @param userId 用户ID
      * @param noteId 笔记ID
      * @return ok
      */
     @DeleteMapping("/delUserLikeNote")
-    public NoteResultUtil delUserLikeNote(@RequestParam("userId") String userId, @RequestParam("noteId") String noteId) {
-        likesMapper.delete(new QueryWrapper<Likes>().eq("user_id", userId).eq("note_id", noteId));
+    public NoteResultUtil delUserLikeNote(@RequestParam("noteId") String noteId) {
+        likesMapper.delete(new QueryWrapper<Likes>().eq("user_id", UserUtil.selUserId()).eq("note_id", noteId));
         return NoteResultUtil.success();
     }
 }
