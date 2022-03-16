@@ -61,26 +61,24 @@ public class CollectsController {
     /**
      * 查询用户所有收藏笔记
      *
-     * @param userId 用户ID
-     * @param page   分页
+     * @param page 分页
      * @return 用户所有收藏笔记
      */
     @GetMapping("/selUserNoteCollectList")
-    public NoteResultUtil selUserNoteCollectList(@RequestParam("userId") String userId, @RequestParam("page") Integer page) {
-        int count = collectsMapper.selectCount(new QueryWrapper<Collects>().eq("user_id", userId)).intValue();
-        return NoteResultUtil.success(String.valueOf(count), collectsMapper.selUserCollectList(new Page<>(page, 5), userId));
+    public NoteResultUtil selUserNoteCollectList(@RequestParam("page") Integer page) {
+        int count = collectsMapper.selectCount(new QueryWrapper<Collects>().eq("user_id", UserUtil.selUserId())).intValue();
+        return NoteResultUtil.success(String.valueOf(count), collectsMapper.selUserCollectList(new Page<>(page, 5), UserUtil.selUserId()));
     }
 
     /**
      * 删除用户 收藏笔记
      *
-     * @param userId 用户ID
      * @param noteId 笔记ID
      * @return ok
      */
     @DeleteMapping("/delUserNoteCollect")
-    public NoteResultUtil delUserNoteCollect(@RequestParam("userId") String userId, @RequestParam("noteId") String noteId) {
-        collectsMapper.delete(new QueryWrapper<Collects>().eq("user_id", userId).eq("note_id", noteId));
+    public NoteResultUtil delUserNoteCollect(@RequestParam("noteId") String noteId) {
+        collectsMapper.delete(new QueryWrapper<Collects>().eq("user_id", UserUtil.selUserId()).eq("note_id", noteId));
         int collectCount = collectsMapper.selectCount(new QueryWrapper<Collects>().eq("note_id", noteId)).intValue();
         Note note = new Note();
         note.setCollection(collectCount);

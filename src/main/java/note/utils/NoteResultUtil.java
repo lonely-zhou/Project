@@ -26,7 +26,7 @@ public class NoteResultUtil {
     }
 
     public static NoteResultUtil success(String msg, Object data) {
-        return new NoteResultUtil(msg, data);
+        return new NoteResultUtil(200, msg, data);
     }
 
     public static NoteResultUtil success(Object data) {
@@ -44,11 +44,6 @@ public class NoteResultUtil {
     public NoteResultUtil(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
-    }
-
-    public NoteResultUtil(String msg, Object data) {
-        this.msg = msg;
-        this.data = data;
     }
 
 }
