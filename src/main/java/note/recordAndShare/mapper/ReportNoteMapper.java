@@ -22,7 +22,7 @@ import java.util.List;
 @Mapper
 public interface ReportNoteMapper extends BaseMapper<ReportNote> {
     /**
-     * 查询所有举报尼基
+     * 查询所有举报笔记
      *
      * @param page 分页
      * @return 所有举报笔记

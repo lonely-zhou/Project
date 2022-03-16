@@ -62,13 +62,12 @@ public class LikesController {
     /**
      * 查询用户 所有点赞笔记
      *
-     * @param userId 用户ID
      * @return 所有点赞笔记
      */
     @GetMapping("/selUserLikeList")
-    public NoteResultUtil selUserLikeList(@RequestParam("userId") String userId, @RequestParam("page") Integer page) {
-        int count = likesMapper.selectCount(new QueryWrapper<Likes>().eq("user_id", userId)).intValue();
-        return NoteResultUtil.success(String.valueOf(count), likesMapper.selUserLikeList(new Page<>(page, 5), userId));
+    public NoteResultUtil selUserLikeList(@RequestParam("page") Integer page) {
+        int count = likesMapper.selectCount(new QueryWrapper<Likes>().eq("user_id", UserUtil.selUserId())).intValue();
+        return NoteResultUtil.success(String.valueOf(count), likesMapper.selUserLikeList(new Page<>(page, 5), UserUtil.selUserId()));
     }
 
     /**
@@ -88,6 +87,7 @@ public class LikesController {
 
     /**
      * 删除用户点赞笔记
+     *
      * @param userId 用户ID
      * @param noteId 笔记ID
      * @return ok

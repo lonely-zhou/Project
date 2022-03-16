@@ -11,6 +11,7 @@ import note.recordAndShare.mapper.CollectsMapper;
 import note.recordAndShare.mapper.NoteMapper;
 import note.utils.NoteResultUtil;
 import note.utils.TimeUtil;
+import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -72,6 +73,7 @@ public class CollectsController {
 
     /**
      * 删除用户 收藏笔记
+     *
      * @param userId 用户ID
      * @param noteId 笔记ID
      * @return ok
@@ -89,14 +91,14 @@ public class CollectsController {
 
     /**
      * 用户是否收藏笔记
-     * @param userId 用户ID
+     *
      * @param noteId 笔记ID
      * @return true or false
      */
-    @GetMapping("/isUserNoteCollect")
-    public NoteResultUtil isUserNoteCollect(@RequestParam("userId")String userId,@RequestParam("noteId")String noteId){
-        int count = collectsMapper.selectCount(new QueryWrapper<Collects>().eq("user_id",userId).eq("note_id",noteId)).intValue();
-        if (count != 1){
+    @GetMapping("isUserNoteCollect")
+    public NoteResultUtil isUserNoteCollect(@RequestParam("noteId") String noteId) {
+        int count = collectsMapper.selectCount(new QueryWrapper<Collects>().eq("user_id", UserUtil.selUserId()).eq("note_id", noteId)).intValue();
+        if (count != 1) {
             return NoteResultUtil.success("false");
         }
         return NoteResultUtil.success("true");

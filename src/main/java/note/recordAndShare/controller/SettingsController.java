@@ -31,12 +31,12 @@ public class SettingsController {
     /**
      * 更改用户默认编辑器
      *
-     * @param userId 用户ID
      * @param editor 编辑器
      * @return ok
      */
     @GetMapping("/updUserEditorStyle")
-    public NoteResultUtil updUserEditorStyle(@RequestParam("userId") String userId, @RequestParam("editor") String editor) {
+    public NoteResultUtil updUserEditorStyle(@RequestParam("editor") String editor) {
+        String userId = UserUtil.selUserId();
         int count = settingsMapper.selectCount(new QueryWrapper<Settings>().eq("user_id", userId)).intValue();
         Settings settings = new Settings();
         settings.setUserId(userId);
