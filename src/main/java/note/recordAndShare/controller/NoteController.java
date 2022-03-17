@@ -8,6 +8,7 @@ import note.recordAndShare.entity.Note;
 import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.NoteService;
 import note.utils.NoteResultUtil;
+import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -63,20 +64,19 @@ public class NoteController {
     /**
      * 查询用户笔记
      *
-     * @param userid 用户ID
-     * @param page   页码
+     * @param page 页码
      * @return 用户笔记列表
      */
     @GetMapping("/selUserNote")
-    public NoteResultUtil selUserNote(@RequestParam("userid") String userid,
-                                      @RequestParam("page") Integer page,
-                                      @RequestParam(value = "message", required = false) String message) {
-        int count = noteMapper.selectCount(new QueryWrapper<Note>().eq("user_id", userid)).intValue();
+    public NoteResultUtil selUserNote(
+            @RequestParam("page") Integer page,
+            @RequestParam(value = "message", required = false) String message) {
+        int count = noteMapper.selectCount(new QueryWrapper<Note>().eq("user_id", UserUtil.selUserId())).intValue();
         if ("".equals(message)) {
             message = null;
         }
         return NoteResultUtil.success(String.valueOf(count),
-                noteMapper.selectUserNote(new Page<>(page, 9), userid, message));
+                noteMapper.selectUserNote(new Page<>(page, 9), UserUtil.selUserId(), message));
     }
 
     /**
@@ -115,10 +115,14 @@ public class NoteController {
      * @param noteId 笔记ID
      * @return ok
      */
-    @GetMapping("/delUserNote")
+    @DeleteMapping("/delUserNote")
     public NoteResultUtil delUserNote(@RequestParam("noteId") String noteId) {
-        noteMapper.delete(new QueryWrapper<Note>().eq("id", noteId));
-        return NoteResultUtil.success();
+        int count = noteMapper.delete(new QueryWrapper<Note>().eq("id", noteId));
+        if (count == 1) {
+            return NoteResultUtil.success();
+        }
+        return NoteResultUtil.error("删除失败");
+
     }
 
     /**

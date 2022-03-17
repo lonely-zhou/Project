@@ -8,6 +8,7 @@ import lombok.Data;
 import note.recordAndShare.entity.Comment;
 import note.recordAndShare.mapper.CommentMapper;
 import note.utils.NoteResultUtil;
+import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -68,30 +69,42 @@ public class CommentController {
     /**
      * 查询用户所有评论
      *
-     * @param userId 用户ID
-     * @param page   页码
+     * @param page 页码
      * @return 用户所有评论
      */
     @GetMapping("/selUserCommentList")
-    public NoteResultUtil selUserCommentList(@RequestParam("userId") String userId, @RequestParam("page") Integer page) {
-        int count = commentMapper.selectCount(new QueryWrapper<Comment>().eq("user_id", userId)).intValue();
-        return NoteResultUtil.success(String.valueOf(count), commentMapper.selUserCommentList(new Page<>(page, 5), userId));
+    public NoteResultUtil selUserCommentList(@RequestParam("page") Integer page) {
+        int count = commentMapper.selectCount(new QueryWrapper<Comment>().eq("user_id", UserUtil.selUserId())).intValue();
+        return NoteResultUtil.success(String.valueOf(count), commentMapper.selUserCommentList(new Page<>(page, 5), UserUtil.selUserId()));
     }
 
     /**
      * 更新笔记评论
+     *
      * @param comment 评论
      * @return 更新后评论
      */
     @PostMapping("/updNoteComment")
     public NoteResultUtil updNoteComment(@RequestBody Comment comment) {
-        commentMapper.updateById(comment);
-        return NoteResultUtil.success(commentMapper.selectById(comment.getId()));
+        int count = commentMapper.updateById(comment);
+        if (count == 1) {
+            return NoteResultUtil.success();
+        }
+        return NoteResultUtil.error("评论修改失败");
     }
 
+    /**
+     * 删除评论
+     *
+     * @param id 评论ID
+     * @return ok
+     */
     @DeleteMapping("/delNoteComment")
-    public NoteResultUtil delNoteComment(@RequestParam("id")String id){
-        commentMapper.deleteById(id);
-        return NoteResultUtil.success();
+    public NoteResultUtil delNoteComment(@RequestParam("id") String id) {
+        int count = commentMapper.deleteById(id);
+        if (count == 1) {
+            return NoteResultUtil.success();
+        }
+        return NoteResultUtil.error("删除失败");
     }
 }
