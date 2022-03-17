@@ -6,8 +6,8 @@
       <el-table-column label="摘要">
         <template #default="scope">
           <span style="margin-left: 10px">{{ scope.row.articleTabled.slice(0, 25) }}......</span>
-        </template></el-table-column
-      >
+        </template>
+      </el-table-column>
       <el-table-column prop="time" label="时间" />
       <el-table-column prop="message" label="举报理由" />
       <el-table-column align="right" fixed="right">

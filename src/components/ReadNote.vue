@@ -53,7 +53,7 @@
     <div class="showComment" style="margin-top: 40px">
       <p style="margin-bottom: 10px">评论</p>
       <el-row v-for="(item, index) in noteCommentList" :key="index">
-        <el-col :span="2"><el-avatar :size="50" :src="item.avatar_url"></el-avatar></el-col>
+        <el-col :span="2"><el-avatar :size="50" :src="item.avatarUrl"></el-avatar></el-col>
         <el-col :span="22">
           <el-row>
             <el-col :span="24">{{ item.nickname }}</el-col>
