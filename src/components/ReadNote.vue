@@ -22,10 +22,10 @@
       :toolbarsFlag="false"
     />
     <div style="margin-top: 40px">
-      <el-button type="primary" plain class="iconfont icon-like" v-show="!isLike" @click="addLike">
+      <el-button type="primary" plain class="iconfont icon-like" v-show="!isLike" @click="insLike">
         &nbsp;点赞
       </el-button>
-      <el-button type="primary" plain class="iconfont icon-like" v-show="isLike" @click="addLike">
+      <el-button type="primary" plain class="iconfont icon-like" v-show="isLike" @click="insLike">
         &nbsp;已点赞
       </el-button>
       <el-button type="success" plain class="iconfont icon-star" @click="insUserNoteCollect" v-show="!showCollect">
@@ -90,7 +90,6 @@ const detail = '阅读全文';
 const path = 'index';
 const store = api.store();
 const { noteId } = route.query;
-const user = store.user as any;
 const isLike = ref();
 const showCollect = ref();
 const loginFlag = ref(store.isLogin);
@@ -101,7 +100,6 @@ const page = ref(1);
 
 const comment = reactive({
   message: '',
-  userId: user === null ? '' : user.id,
   noteId,
   time: api.dateFormat.getDateFormatYHD(),
 });
@@ -154,10 +152,10 @@ function isUserLikeNote() {
     });
 }
 // 点赞
-function addLike() {
+function insLike() {
   const result = ref();
   if (loginFlag.value === true) {
-    axios.get(`api/likes/addLike?userId=${user.id}&noteId=${noteId}`).then((res) => {
+    axios.get(`api/likes/insLike?noteId=${noteId}`).then((res) => {
       result.value = res.data;
       isUserLikeNote();
     });
@@ -221,7 +219,7 @@ function changePage(pageNum: number) {
 function isUserNoteCollect() {
   const result = ref();
   axios
-    .get(`api/collects/isUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
+    .get(`api/collects/isUserNoteCollect?noteId=${noteId}`)
     .then((res) => {
       result.value = res.data.data;
     })
@@ -235,7 +233,7 @@ function insUserNoteCollect() {
   const result = ref();
   if (loginFlag.value) {
     axios
-      .get(`api/collects/insUserNoteCollect?userId=${user.id}&noteId=${noteId}`)
+      .get(`api/collects/insUserNoteCollect?noteId=${noteId}`)
       .then((res) => {
         result.value = res.data;
       })

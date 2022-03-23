@@ -58,9 +58,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-// eslint-disable-next-line object-curly-newline
 import { reactive, ref, nextTick } from 'vue';
-// import { useCookies } from 'vue3-cookies';
 import { ElMessage, ElInput } from 'element-plus';
 import axios from 'axios';
 import router from '../router';

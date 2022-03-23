@@ -9,7 +9,6 @@
           placeholder="请输入标题（建议10字以内）"
           style="overflow-y: hidden; height: 64px"
         />
-        <!-- <router-link to="/mdEditor"><el-button type="primary">切换至MD编辑器</el-button></router-link> -->
       </div>
       <div ref="editor" />
       <div class="noteType">
@@ -22,9 +21,7 @@
               <el-radio-button label="工作经验"></el-radio-button>
             </el-radio-group>
           </el-col>
-          <!-- <el-col :span="24"><p>输入标签</p></el-col> -->
           <el-col :span="24">
-            <!-- <el-input v-model="note.label_values" placeholder="标签" /> -->
             <el-tag
               v-for="tag in note.label"
               :key="tag"
@@ -62,10 +59,8 @@
 </template>
 
 <script lang="ts" setup>
-// eslint-disable-next-line object-curly-newline
 import { onMounted, onBeforeUnmount, ref, reactive, nextTick } from 'vue';
 import WangEditor from 'wangeditor';
-// import { useCookies } from 'vue3-cookies';
 import { ElInput, ElMessage } from 'element-plus';
 import axios from 'axios';
 import PageHeaderVue from './PageHeader.vue';
@@ -95,7 +90,7 @@ onMounted(() => {
   instance = new WangEditor(editor.value);
   Object.assign(instance.config, {
     onchange() {
-      console.log('change');
+      // console.log('change');
     },
   });
   instance.config.onchange = (newHtml: any) => {

@@ -69,7 +69,7 @@
                       <!-- 点赞数 -->
                       <el-col :span="3">
                         <el-tooltip effect="light" content="点赞" show-after="3000" placement="bottom">
-                          <el-button type="text" style="color: black" @click="addLike(item.id, index)">
+                          <el-button type="text" style="color: black" @click="insLike(item.id, index)">
                             <span class="iconfont icon-like" :id="`like${item.id}`" />
                             {{ isUserLikeNote(item.id) }}
                           </el-button>
@@ -284,7 +284,7 @@ function toWrite(): void {
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
   if (store.isLogin === true) {
-    axios.get(`api/looks/insUserLook?userId=${user.value.id}&noteId=${noteId}`);
+    axios.get(`api/looks/insUserLook?noteId=${noteId}`);
   }
 }
 // 用户是否点赞笔记
@@ -326,11 +326,11 @@ function isUserNoteCollect(noteId: string) {
   }
 }
 // 点赞
-function addLike(noteId: string, index: number) {
+function insLike(noteId: string, index: number) {
   if (store.isLogin === true) {
     const result = ref();
     axios
-      .get(`api/likes/addLike?userId=${user.value.id}&noteId=${noteId}`)
+      .get(`api/likes/insLike?noteId=${noteId}`)
       .then((res) => {
         result.value = res.data;
       })
@@ -347,7 +347,7 @@ function toReportPage(noteId: string) {
 // 收藏笔记
 function insUserCollect(noteId: string, index: number) {
   if (store.isLogin === true) {
-    axios.get(`api/collects/insUserNoteCollect?userId=${user.value.id}&noteId=${noteId}`).then((res) => {
+    axios.get(`api/collects/insUserNoteCollect?noteId=${noteId}`).then((res) => {
       noteList.value[index].collection = res.data.data;
       isUserNoteCollect(noteId);
     });

@@ -29,8 +29,6 @@
                 </el-col>
               </el-row>
             </el-col>
-            <!-- <el-col :span="4">{{ user.username }}</el-col>
-            <el-col :span="4">{{ user.username }}</el-col> -->
             <el-divider style="margin: 12px 0" />
             <el-row>
               <el-col :span="24"> <p>账户安全</p></el-col>
@@ -79,7 +77,7 @@
               <el-row style="margin-top: 30px">
                 <el-col :span="24"><el-avatar :size="80" :src="user.avatarUrl" /></el-col>
                 <el-col :span="24" class="avatar">当前头像</el-col>
-                <el-button type="primary" plain> 历史头像 </el-button>
+                <el-button type="primary" plain @click="selUserHistoricalAvatar"> 历史头像 </el-button>
               </el-row>
             </el-col>
           </el-row>
@@ -106,16 +104,6 @@
               <el-button type="text" @click="toUpdPE('email')"> {{ isEmailText }} </el-button>
             </div>
           </el-card>
-          <!-- <el-row class="myAccount">
-            <el-col :span="24" style="margin-top: 16px">
-              <span class="iconfont icon-phone">手机</span> {{ isPhone }}
-              <el-button type="text" @click="toUpdPE('phone')"> {{ isPhoneText }} </el-button>
-            </el-col>
-            <el-col :span="24" style="margin-top: 16px">
-              <span class="iconfont icon-mail">邮箱</span> {{ isEmail }}
-              <el-button type="text" @click="toUpdPE('email')"> {{ isEmailText }} </el-button>
-            </el-col>
-          </el-row> -->
         </el-tab-pane>
         <el-tab-pane label="我的点赞" name="我的点赞">
           <my-likes-vue></my-likes-vue>
@@ -123,12 +111,34 @@
         <el-tab-pane label="我的收藏" name="我的收藏">
           <my-collect-vue></my-collect-vue>
         </el-tab-pane>
+        <el-tab-pane label="我的反馈" name="我的反馈">
+          <my-feedback-vue></my-feedback-vue>
+        </el-tab-pane>
         <el-tab-pane label="其他">
           <other-vue />
         </el-tab-pane>
       </el-tabs>
     </div>
   </div>
+  <!-- 历史头像弹出框 -->
+  <el-dialog v-model="dialogVisible" title="Tips" width="30%">
+    <el-radio-group v-model="radio" fill="#cccccc" @change="changeAvatar(radio)">
+      <el-radio-button
+        :label="item"
+        v-for="(item, index) in userHistoricalAvatar"
+        :key="index"
+        class="historicalAvatar"
+      >
+        <el-avatar :size="50" :src="item" />
+      </el-radio-button>
+    </el-radio-group>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitAvatar">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
@@ -141,6 +151,7 @@ import myLikesVue from './PersonalCenter/myLikes.vue';
 import myCollectVue from './PersonalCenter/myCollect.vue';
 import myNoteVue from './PersonalCenter/myNote.vue';
 import myCommentVue from './PersonalCenter/myComment.vue';
+import myFeedbackVue from './PersonalCenter/myFeedback.vue';
 import api from '../api/index';
 
 const detail = '个人中心';
@@ -150,6 +161,9 @@ const path = 'index';
 const user = store.user as any;
 const router = useRouter();
 const uploadData = { username: user.username };
+const userHistoricalAvatar = ref();
+const radio = ref(user.avatarUrl);
+const dialogVisible = ref(false);
 const show = ref(true);
 // const userSettings = ref({ editorStyle: '' });
 // const noteMessage = ref();
@@ -236,12 +250,33 @@ function uploadSuccess() {
 function clickTap() {
   show.value = false;
   if (activeName.value === '我的评论') {
-    axios.get(`api/comment/selUserCommentList?userId=${user.id}&page=1`).then((res) => {
+    axios.get('api/comment/selUserCommentList?page=1').then((res) => {
       myData.myCommentList = res.data.data.records;
       paginationData.totalMyComment = Number(res.data.msg);
       show.value = true;
     });
   }
+}
+function selUserHistoricalAvatar() {
+  axios
+    .get('api/user/selUserHistoricalAvatar')
+    .then((res) => {
+      userHistoricalAvatar.value = res.data.data;
+    })
+    .then(() => {
+      dialogVisible.value = true;
+    });
+}
+function changeAvatar(avatar: string) {
+  console.log(avatar);
+}
+function submitAvatar() {
+  axios.get(`api/user/updSelAvatar?avatarUrl=${radio.value}`).then((res) => {
+    if (res.data.code === 200) {
+      ElMessage.success('更新头像成功');
+      dialogVisible.value = false;
+    }
+  });
 }
 </script>
 <style scoped>
@@ -336,5 +371,8 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.historicalAvatar {
+  margin-right: 20px;
 }
 </style>
