@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import note.recordAndShare.entity.Settings;
 import note.recordAndShare.mapper.SettingsMapper;
+import note.recordAndShare.service.SettingsService;
 import note.utils.NoteResultUtil;
 import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/recordAndShare/settings")
 public class SettingsController {
 
-    private final SettingsMapper settingsMapper;
+    private final SettingsService settingsService;
 
     /**
      * 更改用户默认编辑器
@@ -36,25 +37,16 @@ public class SettingsController {
      */
     @GetMapping("/updUserEditorStyle")
     public NoteResultUtil updUserEditorStyle(@RequestParam("editor") String editor) {
-        String userId = UserUtil.selUserId();
-        int count = settingsMapper.selectCount(new QueryWrapper<Settings>().eq("user_id", userId)).intValue();
-        Settings settings = new Settings();
-        settings.setUserId(userId);
-        settings.setEditorStyle(editor);
-        if (count != 0) {
-            settingsMapper.updateById(settings);
-        } else {
-            settingsMapper.insert(settings);
-        }
-        return NoteResultUtil.success();
+        return settingsService.updUserEditorStyle(editor);
     }
 
     /**
      * 查询用户所有设置
+     *
      * @return 用户所有设置
      */
     @GetMapping("/selUserSettingsList")
     public NoteResultUtil selUserSettingsList() {
-        return NoteResultUtil.success(settingsMapper.selectById(UserUtil.selUserId()));
+        return settingsService.selUserSettingsList();
     }
 }

@@ -14,5 +14,10 @@ public class ConstantUtil {
     public static final String USER_PHONE_CODE = "redis:note:user:phone:";
     public static final String USER_AVATAR = "redis:note:user:avatar";
     public static final String USER_EMAIL = "redis:note:user:email:";
-
+    public static final int ADMIN_ROLE = 1;
+    public static final int SU_ADMIN_ROLE = 4;
+    public static final String OK = "OK";
+    public static final int EMAIL_CODE_DIGITS = 6;
+    public static final String NOTE_MESSAGE = "0";
+    public static final String UNDEFINED = "undefined";
 }

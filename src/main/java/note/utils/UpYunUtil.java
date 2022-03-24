@@ -2,6 +2,7 @@ package note.utils;
 
 import com.upyun.FormUploader;
 import com.upyun.Params;
+import com.upyun.RestManager;
 import com.upyun.Result;
 
 import java.security.InvalidKeyException;
@@ -35,8 +36,12 @@ public class UpYunUtil {
         //限定图片宽度为 300px、锐化、压缩质量 80、存储为 png 格式（参数不区分先后顺序）
         paramsMap.put(Params.X_GMKERL_THUMB, "/fw/300/unsharp/true/quality/80/format/png");
         //打印结果
-        Result result = null;
-        result = uploader.upload(paramsMap, datas);
-        return result;
+        return uploader.upload(paramsMap, datas);
+    }
+
+    public static RestManager init() {
+        RestManager manager = new RestManager("lonelyzhou-img", "lonelyzhou", "cyp39jK5r8LJGTuX71hixV8KGMRE5Udc");
+        manager.setApiDomain(RestManager.ED_AUTO);
+        return manager;
     }
 }

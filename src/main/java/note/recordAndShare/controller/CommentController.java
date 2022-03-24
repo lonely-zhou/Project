@@ -1,14 +1,9 @@
 package note.recordAndShare.controller;
 
-
-import cn.hutool.core.lang.UUID;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
 import note.recordAndShare.entity.Comment;
-import note.recordAndShare.mapper.CommentMapper;
+import note.recordAndShare.service.CommentService;
 import note.utils.NoteResultUtil;
-import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -25,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/recordAndShare/comment")
 public class CommentController {
 
-    private final CommentMapper commentMapper;
+    private final CommentService commentService;
 
     /**
      * 查询笔记评论数
@@ -35,8 +30,7 @@ public class CommentController {
      */
     @GetMapping("/selNoteCommentCount")
     public NoteResultUtil selNoteCommentCount(@RequestParam("noteId") String noteId) {
-        int count = commentMapper.selectCount(new QueryWrapper<Comment>().eq("note_id", noteId)).intValue();
-        return NoteResultUtil.success(count);
+        return commentService.selNoteCommentCount(noteId);
     }
 
     /**
@@ -47,11 +41,7 @@ public class CommentController {
      */
     @PostMapping("/insNoteComment")
     public NoteResultUtil insNoteComment(@RequestBody Comment comment) {
-        comment.setId(UUID.randomUUID().toString());
-        if (commentMapper.insert(comment) != 1) {
-            return NoteResultUtil.error("评论失败");
-        }
-        return NoteResultUtil.success();
+        return commentService.insNoteComment(comment);
     }
 
     /**
@@ -62,8 +52,7 @@ public class CommentController {
      */
     @GetMapping("/selNoteCommentList")
     public NoteResultUtil selNoteCommentList(@RequestParam("noteId") String noteId, @RequestParam("page") Integer page) {
-        int count = commentMapper.selectCount(new QueryWrapper<Comment>().eq("note_id", noteId)).intValue();
-        return NoteResultUtil.success(String.valueOf(count), commentMapper.selNoteCommentList(new Page<>(page, 5), noteId));
+        return commentService.selNoteCommentList(noteId, page);
     }
 
     /**
@@ -74,8 +63,7 @@ public class CommentController {
      */
     @GetMapping("/selUserCommentList")
     public NoteResultUtil selUserCommentList(@RequestParam("page") Integer page) {
-        int count = commentMapper.selectCount(new QueryWrapper<Comment>().eq("user_id", UserUtil.selUserId())).intValue();
-        return NoteResultUtil.success(String.valueOf(count), commentMapper.selUserCommentList(new Page<>(page, 5), UserUtil.selUserId()));
+        return commentService.selUserCommentList(page);
     }
 
     /**
@@ -86,11 +74,7 @@ public class CommentController {
      */
     @PostMapping("/updNoteComment")
     public NoteResultUtil updNoteComment(@RequestBody Comment comment) {
-        int count = commentMapper.updateById(comment);
-        if (count == 1) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("评论修改失败");
+        return commentService.updNoteComment(comment);
     }
 
     /**
@@ -101,10 +85,6 @@ public class CommentController {
      */
     @DeleteMapping("/delNoteComment")
     public NoteResultUtil delNoteComment(@RequestParam("id") String id) {
-        int count = commentMapper.deleteById(id);
-        if (count == 1) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("删除失败");
+        return commentService.delNoteComment(id);
     }
 }

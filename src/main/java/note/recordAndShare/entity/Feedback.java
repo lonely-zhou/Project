@@ -43,5 +43,6 @@ public class Feedback {
     @TableField("time")
     private String time;
 
-
+    @TableField("state")
+    private String state;
 }

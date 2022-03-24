@@ -7,6 +7,7 @@ import lombok.Data;
 import note.recordAndShare.entity.ReportNote;
 import note.recordAndShare.entity.dto.ReportNoteDto;
 import note.recordAndShare.mapper.ReportNoteMapper;
+import note.recordAndShare.service.ReportNoteService;
 import note.utils.NoteResultUtil;
 import note.utils.TimeUtil;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ import java.util.List;
 @RequestMapping("/recordAndShare/report-note")
 public class ReportNoteController {
 
-    private final ReportNoteMapper reportNoteMapper;
+    private final ReportNoteService reportNoteService;
 
     /**
      * 举报笔记
@@ -37,10 +38,7 @@ public class ReportNoteController {
      */
     @PostMapping("insReportNote")
     public NoteResultUtil insReportNote(@RequestBody ReportNote reportNote) {
-        reportNote.setId(UUID.randomUUID().toString());
-        reportNote.setTime(new TimeUtil().getFormatDateForFive());
-        reportNoteMapper.insert(reportNote);
-        return NoteResultUtil.success();
+        return reportNoteService.insReportNote(reportNote);
     }
 
     /**
@@ -50,22 +48,17 @@ public class ReportNoteController {
      */
     @GetMapping("selAllReportNote")
     public NoteResultUtil selAllReportNote() {
-        List<Object> allReportNote = new ArrayList<>();
-        List<String> allReportNoteId = reportNoteMapper.selAllReportNoteId();
-        for (String s : allReportNoteId) {
-            ReportNoteDto reportNoteDto = reportNoteMapper.selReportNoteInfoById(s);
-            List<String> allReportNoteMessageById = reportNoteMapper.selAllReportNoteMessageById(s);
-            reportNoteDto.setMessage(allReportNoteMessageById);
-            allReportNote.add(reportNoteDto);
-        }
-        return NoteResultUtil.success(allReportNote);
+        return reportNoteService.selAllReportNote();
     }
 
+    /**
+     * 撤销举报笔记状态
+     *
+     * @param noteId 笔记id
+     * @return ok
+     */
     @DeleteMapping("delReportNote")
     public NoteResultUtil delReportNote(@RequestParam("noteId") String noteId) {
-        if (reportNoteMapper.delete(new QueryWrapper<ReportNote>().eq("noteId", noteId)) > 1) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("撤销失败");
+        return reportNoteService.delReportNote(noteId);
     }
 }

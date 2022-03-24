@@ -2,17 +2,8 @@ package note.recordAndShare.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.map.MapUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
-import note.recordAndShare.entity.User;
-import note.recordAndShare.entity.dto.UserDto;
-import note.recordAndShare.mapper.CommentMapper;
-import note.recordAndShare.mapper.LooksMapper;
-import note.recordAndShare.mapper.NoteMapper;
-import note.recordAndShare.mapper.UserMapper;
+import note.recordAndShare.service.AdminService;
 import note.utils.NoteResultUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,12 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Data
 @RestController
 @SaCheckRole(value = {"admin", "su-admin"}, mode = SaMode.OR)
-@RequestMapping("/recordAndShare/admin/")
+@RequestMapping("/recordAndShare/admin")
 public class AdminController {
-    private final UserMapper userMapper;
-    private final NoteMapper noteMapper;
-    private final CommentMapper commentMapper;
-    private final LooksMapper looksMapper;
+    private final AdminService adminService;
 
     /**
      * 分析页
@@ -43,15 +31,7 @@ public class AdminController {
      */
     @GetMapping("selAnalysis")
     public NoteResultUtil selAnalysis() {
-        int userCount = userMapper.selectCount(null).intValue();
-        int noteCount = noteMapper.selectCount(null).intValue();
-        int commentCount = commentMapper.selectCount(null).intValue();
-        int lookCount = looksMapper.selectCount(null).intValue();
-        return NoteResultUtil.success(MapUtil.builder()
-                .put("userCount", userCount)
-                .put("noteCount", noteCount)
-                .put("commentCount", commentCount)
-                .put("lookCount", lookCount).map());
+        return adminService.selAnalysis();
     }
 
     /**
@@ -62,10 +42,7 @@ public class AdminController {
      */
     @GetMapping("selAllUser")
     public NoteResultUtil selAllUser(@RequestParam("page") Integer page) {
-        int count = userMapper.selectCount(new QueryWrapper<>()).intValue();
-        Page<UserDto> userDtoList = new Page<>();
-        BeanUtil.copyProperties(userMapper.selAllUser(new Page<>(page, 9)), userDtoList);
-        return NoteResultUtil.success(String.valueOf(count), userDtoList);
+        return adminService.selAllUser(page);
     }
 
     /**
@@ -76,12 +53,6 @@ public class AdminController {
      */
     @GetMapping("updUserRole")
     public NoteResultUtil updUserRole(@RequestParam("rid") Integer rid, @RequestParam("id") String id) {
-        User user = new User();
-        user.setId(id);
-        user.setRoleId(rid);
-        if (userMapper.updateById(user) == 1) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("修改失败");
+        return adminService.updUserRole(rid, id);
     }
 }

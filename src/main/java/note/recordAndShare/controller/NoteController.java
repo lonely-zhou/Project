@@ -1,19 +1,11 @@
 package note.recordAndShare.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
 import note.recordAndShare.entity.Note;
-import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.NoteService;
 import note.utils.NoteResultUtil;
-import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -30,9 +22,7 @@ import java.util.Set;
 @RequestMapping("/recordAndShare/note")
 public class NoteController {
 
-    private final NoteMapper noteMapper;
     private final NoteService noteService;
-    String undefined = "undefined";
 
     /**
      * 查询笔记列表
@@ -42,8 +32,7 @@ public class NoteController {
      */
     @GetMapping("/getNoteList")
     public NoteResultUtil getNoteList(@RequestParam("page") Integer page) {
-        int count = noteMapper.selectCount(new QueryWrapper<>(null)).intValue();
-        return NoteResultUtil.success(String.valueOf(count), noteMapper.selectNotePage(new Page<>(page, 9)));
+        return noteService.getNoteList(page);
     }
 
     /**
@@ -55,10 +44,7 @@ public class NoteController {
     @SaCheckLogin
     @PostMapping("/insNote")
     public NoteResultUtil insNote(@RequestBody Note note) {
-        if (noteService.insNote(note) > 0) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("保存失败");
+        return noteService.insNote(note);
     }
 
     /**
@@ -68,15 +54,8 @@ public class NoteController {
      * @return 用户笔记列表
      */
     @GetMapping("/selUserNote")
-    public NoteResultUtil selUserNote(
-            @RequestParam("page") Integer page,
-            @RequestParam(value = "message", required = false) String message) {
-        int count = noteMapper.selectCount(new QueryWrapper<Note>().eq("user_id", UserUtil.selUserId())).intValue();
-        if ("".equals(message)) {
-            message = null;
-        }
-        return NoteResultUtil.success(String.valueOf(count),
-                noteMapper.selectUserNote(new Page<>(page, 9), UserUtil.selUserId(), message));
+    public NoteResultUtil selUserNote(@RequestParam("page") Integer page, @RequestParam(value = "message", required = false) String message) {
+        return noteService.selUserNote(page, message);
     }
 
     /**
@@ -87,13 +66,7 @@ public class NoteController {
      */
     @GetMapping("/selNote")
     public NoteResultUtil selNote(@RequestParam("noteId") String noteId) {
-        String str = "0";
-        String message = noteMapper.selectOne(new QueryWrapper<Note>().eq("id", noteId).select("message")).getMessage();
-        if (str.equals(message)) {
-            return NoteResultUtil.success(noteMapper.selectOne(new QueryWrapper<Note>().eq("id", noteId)));
-        } else {
-            return NoteResultUtil.error("笔记未公开");
-        }
+        return noteService.selNote(noteId);
 
     }
 
@@ -105,8 +78,7 @@ public class NoteController {
      */
     @PostMapping("/updUserNote")
     public NoteResultUtil updUserNote(@RequestBody Note note) {
-        noteMapper.update(note, new QueryWrapper<Note>().eq("id", note.getId()));
-        return NoteResultUtil.success();
+        return noteService.updUserNote(note);
     }
 
     /**
@@ -115,14 +87,9 @@ public class NoteController {
      * @param noteId 笔记ID
      * @return ok
      */
-    @DeleteMapping("/delUserNote")
+    @DeleteMapping("delUserNote")
     public NoteResultUtil delUserNote(@RequestParam("noteId") String noteId) {
-        int count = noteMapper.delete(new QueryWrapper<Note>().eq("id", noteId));
-        if (count == 1) {
-            return NoteResultUtil.success();
-        }
-        return NoteResultUtil.error("删除失败");
-
+        return noteService.delUserNote(noteId);
     }
 
     /**
@@ -134,22 +101,12 @@ public class NoteController {
      * @param groupBy 分组
      * @return 笔记列表
      */
-    @GetMapping("/selSearchNote")
-    public NoteResultUtil selSearchNote(@RequestParam("q") String q, Integer page,
+    @GetMapping("selSearchNote")
+    public NoteResultUtil selSearchNote(@RequestParam("q") String q, @RequestParam("page") Integer page,
                                         @RequestParam(value = "orderBy", required = false) String orderBy,
                                         @RequestParam(value = "groupBy", required = false) String groupBy,
                                         @RequestParam(value = "label", required = false) String label) {
-        int count;
-        if (undefined.equals(q)) {
-            q = label;
-            count = noteMapper.selectCount(new QueryWrapper<Note>().like("label_values", q)).intValue();
-        } else {
-            count = noteMapper.selectCount(new QueryWrapper<Note>().like("title", q)).intValue();
-        }
-        if (groupBy == null) {
-            groupBy = "";
-        }
-        return NoteResultUtil.success(String.valueOf(count), noteMapper.selSearchNote(new Page<>(page, 9), q, orderBy, groupBy, label));
+        return noteService.selSearchNote(q, page, orderBy, groupBy, label);
     }
 
     /**
@@ -157,15 +114,9 @@ public class NoteController {
      *
      * @return 笔记所有标签
      */
-    @GetMapping("/selLabelValuesList")
+    @GetMapping("selLabelValuesList")
     public NoteResultUtil selLabelValuesList() {
-        String[] label = noteMapper.selLabelValuesList().toArray(new String[0]);
-        String str = ",";
-        Set<String> labelSet = new HashSet<>();
-        for (String s : label) {
-            labelSet.addAll(Arrays.asList(s.split(str)));
-        }
-        return NoteResultUtil.success(labelSet);
+        return noteService.selLabelValuesList();
     }
 
 }

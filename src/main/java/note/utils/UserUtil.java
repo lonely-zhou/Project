@@ -23,13 +23,12 @@ public class UserUtil {
         UserUtil.userMapper = userMapper;
     }
 
-    public static String selUserId() {
-        String username = StpUtil.getLoginId().toString();
-        return userMapper.selectOne(new QueryWrapper<User>().eq("username", username)).getId();
-    }
-
+    /**
+     * 查询用户信息
+     *
+     * @return 用户信息
+     */
     public static User selUser() {
-        String username = StpUtil.getLoginId().toString();
-        return userMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        return userMapper.selectById(StpUtil.getExtra("user_id").toString());
     }
 }

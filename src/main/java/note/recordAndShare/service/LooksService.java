@@ -2,6 +2,7 @@ package note.recordAndShare.service;
 
 import note.recordAndShare.entity.Looks;
 import com.baomidou.mybatisplus.extension.service.IService;
+import note.utils.NoteResultUtil;
 
 /**
  * <p>
@@ -12,5 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-02-19 11:39:06
  */
 public interface LooksService extends IService<Looks> {
-
+    /**
+     * 用户点赞笔记
+     * @param noteId 笔记id
+     * @return ok
+     */
+    NoteResultUtil insUserLook(String noteId);
 }
