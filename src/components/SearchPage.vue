@@ -1,7 +1,8 @@
 <template>
   <div class="box">
     <div class="search">
-      <el-input
+      <search-vue style="width: 30%; margin-right: 10px" />
+      <!-- <el-input
         v-model="search"
         placeholder="输入关键字 搜索"
         :suffix-icon="Search"
@@ -9,7 +10,7 @@
         clearable
         style="width: 30%; margin-right: 10px"
         @keydown.enter="selSearchNote"
-      />
+      /> -->
       <el-button type="primary" plain @click="selSearchNote">搜索</el-button>
       <el-row class="noteInfo">
         <el-col :span="24" style="margin-bottom: 10px">
@@ -37,7 +38,7 @@
 
       <el-empty description="无数据" v-if="showEmpty" />
       <!-- <el-skeleton :rows="5" v-if="showEmpty" animated class="noteInfo" /> -->
-      <div v-for="(item, index) in searchResult" :key="index" class="noteInfo">
+      <div v-for="(item, index) in searchResult" :key="index" class="noteInfo" v-loading="loading">
         <el-row @click="toReadNote(item.id)" style="cursor: pointer">
           <el-col :span="24" style="margin-bottom: 10px">
             <span class="title"> {{ item.title }} </span>
@@ -80,17 +81,21 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { Search } from '@element-plus/icons-vue';
+// import { Search } from '@element-plus/icons-vue';
 import axios from 'axios';
+import searchVue from './search.vue';
 import router from '../router';
+import api from '../api';
 
 const route = useRoute();
-const { q, tagName } = route.query;
+const store = api.store();
+const { tagName } = route.query;
 const searchResultCount = ref();
-const search = ref(q);
+const search = ref(store.q);
 const orderBy = ref();
 const groupBy = ref();
 const page = ref(1);
+const loading = ref(true);
 const searchResult = ref([
   {
     id: '', // 笔记ID
@@ -201,21 +206,29 @@ function changeGroupBy(group: string) {
 function toReadNote(noteId: string) {
   router.push({ name: 'ReadNote', query: { noteId } });
 }
-onMounted(() => {
+function searchNote() {
   const result = ref();
+  search.value = store.q;
   // 初始搜索笔记列表数据
   axios
-    .get(`api/note/selSearchNote?q=${q}&page=1&label=${tagName}`)
+    .get(`api/note/selSearchNote?q=${search.value}&page=1&label=${tagName}`)
     .then((res) => {
       result.value = res.data;
       searchResult.value = result.value.data.records;
       searchResultCount.value = Number(result.value.msg);
+      loading.value = false;
     })
     .then(() => {
       if (searchResultCount.value > 1000) {
         searchResultCount.value = '1000+';
       }
     });
+}
+router.beforeEach(() => {
+  searchNote();
+});
+onMounted(() => {
+  searchNote();
 });
 </script>
 <style scoped>

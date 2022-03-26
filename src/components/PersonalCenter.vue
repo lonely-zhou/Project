@@ -164,44 +164,44 @@ const uploadData = { username: user.username };
 const userHistoricalAvatar = ref();
 const radio = ref(user.avatarUrl);
 const dialogVisible = ref(false);
-const show = ref(true);
-// const userSettings = ref({ editorStyle: '' });
-// const noteMessage = ref();
-const myData = reactive({
-  myNoteList: [
-    {
-      title: '',
-      createTime: '',
-      look: '',
-      likes: '',
-      collection: '',
-      id: '',
-      message: '',
-      noteType: '',
-    },
-  ],
-  myCommentList: [
-    {
-      id: '',
-      title: '',
-      time: '',
-      message: '',
-      noteId: '',
-    },
-  ],
-  myCollectList: [{ noteId: '', time: '', title: '' }],
-  myLikeList: [{ noteId: '', time: '', title: '' }],
-});
-const paginationData = reactive({
-  totalMyNote: 0,
-  pageMyNote: 1,
-  totalMyComment: 0,
-  pageMyComment: 1,
-  totalMyCollect: 0,
-  pageMyCollect: 1,
-  totalMyLike: 0,
-  pageMyLike: 1,
-});
+// const show = ref(true);
+// // const userSettings = ref({ editorStyle: '' });
+// // const noteMessage = ref();
+// const myData = reactive({
+//   myNoteList: [
+//     {
+//       title: '',
+//       createTime: '',
+//       look: '',
+//       likes: '',
+//       collection: '',
+//       id: '',
+//       message: '',
+//       noteType: '',
+//     },
+//   ],
+//   myCommentList: [
+//     {
+//       id: '',
+//       title: '',
+//       time: '',
+//       message: '',
+//       noteId: '',
+//     },
+//   ],
+//   myCollectList: [{ noteId: '', time: '', title: '' }],
+//   myLikeList: [{ noteId: '', time: '', title: '' }],
+// });
+// const paginationData = reactive({
+//   totalMyNote: 0,
+//   pageMyNote: 1,
+//   totalMyComment: 0,
+//   pageMyComment: 1,
+//   totalMyCollect: 0,
+//   pageMyCollect: 1,
+//   totalMyLike: 0,
+//   pageMyLike: 1,
+// });
 
 const upduser = reactive({
   username: user.username,
@@ -248,14 +248,14 @@ function uploadSuccess() {
   ElMessage.success('头像上传成功，下次登录生效！');
 }
 function clickTap() {
-  show.value = false;
-  if (activeName.value === '我的评论') {
-    axios.get('api/comment/selUserCommentList?page=1').then((res) => {
-      myData.myCommentList = res.data.data.records;
-      paginationData.totalMyComment = Number(res.data.msg);
-      show.value = true;
-    });
-  }
+  // show.value = false;
+  // if (activeName.value === '我的评论') {
+  //   axios.get('api/comment/selUserCommentList?page=1').then((res) => {
+  //     myData.myCommentList = res.data.data.records;
+  //     paginationData.totalMyComment = Number(res.data.msg);
+  //     show.value = true;
+  //   });
+  // }
 }
 function selUserHistoricalAvatar() {
   axios

@@ -41,6 +41,7 @@ const emptyMyCollect = computed(() => {
 function changePage(pageNum: number) {
   axios.get(`api/collects/selUserNoteCollectList?page=${pageNum}`).then((res) => {
     myCollects.value = res.data.data.records;
+    pagination.total = Number(res.data.msg);
   });
 }
 // 删除收藏笔记

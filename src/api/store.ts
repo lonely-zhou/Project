@@ -17,6 +17,8 @@ const useStore = defineStore({
     userNote: [{}],
     isCollapse: false, // 侧边栏展开or折叠
     role: '',
+    q: undefined,
+    classification: '请选择',
   }),
   getters: {
     getUserNote(): any {
@@ -41,6 +43,12 @@ const useStore = defineStore({
     },
     setRole(role: string) {
       this.role = role;
+    },
+    setQ(q: any) {
+      this.q = q;
+    },
+    setClassification(classification: string) {
+      this.classification = classification;
     },
   },
   persist: {

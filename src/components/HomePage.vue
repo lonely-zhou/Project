@@ -4,9 +4,9 @@
       <el-affix>
         <div class="navTop">
           <el-row>
-            <el-col :span="3" :xs="8"><span class="text">生活杂谈</span></el-col>
-            <el-col :span="3" :xs="8"><span class="text">学习分享</span></el-col>
-            <el-col :span="3" :xs="8"><span class="text">工作经验</span></el-col>
+            <el-col :span="3" :xs="8"><span class="text" @click="toClassification('生活杂谈')">生活杂谈</span></el-col>
+            <el-col :span="3" :xs="8"><span class="text" @click="toClassification('学习分享')">学习分享</span></el-col>
+            <el-col :span="3" :xs="8"><span class="text" @click="toClassification('工作经验')">工作经验</span></el-col>
             <!-- 当前日期 城市 天气 温度 -->
             <el-col :span="10" :xs="24">
               <a target="_black" href="https://www.qweather.com/">
@@ -134,14 +134,15 @@
             <el-col :span="24"><img src="../assets/logo_2.png" alt="logo" /></el-col>
             <!-- 搜索 -->
             <el-col :span="24">
-              <el-input
+              <search-vue />
+              <!-- <el-input
                 v-model="search"
                 placeholder="输入关键字 搜索"
                 :suffix-icon="Search"
                 class="search"
                 @keydown.enter="toSearch"
                 clearable
-              />
+              /> -->
             </el-col>
             <!-- 标签云 -->
             <el-col :span="24" style="margin-top: 24px">
@@ -168,12 +169,13 @@
 </template>
 <script lang="ts" setup>
 import { computed, onActivated, onMounted, reactive, ref } from 'vue';
-import { ArrowRightBold, Search } from '@element-plus/icons-vue';
+import { ArrowRightBold } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
 // import { setRoutes } from '../router';
 import FooterVue from './Footer.vue';
+import searchVue from './search.vue';
 import api from '../api/index';
 import Result from '../api/common';
 
@@ -181,7 +183,7 @@ const store = api.store();
 const user = ref();
 const avatarUrl = ref(''); // 头像url
 const router = useRouter();
-const search = ref();
+// const search = ref();
 // 剪贴板操作
 const clipboardObj = navigator.clipboard;
 const labelValuesList = ref();
@@ -362,10 +364,10 @@ function shareUrl(noteId: string) {
     ElMessage.error('复制失败');
   }
 }
-// 跳转搜索结果页
-function toSearch() {
-  router.push({ name: 'SearchPage', query: { q: search.value } });
-}
+// // 跳转搜索结果页
+// function toSearch() {
+//   router.push({ name: 'SearchPage', query: { q: search.value } });
+// }
 // 随机颜色
 function setColor() {
   const R = Math.floor(Math.random() * 130 + 110);
@@ -375,6 +377,7 @@ function setColor() {
 }
 // 点击标签
 function clickTag(tagName: string) {
+  store.setQ(undefined);
   router.push({ name: 'SearchPage', query: { tagName } });
 }
 onActivated(() => {
@@ -398,6 +401,10 @@ onActivated(() => {
     });
 });
 
+function toClassification(str: string) {
+  store.setClassification(str);
+  router.push('classification');
+}
 onMounted(() => {
   const result = ref();
   axios

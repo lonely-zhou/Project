@@ -5,44 +5,50 @@ import 'nprogress/nprogress.css';
 
 const publicRoutes: Array<RouteRecordRaw> = [
   {
+    path: '/classification',
+    name: 'classification',
+    component: () => import('../components/classification.vue'),
+    meta: { title: '分类', roles: ['admin', 'user', 'guest', 'su-admin'] },
+  },
+  {
     path: '/search',
     name: 'SearchPage',
     component: () => import('../components/SearchPage.vue'),
-    meta: { title: '搜索', roles: ['admin', 'user', 'guest'] },
+    meta: { title: '搜索', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
   {
     path: '/reportPage',
     name: 'ReportPage',
     component: () => import('../components/ReportPage.vue'),
-    meta: { title: '举报', roles: ['admin', 'user', 'guest'] },
+    meta: { title: '举报', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
   {
     path: '/readNote',
     name: 'ReadNote',
     component: () => import('../components/ReadNote.vue'),
-    meta: { title: '阅读全文', roles: ['admin', 'user', 'guest'] },
+    meta: { title: '阅读全文', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('../components/Login.vue'),
-    meta: { title: '登录', roles: ['admin', 'user', 'guest'] },
+    meta: { title: '登录', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
   {
     path: '/signup',
     name: 'SignUp',
     component: () => import('../components/SignUp.vue'),
-    meta: { title: '注册', roles: ['admin', 'user', 'guest'] },
+    meta: { title: '注册', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
-  // { path: '/:pathMatch(.*)', redirect: '/404' },
   {
     path: '/',
     name: 'Home',
     alias: '/index',
     component: () => import('../components/HomePage.vue'),
-    meta: { keepAlive: true, title: '首页', roles: ['admin', 'user', 'guest'] },
+    meta: { keepAlive: true, title: '首页', roles: ['admin', 'user', 'guest', 'su-admin'] },
   },
 ];
+
 export const asyncRoutes: Array<RouteRecordRaw> = [
   {
     path: '/admin',

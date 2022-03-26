@@ -60,10 +60,11 @@ import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api';
-import cookies from '../api/cookies';
+// import cookies from '../api/cookies';
 import router from '../router';
 
 const route = useRoute();
+const store = api.store();
 const path = 'personalCenter';
 const { showInfo } = route.params;
 const activeName = ref('step1');
@@ -72,7 +73,7 @@ const wait60s = ref(); // 60秒等待
 const wait60sText = ref('获取验证码');
 const wait60sShow = ref(true);
 // const code = ref();
-const userInfo = api.cookies.get('userInfo') as any;
+const userInfo = store.user;
 const updPhone = reactive({
   phone: '',
   code: '',
@@ -133,7 +134,8 @@ function updatePhone() {
     .post('/api/user/updUserPhone', userData)
     .then((res) => {
       result.value = res.data;
-      cookies.set('userInfo', JSON.stringify(result.value.data), '7d');
+      // cookies.set('userInfo', JSON.stringify(result.value.data), '7d');
+      store.setUser(result.value.data);
     })
     .then(() => {
       if (result.value.code === 200) {
@@ -156,7 +158,8 @@ function updateEmail() {
     .post('/api/user/updUserEmail', userData)
     .then((res) => {
       result.value = res.data;
-      cookies.set('userInfo', JSON.stringify(result.value.data), '7d');
+      store.setUser(result.value.data);
+      // cookies.set('userInfo', JSON.stringify(result.value.data), '7d');
     })
     .then(() => {
       if (result.value.code === 200) {

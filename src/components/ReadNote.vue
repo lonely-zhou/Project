@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="box" v-loading="loading">
     <PageHeaderVue :detail="detail" :path="path" />
     <div class="noteInfo">
       <h1 class="title">{{ note.title }}</h1>
@@ -79,7 +79,7 @@
 </template>
 <script lang="ts" setup>
 import axios from 'axios';
-import { ElMessage, ElNotification } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
@@ -97,6 +97,7 @@ const clipboardObj = navigator.clipboard;
 const noteCommentList = ref();
 const total = ref(); // 分页数
 const page = ref(1);
+const loading = ref(true);
 
 const comment = reactive({
   message: '',
@@ -160,11 +161,7 @@ function insLike() {
       isUserLikeNote();
     });
   } else {
-    ElNotification({
-      title: 'Warning',
-      message: '登录才能点赞哦！',
-      type: 'warning',
-    });
+    ElMessage.error('未登录');
   }
 }
 
@@ -195,8 +192,6 @@ function submitComment() {
     ElMessage.error('未登录');
     return;
   }
-  console.log(comment);
-
   axios
     .post('api/comment/insNoteComment', comment)
     .then((res) => {
@@ -257,6 +252,7 @@ onMounted(() => {
     result.value = res[0].data;
     note.value = result.value.data;
     noteCommentCount.value = res[1].data.data;
+    loading.value = false;
   });
   if (loginFlag.value) {
     isUserLikeNote();
