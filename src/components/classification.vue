@@ -9,7 +9,8 @@
           </el-select>
         </el-aside>
         <el-container>
-          <el-main class="main" v-loading="loading">
+          <el-empty description="无笔记" v-show="emptyNote" />
+          <el-main class="main" v-loading="loading" v-show="!emptyNote">
             <el-card class="box-card" v-for="(item, index) in noteList" :key="index">
               <template #header>
                 <div class="card-header">
@@ -66,14 +67,12 @@
 <script lang="ts" setup>
 import axios from 'axios';
 import { onMounted, reactive, ref } from 'vue';
-// import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import Result from '../api/common';
 import api from '../api';
 import router from '../router';
 import PageHeaderVue from './PageHeader.vue';
 
-// const route = useRoute();
 const store = api.store();
 const value = ref(store.classification);
 const placeholder = ref('请选择');
@@ -107,8 +106,10 @@ const noteList = ref([
     avatarUrl: '', // 头像
   },
 ]);
-
+const emptyNote = ref(true);
+// 分类查询笔记
 function selClassificationNote() {
+  store.setClassification(value.value);
   loading.value = true;
   let result: Result;
   axios
@@ -120,6 +121,8 @@ function selClassificationNote() {
       noteList.value = result.data.records;
       pagination.total = Number(result.msg);
       loading.value = false;
+      if (noteList.value.length !== 0) emptyNote.value = false;
+      else emptyNote.value = true;
     });
 }
 // 跳转阅读全文

@@ -16,10 +16,14 @@
           <span>提供 CDN 加速</span>
         </el-col>
         <el-col :span="24">
-          © {{ year }} 记录与分享 <a target="_blank" href="https://beian.miit.gov.cn"> 辽ICP备2021007788号 </a>
-          <img src="https://img.lonelyzhou.cn/RecordAndShare/%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" />
+          <img :src="`https://img.shields.io/badge/©${year}-记录与分享-critical`" />
+          <a target="_blank" href="https://beian.miit.gov.cn">
+            <img src="https://img.shields.io/badge/辽ICP备-2021007788号-blue" />
+          </a>
           <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=21142102000082">
-            辽公网安备 21142102000082号
+            <img
+              :src="`https://img.shields.io/badge/辽公网安备-21142102000082号-blue?logo=data:image/png;base64,${BAIcon}`"
+            />
           </a>
         </el-col>
       </el-row>
@@ -27,9 +31,18 @@
   </el-footer>
 </template>
 <script lang="ts" setup>
+import axios from 'axios';
+import { ref } from 'vue';
 import api from '../api/index';
 
 const year: number = api.dateFormat.getDateRormatY();
+const BAIcon = ref();
+axios
+  .get('api/user/selBA_Icon')
+  .then((res) => {
+    BAIcon.value = res.data;
+  })
+  .then(() => {});
 </script>
 <style scoped>
 .box {
