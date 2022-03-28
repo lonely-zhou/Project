@@ -12,7 +12,7 @@
       <el-table-column prop="message" label="举报理由" />
       <el-table-column align="right" fixed="right">
         <template #header>
-          <el-input v-model="search" size="small" placeholder="Type to search" />
+          <el-input v-model="search" size="small" placeholder="搜索笔记" @keydown.enter="searchNote" />
         </template>
         <template #default="scope">
           <el-button size="small" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
@@ -104,7 +104,17 @@ function delRepotrNote(index: number, noteId: string) {
       if (result.code === 200) ElMessage.success('撤销成功');
     });
 }
-
+function searchNote() {
+  let result: Result;
+  axios
+    .get(`/api/admin/searchNote?page=1&title=${search.value}`)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      allReportNote.value = result.data.records;
+    });
+}
 onMounted(() => {
   let result: Result;
   axios.get('/api/report-note/selAllReportNote').then((res) => {

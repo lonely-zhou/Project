@@ -38,7 +38,7 @@ import api from '../api/index';
 const year: number = api.dateFormat.getDateRormatY();
 const BAIcon = ref();
 axios
-  .get('api/user/selBA_Icon')
+  .get('api/user/selBaIcon')
   .then((res) => {
     BAIcon.value = res.data;
   })

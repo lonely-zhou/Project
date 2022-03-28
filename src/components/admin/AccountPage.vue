@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <el-table :data="allUser" stripe>
+    <el-table :data="allUser" stripe v-loading="loading">
       <el-table-column type="index" label="序号" />
       <el-table-column label="头像" min-width="50">
         <template #default="scope">
@@ -16,11 +16,10 @@
       <el-table-column prop="rname" label="角色" />
       <el-table-column align="right" fixed="right">
         <template #header>
-          <el-input v-model="search" size="small" placeholder="Type to search" />
+          <el-input v-model="search" size="small" placeholder="搜索用户" @keydown.enter="searchUser" />
         </template>
         <template #default="scope">
           <el-dropdown split-button size="small" @command="handleRole">
-            <!-- <el-button size="small" @click="handleRole(scope.$index, scope.row.id)">更改角色</el-button> -->
             <span>更改角色</span>
             <template #dropdown>
               <el-dropdown-menu>
@@ -30,9 +29,16 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)" style="margin-left: 2px">
-            删除
-          </el-button>
+          <el-popconfirm
+            title="确定删除该用户?"
+            confirm-button-text="确定"
+            cancel-button-text="取消"
+            @confirm="handleDelete(scope.$index, scope.row)"
+          >
+            <template #reference>
+              <el-button size="small" type="danger">删除</el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -58,6 +64,7 @@ const allUser = ref([]);
 const search = ref();
 const page = ref(1);
 const total = ref();
+const loading = ref(true);
 interface User {
   avatarUrl: '';
   email: '';
@@ -72,6 +79,18 @@ interface User {
 }
 // 删除用户
 function handleDelete(index: number, row: User) {
+  let result: Result;
+  axios
+    .delete(`/api/user/delUser?userId=${row.id}`)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      if (result.code === 200) {
+        allUser.value.splice(index, 1);
+        ElMessage.success('删除成功');
+      } else ElMessage.error('删除失败');
+    });
   console.log(index, row);
 }
 // 改变页码
@@ -105,7 +124,17 @@ function handleRole(str: string) {
       } else ElMessage.error(result.msg);
     });
 }
-
+function searchUser() {
+  let result: Result;
+  axios
+    .get(`/api/admin/searchUser?page=1&username=${search.value}`)
+    .then((res) => {
+      result = res.data;
+    })
+    .then(() => {
+      allUser.value = result.data.records;
+    });
+}
 onMounted(() => {
   let result: any;
   axios
@@ -116,6 +145,7 @@ onMounted(() => {
     .then(() => {
       allUser.value = result.data.records;
       total.value = Number(result.msg);
+      loading.value = false;
     });
 });
 </script>

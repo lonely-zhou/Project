@@ -16,14 +16,18 @@
             <el-icon><files /></el-icon>
             <span>网站数据</span>
           </el-menu-item>
-          <el-sub-menu index="2" v-if="showSystemAdmin">
-            <template #title>
-              <el-icon><setting /></el-icon>
-              <span>系统管理</span>
-            </template>
-            <el-menu-item index="/admin/account">账号管理</el-menu-item>
-            <el-menu-item index="1-2">角色管理</el-menu-item>
-          </el-sub-menu>
+          <!-- <el-sub-menu index="2" v-if="showSystemAdmin"> -->
+          <!-- <template #title> -->
+          <!-- <el-icon><setting /></el-icon> -->
+          <!-- <span>系统管理</span> -->
+          <!-- </template> -->
+          <!-- <el-menu-item index="/admin/account">账号管理</el-menu-item> -->
+          <!-- <el-menu-item index="/admin/role">角色管理</el-menu-item> -->
+          <!-- </el-sub-menu> -->
+          <el-menu-item index="/admin/account" v-if="showSystemAdmin">
+            <el-icon><setting /></el-icon>
+            <span>账号管理</span>
+          </el-menu-item>
           <el-menu-item index="/admin/note">
             <el-icon><edit-pen /></el-icon>
             <span>笔记管理</span>

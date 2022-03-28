@@ -35,7 +35,7 @@
         &nbsp;已收藏
       </el-button>
       <el-button type="warning" plain class="iconfont icon-share" @click="shareUrl">&nbsp;分享</el-button>
-      <el-button type="danger" plain class="iconfont icon-flag">&nbsp;举报</el-button>
+      <el-button type="danger" plain class="iconfont icon-flag" @click="toReportPage">&nbsp;举报</el-button>
       <el-button type="info" plain class="iconfont icon-download" @click="download">&nbsp;下载</el-button>
     </div>
     <div class="insComment">
@@ -84,6 +84,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
 import api from '../api';
+import router from '../router';
 
 const route = useRoute();
 const detail = '阅读全文';
@@ -245,6 +246,11 @@ function download() {
   if (note.value.noteType === 'note') type = 'html';
   else type = 'md';
   api.download(note.value.title, note.value.text, type);
+}
+
+// 跳转举报页
+function toReportPage() {
+  router.push({ name: 'ReportPage', query: { noteId } });
 }
 onMounted(() => {
   const result = ref();

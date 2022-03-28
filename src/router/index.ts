@@ -64,6 +64,12 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         meta: { title: '账户管理', roles: ['su-admin'], menu: true },
       },
       {
+        path: 'role',
+        name: 'roleControl',
+        component: () => import('../components/admin/roleControl.vue'),
+        meta: { title: '角色管理', roles: ['su-admin'], menu: true },
+      },
+      {
         path: 'analysis',
         name: 'AnalysisPage',
         component: () => import('../components/admin/AnalysisPage.vue'),
