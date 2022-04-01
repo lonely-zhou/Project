@@ -119,4 +119,9 @@ public class NoteController {
         return noteService.selLabelValuesList();
     }
 
+    @GetMapping("selClassificationNote")
+    public NoteResultUtil selClassificationNote(@RequestParam("page") Integer page, @RequestParam("classification") String classification) {
+        return noteService.selClassificationNote(classification, page);
+    }
+
 }

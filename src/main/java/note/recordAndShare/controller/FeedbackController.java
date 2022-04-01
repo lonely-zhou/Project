@@ -44,7 +44,8 @@ public class FeedbackController {
      */
     @GetMapping("selAllFeedback")
     public NoteResultUtil selAllFeedback(@RequestParam("page") Integer page) {
-        return NoteResultUtil.success(feedbackMapper.selectPage(new Page<>(page, 9), null));
+        int count = feedbackMapper.selectCount(null).intValue();
+        return NoteResultUtil.success(String.valueOf(count), feedbackMapper.selectPage(new Page<>(page, 9), null));
     }
 
     /**

@@ -45,7 +45,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public NoteResultUtil insNoteComment(Comment comment) {
-        comment.setId(UUID.randomUUID().toString());
+//        comment.setId(UUID.randomUUID().toString());
         comment.setUserId(StpUtil.getExtra("user_id").toString());
         if (commentMapper.insert(comment) != 1) {
             return NoteResultUtil.error("评论失败");

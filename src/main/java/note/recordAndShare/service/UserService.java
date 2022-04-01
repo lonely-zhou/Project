@@ -175,4 +175,12 @@ public interface UserService extends IService<User> {
      * @return 用户信息
      */
     NoteResultUtil updUser(User user);
+
+    /**
+     * 删除用户
+     * @param userId 用户id
+     * @return ok
+     */
+    NoteResultUtil delUser(String userId);
+
 }

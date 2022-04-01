@@ -43,7 +43,7 @@ public class CollectsServiceImpl extends ServiceImpl<CollectsMapper, Collects> i
             collectsMapper.delete(new QueryWrapper<Collects>().eq("user_id", userId).eq("note_id", noteId));
         } else {
             Collects collects = new Collects();
-            collects.setId(UUID.randomUUID().toString());
+//            collects.setId(UUID.randomUUID().toString());
             collects.setUserId(userId);
             collects.setNoteId(noteId);
             collects.setTime(new TimeUtil().getFormatDateForFive());

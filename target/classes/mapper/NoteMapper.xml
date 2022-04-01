@@ -41,4 +41,11 @@
             </when>
         </choose>
     </select>
+    <select id="selClassificationNote" resultType="note.recordAndShare.entity.dto.NoteDto">
+        select n.*, u.avatar_url
+        from note n
+        join user u on u.id = n.user_id
+        where n.message = 0
+        and n.select_type = #{classification}
+    </select>
 </mapper>

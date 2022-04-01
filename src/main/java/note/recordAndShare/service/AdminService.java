@@ -34,4 +34,13 @@ public interface AdminService {
      * @return ok
      */
     NoteResultUtil updUserRole(Integer rid, String id);
+
+    /**
+     * 搜索用户
+     *
+     * @param page     分页
+     * @param username 用户名
+     * @return 用户信息
+     */
+    NoteResultUtil searchUser(Integer page, String username);
 }

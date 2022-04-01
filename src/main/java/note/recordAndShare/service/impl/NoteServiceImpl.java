@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import note.recordAndShare.entity.Note;
+import note.recordAndShare.entity.dto.NoteDto;
 import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.NoteService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -166,5 +167,18 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
             labelSet.addAll(Arrays.asList(s.split(str)));
         }
         return NoteResultUtil.success(labelSet);
+    }
+
+    /**
+     * 查询分类笔记
+     *
+     * @param classification 分类
+     * @param page           分页
+     * @return 笔记列表
+     */
+    @Override
+    public NoteResultUtil selClassificationNote(String classification, Integer page) {
+        int count = noteMapper.selectCount(new QueryWrapper<Note>().eq("select_type", classification)).intValue();
+        return NoteResultUtil.success(String.valueOf(count), noteMapper.selClassificationNote(new Page<NoteDto>(page, 9), classification));
     }
 }

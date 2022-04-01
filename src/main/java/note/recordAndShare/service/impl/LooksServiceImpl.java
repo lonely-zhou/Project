@@ -43,7 +43,7 @@ public class LooksServiceImpl extends ServiceImpl<LooksMapper, Looks> implements
             note.setLook(note.getLook() + 1);
             noteMapper.update(note, new QueryWrapper<Note>().eq("id", noteId));
             Looks looks = new Looks();
-            looks.setId(UUID.randomUUID().toString());
+//            looks.setId(UUID.randomUUID().toString());
             looks.setUserId(userId);
             looks.setNoteId(noteId);
             looks.setTime(new TimeUtil().getFormatDateForFive());

@@ -40,6 +40,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
         patterns.add("/recordAndShare/report-note/insReportNote");
         patterns.add("/recordAndShare/comment/selNoteCommentCount");
         patterns.add("/recordAndShare/comment/selNoteCommentList");
+        patterns.add("/recordAndShare/note/selClassificationNote");
         registry.addInterceptor(new SaAnnotationInterceptor()).addPathPatterns("/**");
         registry.addInterceptor(new SaRouteInterceptor()).addPathPatterns("/**").excludePathPatterns(patterns);
     }

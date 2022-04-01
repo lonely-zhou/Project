@@ -79,4 +79,16 @@ public class AdminServiceImpl implements AdminService {
         }
         return NoteResultUtil.error("修改失败");
     }
+
+    /**
+     * 搜索用户
+     *
+     * @param page     分页
+     * @param username 用户名
+     * @return 用户信息
+     */
+    @Override
+    public NoteResultUtil searchUser(Integer page, String username) {
+        return NoteResultUtil.success(userMapper.searchUser(new Page<>(page, 9), username));
+    }
 }

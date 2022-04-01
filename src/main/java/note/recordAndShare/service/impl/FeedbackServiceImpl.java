@@ -64,7 +64,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
         if (state.equals(feedback.getState())) {
             return NoteResultUtil.error("已经是取消状态");
         }
-        feedback.setState(state);
+        feedback.setState(feedback.getState());
         int count = feedbackMapper.updateById(feedback);
         if (count == 1) {
             return NoteResultUtil.success();

@@ -2,6 +2,7 @@ C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\not
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\saToken\StpInterfaceImpl.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\dto\ReportNoteDto.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\utils\GlobalExceptionUtil.java
+C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\mapper\AnalysisMapper.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\dto\CommentDto.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\AdminService.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\impl\CollectsServiceImpl.java
@@ -26,6 +27,7 @@ C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\not
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\mapper\CommentMapper.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\utils\BuildArticleTabloidUtil.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\utils\TimeUtil.java
+C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\AnalysisService.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\mapper\LikesMapper.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\SettingsController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\dto\NoteDto.java
@@ -46,6 +48,7 @@ C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\not
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\UserController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\User.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\mapper\UserMapper.java
+C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\impl\AnalysisServiceImpl.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\AdminController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\Likes.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\FeedbackService.java
@@ -54,6 +57,7 @@ C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\not
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\impl\ReportNoteServiceImpl.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\FeedbackController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\config\RedisConfig.java
+C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\Analysis.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\mapper\FeedbackMapper.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\LooksService.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\SettingsService.java
@@ -70,6 +74,7 @@ C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\not
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\CollectsController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\impl\SettingsServiceImpl.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\service\CommentService.java
+C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\controller\AnalysisController.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\utils\UserUtil.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\recordAndShare\entity\Role.java
 C:\Users\lonel\Documents\Data\GraduationProject\RecordAndShare\src\main\java\note\utils\EmailUtil.java

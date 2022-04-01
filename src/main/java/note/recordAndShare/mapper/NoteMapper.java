@@ -31,9 +31,10 @@ public interface NoteMapper extends BaseMapper<Note> {
 
     /**
      * 用户笔记查询
+     *
      * @param message 是否公开
-     * @param page   页码
-     * @param userid userid
+     * @param page    页码
+     * @param userid  userid
      * @return 笔记列表
      */
     IPage<NoteDto> selectUserNote(Page<?> page, @Param("userid") String userid, String message);
@@ -60,5 +61,14 @@ public interface NoteMapper extends BaseMapper<Note> {
      */
     @Select("select distinct label_values from note")
     List<String> selLabelValuesList();
+
+    /**
+     * 查询分类笔记
+     *
+     * @param classification 分类
+     * @param page           分页
+     * @return 笔记列表
+     */
+    IPage<NoteDto> selClassificationNote(Page<?> page, @Param("classification") String classification);
 
 }

@@ -2,6 +2,7 @@ package note.recordAndShare.service.impl;
 
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import note.recordAndShare.entity.ReportNote;
 import note.recordAndShare.entity.dto.ReportNoteDto;
@@ -36,7 +37,7 @@ public class ReportNoteServiceImpl extends ServiceImpl<ReportNoteMapper, ReportN
      */
     @Override
     public NoteResultUtil insReportNote(ReportNote reportNote) {
-        reportNote.setId(UUID.randomUUID().toString());
+//        reportNote.setId(UUID.randomUUID().toString());
         reportNote.setTime(new TimeUtil().getFormatDateForFive());
         if (reportNoteMapper.insert(reportNote) == 1) {
             return NoteResultUtil.success();
@@ -75,5 +76,17 @@ public class ReportNoteServiceImpl extends ServiceImpl<ReportNoteMapper, ReportN
             return NoteResultUtil.success();
         }
         return NoteResultUtil.error("撤销失败");
+    }
+
+    /**
+     * 搜索举报笔记
+     *
+     * @param page  分页
+     * @param title 笔记标题
+     * @return 举报笔记
+     */
+    @Override
+    public NoteResultUtil searchNote(Integer page, String title) {
+        return NoteResultUtil.success(reportNoteMapper.searchNote(new Page<>(page, 9), title));
     }
 }

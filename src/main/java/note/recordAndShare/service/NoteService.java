@@ -75,6 +75,14 @@ public interface NoteService extends IService<Note> {
     NoteResultUtil selSearchNote(String q, Integer page, String orderBy, String groupBy, String label);
 
     /**
+     * 查询分类笔记
+     * @param classification 分类
+     * @param page 分页
+     * @return 笔记列表
+     */
+    NoteResultUtil selClassificationNote(String classification,Integer page);
+
+    /**
      * 查询笔记所有标签
      *
      * @return 笔记所有标签

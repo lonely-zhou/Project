@@ -421,4 +421,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         BeanUtil.copyProperties(user1, userDto);
         return NoteResultUtil.success(userDto);
     }
+
+    /**
+     * 删除用户
+     *
+     * @param userId 用户id
+     * @return ok
+     */
+    @Override
+    public NoteResultUtil delUser(String userId) {
+        String username = userMapper.selectById(userId).getUsername();
+        int count = userMapper.deleteById(userId);
+        if (count == 1) {
+            redisUtil.hdel(ConstantUtil.USER_NAME, username);
+            return NoteResultUtil.success();
+        }
+        return NoteResultUtil.error("注销失败");
+    }
+
 }

@@ -229,4 +229,25 @@ public class UserController {
         return userService.selUserHistoricalAvatar();
     }
 
+    /**
+     * 备案图标
+     *
+     * @return 64
+     */
+    @GetMapping("selBaIcon")
+    public String selBaIcon() {
+        return ConstantUtil.BA_ICON;
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param userId 用户id
+     * @return ok
+     */
+    @DeleteMapping("delUser")
+    public NoteResultUtil delUser(@RequestParam("userId") String userId) {
+        return userService.delUser(userId);
+    }
+
 }

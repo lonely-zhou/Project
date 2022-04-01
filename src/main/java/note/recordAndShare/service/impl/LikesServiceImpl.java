@@ -43,7 +43,7 @@ public class LikesServiceImpl extends ServiceImpl<LikesMapper, Likes> implements
             likesMapper.delete(new QueryWrapper<Likes>().eq("user_id", userId).eq("note_id", noteId));
         } else {
             Likes likes = new Likes();
-            likes.setId(UUID.randomUUID().toString());
+//            likes.setId(UUID.randomUUID().toString());
             likes.setUserId(userId);
             likes.setNoteId(noteId);
             likes.setTime(new TimeUtil().getFormatDateForFive());
