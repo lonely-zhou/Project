@@ -1,4 +1,5 @@
 <template>
+  <page-header-vue :detail="detail" />
   <div class="box">
     <div class="reportBox">
       <div class="reportNoteInfo">
@@ -54,14 +55,6 @@
           <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button>
         </el-form-item>
       </el-form>
-      <!-- <el-input
-        v-model="report.message"
-        :autosize="{ minRows: 2, maxRows: 4 }"
-        type="textarea"
-        placeholder="说点什么吧！"
-      />
-      <el-input v-model="report.email" placeholder="输入邮箱" style="margin-top: 20px" />
-      <el-button type="primary" plain style="width: 100%; margin-top: 40px" @click="insReportNote">提交</el-button> -->
     </div>
   </div>
 </template>
@@ -71,8 +64,10 @@ import { ElMessage } from 'element-plus';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import Result from '../api/common';
+import PageHeaderVue from './PageHeader.vue';
 
 const route = useRoute();
+const detail = '举报笔记';
 const { noteId } = route.query;
 const noteInfo = ref({ name: '', title: '', selectType: '' });
 const isMessageTrue = ref(false);

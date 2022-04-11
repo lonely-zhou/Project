@@ -1,7 +1,7 @@
 <template>
   <page-header-vue :detail="detail" :path="path" />
   <div class="box">
-    <div style="text-align: left">
+    <div class="tabs">
       <el-tabs tab-position="left" type="card" v-model="activeName" @tab-click="clickTap">
         <el-tab-pane label="首页" name="首页" style="margin-top: 20px">
           <el-row>
@@ -280,19 +280,6 @@ function submitAvatar() {
 }
 </script>
 <style scoped>
-.box {
-  background-color: white;
-}
-.box > div {
-  overflow: hidden;
-  width: 980px;
-  height: 100%;
-  margin: 10px auto 100px;
-  border: 1px solid #e1e2e5;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
-  border-radius: 4px;
-  background-color: #fafafa;
-}
 p {
   text-align: left;
 }
@@ -374,5 +361,16 @@ p {
 }
 .historicalAvatar {
   margin-right: 20px;
+}
+.tabs {
+  text-align: left;
+  overflow: hidden;
+  width: 980px;
+  height: 100%;
+  margin: 10px auto 100px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
+  background-color: #ffffff;
+  margin-top: 120px;
 }
 </style>

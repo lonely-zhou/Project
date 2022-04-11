@@ -89,7 +89,6 @@ function handleInfo(index: number, row: Note) {
   console.log(row);
 }
 function handleDelete(index: number) {
-  console.log(index);
   axios.get(`api/note/delUserNote?noteId=${index}`);
 }
 function delRepotrNote(index: number, noteId: string) {
