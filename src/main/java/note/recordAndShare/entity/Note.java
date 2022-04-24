@@ -6,19 +6,17 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * <p>
- *
+ * 笔记表
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-01-26 09:57:41
+ * @since 2022-04-01 05:15:33
  */
 @Getter
 @Setter
-@ToString
 @TableName("note")
 public class Note {
 
@@ -47,13 +45,13 @@ public class Note {
     private String labelValues;
 
     /**
-     * 文章类型
+     * 笔记分类
      */
     @TableField("select_type")
     private String selectType;
 
     /**
-     * 笔记分类
+     * 笔记类型
      */
     @TableField("select_categories")
     private String selectCategories;
@@ -118,7 +116,11 @@ public class Note {
     @TableField("user_id")
     private String userId;
 
+    /**
+     * 笔记类型
+     */
     @TableField("note_type")
     private String noteType;
+
 
 }

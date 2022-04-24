@@ -3,17 +3,19 @@ package note.recordAndShare.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
- * 
+ * 权限表
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-01-26 09:57:41
+ * @since 2022-04-01 05:15:33
  */
-@Data
+@Getter
+@Setter
 @TableName("role")
 public class Role {
 

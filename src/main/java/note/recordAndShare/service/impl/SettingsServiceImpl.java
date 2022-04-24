@@ -8,7 +8,6 @@ import note.recordAndShare.mapper.SettingsMapper;
 import note.recordAndShare.service.SettingsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import note.utils.NoteResultUtil;
-import note.utils.UserUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,10 +35,9 @@ public class SettingsServiceImpl extends ServiceImpl<SettingsMapper, Settings> i
         String userId = StpUtil.getExtra("user_id").toString();
         int count = settingsMapper.selectCount(new QueryWrapper<Settings>().eq("user_id", userId)).intValue();
         Settings settings = new Settings();
-        settings.setUserId(userId);
         settings.setEditorStyle(editor);
         if (count != 0) {
-            settingsMapper.updateById(settings);
+            settingsMapper.update(settings,new QueryWrapper<Settings>().eq("user_id",userId));
         } else {
             settingsMapper.insert(settings);
         }
@@ -53,6 +51,20 @@ public class SettingsServiceImpl extends ServiceImpl<SettingsMapper, Settings> i
      */
     @Override
     public NoteResultUtil selUserSettingsList() {
-        return NoteResultUtil.success(settingsMapper.selectById(StpUtil.getExtra("user_id").toString()));
+        return NoteResultUtil.success(settingsMapper.selectOne(new QueryWrapper<Settings>().eq("user_id",StpUtil.getExtra("user_id").toString())));
+    }
+
+    /**
+     * 更改用户设置-动态背景
+     *
+     * @param dynamicBackground 0or1
+     * @return ok
+     */
+    @Override
+    public NoteResultUtil updDynamicBackground(String dynamicBackground) {
+        String userId = StpUtil.getExtra("user_id").toString();
+        Settings settings = new Settings();
+        settings.setDynamicBackground("true".equals(dynamicBackground) ? 1 : 0);
+        return NoteResultUtil.success(settingsMapper.update(settings,new QueryWrapper<Settings>().eq("user_id",userId)));
     }
 }

@@ -1,7 +1,6 @@
 package note.recordAndShare.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
@@ -43,7 +42,6 @@ public class LikesServiceImpl extends ServiceImpl<LikesMapper, Likes> implements
             likesMapper.delete(new QueryWrapper<Likes>().eq("user_id", userId).eq("note_id", noteId));
         } else {
             Likes likes = new Likes();
-//            likes.setId(UUID.randomUUID().toString());
             likes.setUserId(userId);
             likes.setNoteId(noteId);
             likes.setTime(new TimeUtil().getFormatDateForFive());

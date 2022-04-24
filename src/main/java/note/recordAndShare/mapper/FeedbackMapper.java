@@ -1,7 +1,7 @@
 package note.recordAndShare.mapper;
 
-import note.recordAndShare.entity.Feedback;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import note.recordAndShare.entity.Feedback;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

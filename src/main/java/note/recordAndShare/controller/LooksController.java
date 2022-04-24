@@ -1,16 +1,9 @@
 package note.recordAndShare.controller;
 
 
-import cn.hutool.core.lang.UUID;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
-import note.recordAndShare.entity.Looks;
-import note.recordAndShare.entity.Note;
-import note.recordAndShare.mapper.LooksMapper;
-import note.recordAndShare.mapper.NoteMapper;
 import note.recordAndShare.service.LooksService;
 import note.utils.NoteResultUtil;
-import note.utils.TimeUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 

@@ -3,6 +3,7 @@ package note.recordAndShare.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,19 +13,18 @@ import lombok.Setter;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-02-19 11:39:06
+ * @since 2022-04-01 05:15:33
  */
 @Getter
 @Setter
 @TableName("looks")
 public class Looks {
 
-    @TableId("id")
-    private String id;
-
+    @MppMultiId
     @TableField("user_id")
     private String userId;
 
+    @MppMultiId
     @TableField("note_id")
     private String noteId;
 

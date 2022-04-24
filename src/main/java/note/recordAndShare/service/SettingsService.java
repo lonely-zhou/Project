@@ -1,7 +1,7 @@
 package note.recordAndShare.service;
 
-import note.recordAndShare.entity.Settings;
 import com.baomidou.mybatisplus.extension.service.IService;
+import note.recordAndShare.entity.Settings;
 import note.utils.NoteResultUtil;
 
 /**
@@ -27,4 +27,11 @@ public interface SettingsService extends IService<Settings> {
      * @return 用户所有设置
      */
     NoteResultUtil selUserSettingsList();
+
+    /**
+     * 更改用户设置-动态背景
+     * @param dynamicBackground 0or1
+     * @return ok
+     */
+    NoteResultUtil updDynamicBackground(String dynamicBackground);
 }

@@ -2,13 +2,11 @@ package note.recordAndShare.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import note.recordAndShare.entity.Comment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import note.recordAndShare.entity.Comment;
 import note.recordAndShare.entity.dto.CommentDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>

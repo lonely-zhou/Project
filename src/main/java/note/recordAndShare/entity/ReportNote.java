@@ -3,6 +3,7 @@ package note.recordAndShare.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import lombok.Setter;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-03-11 12:35:35
+ * @since 2022-04-01 05:15:33
  */
 @Getter
 @Setter
@@ -22,8 +23,9 @@ public class ReportNote {
     /**
      * 举报表ID
      */
-    @TableId("id")
-    private String id;
+    @MppMultiId
+    @TableField("userId")
+    private String userId;
 
     /**
      * 举报者邮箱
@@ -34,6 +36,7 @@ public class ReportNote {
     /**
      * 违规笔记ID
      */
+    @MppMultiId
     @TableField("noteId")
     private String noteId;
 

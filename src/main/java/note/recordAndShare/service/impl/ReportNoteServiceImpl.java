@@ -1,6 +1,5 @@
 package note.recordAndShare.service.impl;
 
-import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
@@ -37,7 +36,6 @@ public class ReportNoteServiceImpl extends ServiceImpl<ReportNoteMapper, ReportN
      */
     @Override
     public NoteResultUtil insReportNote(ReportNote reportNote) {
-//        reportNote.setId(UUID.randomUUID().toString());
         reportNote.setTime(new TimeUtil().getFormatDateForFive());
         if (reportNoteMapper.insert(reportNote) == 1) {
             return NoteResultUtil.success();

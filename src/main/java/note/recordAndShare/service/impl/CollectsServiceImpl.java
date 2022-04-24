@@ -1,7 +1,6 @@
 package note.recordAndShare.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
@@ -43,7 +42,6 @@ public class CollectsServiceImpl extends ServiceImpl<CollectsMapper, Collects> i
             collectsMapper.delete(new QueryWrapper<Collects>().eq("user_id", userId).eq("note_id", noteId));
         } else {
             Collects collects = new Collects();
-//            collects.setId(UUID.randomUUID().toString());
             collects.setUserId(userId);
             collects.setNoteId(noteId);
             collects.setTime(new TimeUtil().getFormatDateForFive());

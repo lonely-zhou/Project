@@ -2,8 +2,8 @@ package note.recordAndShare.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import note.recordAndShare.entity.Collects;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import note.recordAndShare.entity.Collects;
 import note.recordAndShare.entity.dto.CollectsDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

@@ -3,6 +3,7 @@ package note.recordAndShare.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import lombok.Setter;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-03-16 04:30:34
+ * @since 2022-04-01 05:15:33
  */
 @Getter
 @Setter
@@ -41,8 +42,13 @@ public class Feedback {
      * 时间
      */
     @TableField("time")
-    private String time;
+    private LocalDateTime time;
 
+    /**
+     * 处理状态
+     */
     @TableField("state")
     private String state;
+
+
 }

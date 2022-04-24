@@ -2,8 +2,8 @@ package note.recordAndShare.service;
 
 import com.upyun.UpException;
 import freemarker.template.TemplateException;
-import note.recordAndShare.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import note.recordAndShare.entity.User;
 import note.utils.NoteResultUtil;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -12,14 +12,17 @@ import lombok.Setter;
  * </p>
  *
  * @author lonelyzhou
- * @since 2022-03-03 04:00:31
+ * @since 2022-04-01 05:15:33
  */
 @Getter
 @Setter
 @TableName("settings")
 public class Settings {
 
-    @TableId("user_id")
+    @TableId("id")
+    private String id;
+
+    @TableField("user_id")
     private String userId;
 
     /**
@@ -28,5 +31,10 @@ public class Settings {
     @TableField("editor_style")
     private String editorStyle;
 
+    /**
+     * 动态背景
+     */
+    @TableField("dynamicBackground")
+    private int dynamicBackground;
 
 }

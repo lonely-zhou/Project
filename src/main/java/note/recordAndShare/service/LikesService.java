@@ -1,7 +1,7 @@
 package note.recordAndShare.service;
 
-import note.recordAndShare.entity.Likes;
 import com.baomidou.mybatisplus.extension.service.IService;
+import note.recordAndShare.entity.Likes;
 import note.utils.NoteResultUtil;
 
 /**

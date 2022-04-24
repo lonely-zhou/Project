@@ -1,13 +1,9 @@
 package note.recordAndShare.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
-import note.recordAndShare.entity.Settings;
-import note.recordAndShare.mapper.SettingsMapper;
 import note.recordAndShare.service.SettingsService;
 import note.utils.NoteResultUtil;
-import note.utils.UserUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -48,5 +44,10 @@ public class SettingsController {
     @GetMapping("/selUserSettingsList")
     public NoteResultUtil selUserSettingsList() {
         return settingsService.selUserSettingsList();
+    }
+
+    @GetMapping("updDynamicBackground")
+    public NoteResultUtil updDynamicBackground(@RequestParam("dynamicBackground") String dynamicBackground) {
+        return settingsService.updDynamicBackground(dynamicBackground);
     }
 }

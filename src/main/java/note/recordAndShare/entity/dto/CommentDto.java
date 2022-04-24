@@ -15,13 +15,6 @@ import lombok.Data;
 @TableName("comment")
 @Data
 public class CommentDto {
-
-    /**
-     * 评论ID
-     */
-    @TableId("id")
-    private String id;
-
     /**
      * 用户ID
      */

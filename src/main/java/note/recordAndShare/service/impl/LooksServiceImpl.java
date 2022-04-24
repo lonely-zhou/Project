@@ -1,7 +1,6 @@
 package note.recordAndShare.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.AllArgsConstructor;
 import note.recordAndShare.entity.Looks;

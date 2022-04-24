@@ -1,7 +1,6 @@
 package note.recordAndShare.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -13,9 +12,6 @@ import lombok.Data;
  **/
 @Data
 public class LikesDto {
-    @TableId("id")
-    private String id;
-
     /**
      * 用户ID
      */

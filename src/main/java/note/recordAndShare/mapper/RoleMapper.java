@@ -1,7 +1,7 @@
 package note.recordAndShare.mapper;
 
-import note.recordAndShare.entity.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import note.recordAndShare.entity.Role;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

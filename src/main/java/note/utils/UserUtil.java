@@ -1,7 +1,6 @@
 package note.utils;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import note.recordAndShare.entity.User;
 import note.recordAndShare.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;

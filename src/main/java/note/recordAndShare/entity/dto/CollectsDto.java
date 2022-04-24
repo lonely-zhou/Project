@@ -14,12 +14,6 @@ import lombok.Data;
 @Data
 public class CollectsDto {
     /**
-     * 收藏表ID
-     */
-    @TableId("id")
-    private String id;
-
-    /**
      * 用户ID
      */
     @TableField("user_id")
