@@ -26,6 +26,16 @@
         <el-button type="primary" plain @click="submitFeedbackInfo">确定</el-button>
       </el-dialog>
     </el-col>
+    <el-col :spqn="24">
+      动态背景开关
+      <el-switch
+        v-model="particlesBackground"
+        inline-prompt
+        active-text="是"
+        inactive-text="否"
+        @change="changeParticlesBackground"
+      />
+    </el-col>
   </el-row>
 </template>
 <script lang="ts" setup>
@@ -34,6 +44,7 @@ import { ElMessage } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import api from '../../api';
 import Result from '../../api/common';
+import router from '../../router';
 
 const userSettings = ref({ editorStyle: '' });
 const store = api.store();
@@ -41,7 +52,7 @@ const openDialog = ref(false);
 const feedbackInfo = reactive({
   text: '',
 });
-
+const particlesBackground = ref(store.particlesBackground);
 // 去管理后台按钮是否显示
 const showAdminButton = computed(() => {
   if (store.role === 'admin' || store.role === 'su-admin') return true;
@@ -78,6 +89,10 @@ function submitFeedbackInfo() {
       if (result.code === 200) ElMessage.success('反馈成功');
       else ElMessage.error('反馈失败');
     });
+}
+function changeParticlesBackground(val: boolean) {
+  store.particlesBackground = val;
+  router.go(0);
 }
 onMounted(() => {
   selUserSettingsList();

@@ -86,7 +86,6 @@ const reportNoteInfo = ref();
 function handleInfo(index: number, row: Note) {
   dialogVisible.value = true;
   reportNoteInfo.value = row;
-  console.log(row);
 }
 function handleDelete(index: number) {
   axios.get(`api/note/delUserNote?noteId=${index}`);

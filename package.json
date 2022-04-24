@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "js-base64": "^3.7.2",
     "mavon-editor": "^3.0.0-beta",
     "nprogress": "^0.2.0",
+    "particles.vue3": "^1.43.1",
     "pinia": "^2.0.13",
     "pinia-plugin-persist": "^1.0.0",
     "save": "^2.4.0",

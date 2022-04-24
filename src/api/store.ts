@@ -19,6 +19,7 @@ const useStore = defineStore({
     role: '',
     q: undefined,
     classification: '请选择',
+    particlesBackground: false,
   }),
   getters: {
     getUserNote(): any {

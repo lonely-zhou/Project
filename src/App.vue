@@ -1,6 +1,14 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import particles from './api/particles';
+import api from './api';
+
+const options = particles;
+const store = api.store();
+const particlesBackound = store.particlesBackground;
+</script>
 <template>
   <div id="id">
+    <Particles id="tsparticles" :options="options" style="z-index: -1" v-if="particlesBackound" />
     <!-- <router-view v-slot="{ Component }">
     <transition name="fade"></transition>
       <component :is="Component" />

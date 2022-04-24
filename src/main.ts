@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
 import mavonEditor from 'mavon-editor';
+import Particles from 'particles.vue3';
 import store from './pinia';
 import App from './App.vue';
 import router from './router';
@@ -15,5 +16,6 @@ createApp(App)
   .use(router)
   .use(ElementPlus)
   .use(store)
+  .use(Particles)
   .use(mavonEditor)
   .mount('#app');

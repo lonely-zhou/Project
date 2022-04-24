@@ -1,4 +1,5 @@
 <template>
+  <one-word-vue />
   <div class="box">
     <div class="bacImg">
       <el-affix>
@@ -135,14 +136,6 @@
             <!-- 搜索 -->
             <el-col :span="24">
               <search-vue />
-              <!-- <el-input
-                v-model="search"
-                placeholder="输入关键字 搜索"
-                :suffix-icon="Search"
-                class="search"
-                @keydown.enter="toSearch"
-                clearable
-              /> -->
             </el-col>
             <!-- 标签云 -->
             <el-col :span="24" style="margin-top: 24px">
@@ -173,17 +166,16 @@ import { ArrowRightBold } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
-// import { setRoutes } from '../router';
 import FooterVue from './Footer.vue';
 import searchVue from './search.vue';
 import api from '../api/index';
+import oneWordVue from './oneWord.vue';
 import Result from '../api/common';
 
 const store = api.store();
 const user = ref();
 const avatarUrl = ref(''); // 头像url
 const router = useRouter();
-// const search = ref();
 // 剪贴板操作
 const clipboardObj = navigator.clipboard;
 const labelValuesList = ref();
@@ -364,10 +356,6 @@ function shareUrl(noteId: string) {
     ElMessage.error('复制失败');
   }
 }
-// // 跳转搜索结果页
-// function toSearch() {
-//   router.push({ name: 'SearchPage', query: { q: search.value } });
-// }
 // 随机颜色
 function setColor() {
   const R = Math.floor(Math.random() * 130 + 110);
@@ -393,7 +381,6 @@ onActivated(() => {
     .then(() => {
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
-      // setRoutes(store.role);
     })
     .catch(() => {
       store.setRole('guest');
@@ -413,11 +400,9 @@ onMounted(() => {
       result.value = res.data;
       store.setIsLogin(result.value.data.isLogin);
       store.setUser(result.value.data.user);
-      // user.value = result.value.data.user;
       store.setRole(res.data.data.role);
     })
     .then(() => {
-      // setRoutes(store.role);
       user.value = store.user;
       if (user.value != null) avatarUrl.value = user.value.avatarUrl;
       if (user.value.phone === '0' && user.value.email === '0' && store.isLogin) {

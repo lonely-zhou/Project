@@ -296,7 +296,7 @@ onMounted(() => {
   tab-size: 4;
   font-size: 14px;
   word-wrap: break-word;
-  user-select: none;
+  /* user-select: none; */
 }
 .info span {
   margin-right: 6px;
