@@ -63,7 +63,7 @@ import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import Result from '../api/common';
+import Result from '../../api/common';
 import PageHeaderVue from './PageHeader.vue';
 
 const route = useRoute();

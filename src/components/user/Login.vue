@@ -106,7 +106,7 @@ import axios from 'axios';
 // import { Base64 } from 'js-base64';
 // import { useCookies } from 'vue3-cookies';
 import { ElMessage } from 'element-plus';
-import api from '../api';
+import api from '../../api';
 
 const user = reactive({
   username: '',

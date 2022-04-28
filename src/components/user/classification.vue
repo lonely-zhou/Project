@@ -68,9 +68,9 @@
 import axios from 'axios';
 import { onMounted, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import Result from '../api/common';
-import api from '../api';
-import router from '../router';
+import Result from '../../api/common';
+import api from '../../api';
+import router from '../../router';
 import PageHeaderVue from './PageHeader.vue';
 
 const store = api.store();

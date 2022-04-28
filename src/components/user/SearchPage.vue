@@ -84,8 +84,8 @@ import { useRoute } from 'vue-router';
 // import { Search } from '@element-plus/icons-vue';
 import axios from 'axios';
 import searchVue from './search.vue';
-import router from '../router';
-import api from '../api';
+import router from '../../router';
+import api from '../../api';
 
 const route = useRoute();
 const store = api.store();

@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import axios from 'axios';
 import { ref } from 'vue';
-import api from '../api/index';
+import api from '../../api/index';
 
 const year: number = api.dateFormat.getDateRormatY();
 const BAIcon = ref();

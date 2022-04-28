@@ -132,7 +132,7 @@
         <el-col :span="6">
           <el-row>
             <!-- logo -->
-            <el-col :span="24"><img src="../assets/logo_2.png" alt="logo" /></el-col>
+            <el-col :span="24"><img src="../../assets/logo_2.png" alt="logo" /></el-col>
             <!-- 搜索 -->
             <el-col :span="24">
               <search-vue />
@@ -168,9 +168,9 @@ import axios from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
 import FooterVue from './Footer.vue';
 import searchVue from './search.vue';
-import api from '../api/index';
+import api from '../../api/index';
 import oneWordVue from './oneWord.vue';
-import Result from '../api/common';
+import Result from '../../api/common';
 
 const store = api.store();
 const user = ref();
@@ -180,6 +180,7 @@ const router = useRouter();
 const clipboardObj = navigator.clipboard;
 const labelValuesList = ref();
 const editorStyle = ref();
+const userSettings = ref({ editorStyle: '', dynamicBackground: 0 });
 const noteList = ref([
   {
     id: '', // 笔记ID
@@ -387,12 +388,20 @@ onActivated(() => {
       store.setIsLogin(false);
     });
 });
-
+// 跳转笔记分类页
 function toClassification(str: string) {
   store.setClassification(str);
   router.push('classification');
 }
+// 查询用户设置
+function selUserSettingsList() {
+  axios.get('api/settings/selUserSettingsList').then((res) => {
+    userSettings.value = res.data.data;
+  });
+}
 onMounted(() => {
+  selUserSettingsList();
+  store.particlesBackground = userSettings.value.dynamicBackground === 1;
   const result = ref();
   axios
     .get('api/user/isLogin')

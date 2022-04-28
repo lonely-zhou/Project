@@ -83,8 +83,8 @@ import { ElMessage } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import PageHeaderVue from './PageHeader.vue';
-import api from '../api';
-import router from '../router';
+import api from '../../api';
+import router from '../../router';
 
 const route = useRoute();
 const detail = '阅读全文';

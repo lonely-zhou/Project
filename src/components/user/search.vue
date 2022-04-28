@@ -11,8 +11,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { Search } from '@element-plus/icons-vue';
-import router from '../router';
-import api from '../api';
+import router from '../../router';
+import api from '../../api';
 
 const search = ref();
 const store = api.store();

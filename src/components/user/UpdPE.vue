@@ -59,9 +59,9 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import PageHeaderVue from './PageHeader.vue';
-import api from '../api';
+import api from '../../api';
 // import cookies from '../api/cookies';
-import router from '../router';
+import router from '../../router';
 
 const route = useRoute();
 const store = api.store();

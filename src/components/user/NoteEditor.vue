@@ -1,4 +1,5 @@
 <template>
+  <page-header-vue :detail="detail" :path="path" />
   <div class="box">
     <div class="noteEditor">
       <div>
@@ -49,7 +50,7 @@
             </el-radio-group>
           </el-col>
           <el-col :span="24">
-            <el-button type="primary" plain @click="updNote">更新</el-button>
+            <el-button type="primary" plain @click="insNote">保存</el-button>
           </el-col>
         </el-row>
       </div>
@@ -58,46 +59,38 @@
 </template>
 
 <script lang="ts" setup>
-// eslint-disable-next-line object-curly-newline
 import { onMounted, onBeforeUnmount, ref, reactive, nextTick } from 'vue';
 import WangEditor from 'wangeditor';
-// import { useCookies } from 'vue3-cookies';
 import { ElInput, ElMessage } from 'element-plus';
 import axios from 'axios';
-// import router from '../router';
-import api from '../api/index';
+import PageHeaderVue from './PageHeader.vue';
+import router from '../../router';
+import api from '../../api/index';
 
 const editor = ref();
-const store = api.store();
+const path = 'index';
+const detail = '写笔记';
 const inputValue = ref('');
 const inputVisible = ref(false);
 const InputRef = ref<InstanceType<typeof ElInput>>();
-// const userNote = JSON.parse(store.getUserNote);
-const userNote = store.getUserNote;
+
 const note = reactive({
-  id: userNote.id,
-  title: userNote.title, // 标题
+  title: '', // 标题
   text: '', // 正文
-  userId: userNote.userId, // 作者ID
-  name: userNote.name, // 作者
+  // user_id: userInfo.id, // 作者ID
+  // name: userInfo.username, // 作者
   createTime: api.dateFormat.getDateFormatYHD(), // 创建时间
-  message: userNote.message, // 是否公开 0公开
-  selectType: userNote.selectType, // 分类
-  labelValues: userNote.labelValues as string, // 标签
+  message: 0, // 是否公开 0公开
+  selectType: '', // 分类
+  labelValues: '', // 标签
   label: [], // 标签
 });
-if (userNote.labelValues !== '' && userNote.labelValues !== undefined) {
-  const labelList = note.labelValues.split(',');
-  for (let index = 0; index < labelList.length; index += 1) {
-    note.label.push(labelList[index] as never);
-  }
-}
 let instance: any;
 onMounted(() => {
   instance = new WangEditor(editor.value);
   Object.assign(instance.config, {
     onchange() {
-      console.log('change');
+      // console.log('change');
     },
   });
   instance.config.onchange = (newHtml: any) => {
@@ -105,7 +98,6 @@ onMounted(() => {
   };
   instance.config.height = 400;
   instance.create();
-  instance.txt.html(userNote.text);
 });
 
 onBeforeUnmount(() => {
@@ -130,17 +122,26 @@ const handleInputConfirm = () => {
   inputVisible.value = false;
   inputValue.value = '';
 };
-function updNote() {
+function insNote() {
   const result = ref();
-  note.labelValues = note.label.toString();
-  axios
-    .post('api/note/updUserNote', note)
-    .then((res) => {
-      result.value = res.data;
-    })
-    .then(() => {
-      if (result.value.code === 200) ElMessage.success('更新成功');
-    });
+  if (note.title === '') {
+    ElMessage.error('请输入标题');
+  } else {
+    note.labelValues = note.label.toString();
+    axios
+      .post('api/note/insNote', note)
+      .then((res) => {
+        result.value = res.data;
+      })
+      .then(() => {
+        if (result.value.code === 200) {
+          ElMessage.success('保存成功');
+          router.go(0);
+        } else {
+          ElMessage.error(result.value.msg);
+        }
+      });
+  }
 }
 </script>
 <style scoped>

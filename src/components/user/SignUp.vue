@@ -32,7 +32,7 @@ import { computed, reactive, ref } from 'vue';
 // import { useRouter } from "vue-router";
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
-import router from '../router';
+import router from '../../router';
 
 const res = ref();
 // 表单信息

@@ -3,7 +3,7 @@
 </template>
 <script lang="ts" setup>
 import { defineProps } from 'vue';
-import router from '../router';
+import router from '../../router';
 
 const props = defineProps({
   detail: String,

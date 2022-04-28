@@ -46,7 +46,7 @@ import api from '../../api';
 import Result from '../../api/common';
 import router from '../../router';
 
-const userSettings = ref({ editorStyle: '' });
+const userSettings = ref({ editorStyle: '', dynamicBackground: 0 });
 const store = api.store();
 const openDialog = ref(false);
 const feedbackInfo = reactive({
@@ -90,8 +90,10 @@ function submitFeedbackInfo() {
       else ElMessage.error('反馈失败');
     });
 }
+// 更改动态背景是否显示
 function changeParticlesBackground(val: boolean) {
   store.particlesBackground = val;
+  axios.get(`api/settings/updDynamicBackground?dynamicBackground=${val}`);
   router.go(0);
 }
 onMounted(() => {

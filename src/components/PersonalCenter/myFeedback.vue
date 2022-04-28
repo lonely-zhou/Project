@@ -87,13 +87,14 @@ const emptyMyFeedback = computed(() => {
   if (myFeedback.value.length === 0) return true;
   return false;
 });
-
+// 分页改变
 function changePage(page: number) {
   let result: Result;
   axios
     .get(`api/feedback/selUserFeedback?page=${page}`)
     .then((res) => {
       result = res.data;
+      console.log(result);
     })
     .then(() => {
       myFeedback.value = result.data.records;

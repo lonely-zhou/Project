@@ -33,5 +33,6 @@ axios
   top: 10%;
   left: 30px;
   font-family: '楷体';
+  user-select: none;
 }
 </style>
