@@ -29,7 +29,6 @@ public class BuildArticleTabloidUtil {
             } else {
                 myArticleTabloid.append(nowStr);
             }
-
             articleTabloid = articleTabloid.substring(endIndex + 1);
             beginIndex = articleTabloid.indexOf("<");
             if (myArticleTabloid.length() < 197) {

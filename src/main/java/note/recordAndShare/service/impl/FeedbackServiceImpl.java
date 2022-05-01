@@ -27,7 +27,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     private final FeedbackMapper feedbackMapper;
 
     /**
-     * 意见反馈
+     * 新增意见反馈
      *
      * @param feedback 反馈信息
      * @return ok

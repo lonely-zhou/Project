@@ -1,5 +1,6 @@
 package note.recordAndShare.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
@@ -37,10 +38,22 @@ public class ReportNoteServiceImpl extends ServiceImpl<ReportNoteMapper, ReportN
     @Override
     public NoteResultUtil insReportNote(ReportNote reportNote) {
         reportNote.setTime(new TimeUtil().getFormatDateForFive());
-        if (reportNoteMapper.insert(reportNote) == 1) {
-            return NoteResultUtil.success();
+        reportNote.setUserId(StpUtil.getExtra("user_id").toString());
+        int count = reportNoteMapper.selectCount(new QueryWrapper<ReportNote>()
+                .eq("userId", reportNote.getUserId())
+                .eq("noteId", reportNote.getNoteId())).intValue();
+        if (count >= 1) {
+            ReportNote reportNote1 = reportNoteMapper.selectOne(new QueryWrapper<ReportNote>()
+                    .eq("userId", reportNote.getUserId())
+                    .eq("noteId", reportNote.getNoteId()));
+            reportNote1.setMessage(reportNote1.getMessage() + "-" + reportNote.getMessage());
+            reportNoteMapper.update(reportNote1, new QueryWrapper<ReportNote>()
+                    .eq("userId", reportNote.getUserId())
+                    .eq("noteId", reportNote.getNoteId()));
+        } else {
+            reportNoteMapper.insert(reportNote);
         }
-        return NoteResultUtil.error("举报失败");
+        return NoteResultUtil.success();
     }
 
     /**
