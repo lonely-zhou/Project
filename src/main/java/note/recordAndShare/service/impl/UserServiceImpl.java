@@ -88,11 +88,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setId(UUID.randomUUID().toString());
         user.setPassword(SaSecureUtil.md5BySalt(user.getPassword(), user.getUsername()));
         user.setLastTime(new TimeUtil().getFormatDateForFive());
-        redisUtil.hset(ConstantUtil.USER_NAME, user.getUsername(), user.getUsername());
-        Settings settings = new Settings();
-        settings.setUserId(user.getId());
-        settingsMapper.insert(settings);
-        return userMapper.insert(user);
+        int count = userMapper.insert(user);
+        if (count > 0) {
+            Settings settings = new Settings();
+            settings.setUserId(user.getId());
+            settingsMapper.insert(settings);
+            redisUtil.hset(ConstantUtil.USER_NAME, user.getUsername(), user.getUsername());
+            return 0;
+        }
+        return 1;
     }
 
     /**
@@ -174,15 +178,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (!redisUtil.hasHkey(ConstantUtil.USER_NAME, user.getUsername())) {
                 insUser(user);
                 return NoteResultUtil.success();
+            } else {
+                return NoteResultUtil.error("用户已存在");
             }
-            return NoteResultUtil.error("用户已存在");
         } else {
             if (isUser(user.getUsername()) < 1) {
-                if (insUser(user) > 0) {
-                    return NoteResultUtil.success();
-                }
+                insUser(user);
+                return NoteResultUtil.success();
+            } else {
+                return NoteResultUtil.error("注册失败");
             }
-            return NoteResultUtil.error("注册失败");
         }
     }
 

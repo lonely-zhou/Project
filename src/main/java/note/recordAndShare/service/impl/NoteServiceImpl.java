@@ -44,7 +44,8 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
         note.setUserId(StpUtil.getExtra("user_id").toString());
         note.setName(UserUtil.selUser().getUsername());
         note.setId(note.getName() + "-" + UUID.randomUUID());
-        note.setArticleTabled(new BuildArticleTabloidUtil().buildArticleTabloid(note.getText()));
+        note.setArticleTabled(new BuildArticleTabloidUtil()
+        .buildArticleTabloid(note.getText()));
         int count = noteMapper.insert(note);
         if (count > 0) {
             return NoteResultUtil.success();
@@ -89,7 +90,9 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note> implements No
      */
     @Override
     public NoteResultUtil selNote(String noteId) {
-        String message = noteMapper.selectOne(new QueryWrapper<Note>().eq("id", noteId).select("message")).getMessage();
+        String message = noteMapper.selectOne(new QueryWrapper<Note>()
+                .eq("id", noteId).select("message"))
+                .getMessage();
         if (ConstantUtil.NOTE_MESSAGE.equals(message)) {
             return NoteResultUtil.success(noteMapper.selectOne(new QueryWrapper<Note>().eq("id", noteId)));
         } else {

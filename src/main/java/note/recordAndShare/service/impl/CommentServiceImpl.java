@@ -44,7 +44,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public NoteResultUtil insNoteComment(Comment comment) {
-//        comment.setId(UUID.randomUUID().toString());
         comment.setUserId(StpUtil.getExtra("user_id").toString());
         if (commentMapper.insert(comment) != 1) {
             return NoteResultUtil.error("评论失败");
@@ -85,7 +84,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public NoteResultUtil updNoteComment(Comment comment) {
-        int count = commentMapper.updateById(comment);
+        System.out.println(comment.getNoteId());
+        int count = commentMapper.update(comment,new QueryWrapper<Comment>()
+                .eq("note_id",comment.getNoteId())
+                .eq("user_id",StpUtil.getExtra("user_id")));
         if (count == 1) {
             return NoteResultUtil.success();
         }
@@ -100,7 +102,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
      */
     @Override
     public NoteResultUtil delNoteComment(String id) {
-        int count = commentMapper.deleteById(id);
+        int count = commentMapper.delete(new QueryWrapper<Comment>().eq("note_id",id));
         if (count == 1) {
             return NoteResultUtil.success();
         }
