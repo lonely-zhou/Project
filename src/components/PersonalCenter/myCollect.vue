@@ -6,6 +6,7 @@
     <el-table-column prop="time" label="时间" />
     <el-table-column label="操作">
       <template #default="scope">
+        <el-button size="small" @click="toReadNote(scope.row.noteId)">阅读</el-button>
         <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row.noteId)">删除</el-button>
       </template>
     </el-table-column>
@@ -25,6 +26,7 @@
 import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 import Result from '../../api/common';
+import router from '../../router';
 
 const loading = ref(false);
 const myCollects = ref([{ noteId: '', time: '', title: '' }]);
@@ -55,6 +57,11 @@ function handleDelete(index: number, noteId: string) {
     .then(() => {
       if (result.code === 200) myCollects.value.splice(index, 1);
     });
+}
+// 阅读全文
+function toReadNote(id: string) {
+  const noteId = id;
+  router.push({ name: 'ReadNote', query: { noteId } });
 }
 onMounted(() => {
   axios.get('api/collects/selUserNoteCollectList?page=1').then((res) => {

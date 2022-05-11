@@ -245,7 +245,7 @@ function toUpdPE(showInfo: string) {
   router.push({ name: 'UpdPE', params: { showInfo } });
 }
 function uploadSuccess() {
-  ElMessage.success('头像上传成功，下次登录生效！');
+  ElMessage.success('头像上传成功！');
 }
 function clickTap() {
   // show.value = false;

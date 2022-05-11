@@ -94,7 +94,6 @@ function changePage(page: number) {
     .get(`api/feedback/selUserFeedback?page=${page}`)
     .then((res) => {
       result = res.data;
-      console.log(result);
     })
     .then(() => {
       myFeedback.value = result.data.records;

@@ -36,10 +36,10 @@
             <el-icon><chat-dot-round /></el-icon>
             <span>反馈管理</span>
           </el-menu-item>
-          <el-menu-item index="5" v-if="showSystemAdmin">
+          <!-- <el-menu-item index="5" v-if="showSystemAdmin">
             <el-icon><span class="iconfont icon-flag" /></el-icon>
             <span>举报管理</span>
-          </el-menu-item>
+          </el-menu-item> -->
         </el-menu>
       </el-aside>
       <el-container>

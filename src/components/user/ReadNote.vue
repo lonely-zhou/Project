@@ -240,7 +240,7 @@ function insUserNoteCollect() {
     ElMessage.error('未登录');
   }
 }
-
+// 下载
 function download() {
   let type: string;
   if (note.value.noteType === 'note') type = 'html';

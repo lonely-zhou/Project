@@ -337,7 +337,9 @@ function insLike(noteId: string, index: number) {
 }
 // 跳转举报页
 function toReportPage(noteId: string) {
-  router.push({ name: 'ReportPage', query: { noteId } });
+  if (store.isLogin === true) {
+    router.push({ name: 'ReportPage', query: { noteId } });
+  } else ElMessage.error('举报笔记请先登录！');
 }
 // 收藏笔记
 function insUserCollect(noteId: string, index: number) {

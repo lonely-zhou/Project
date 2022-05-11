@@ -7,12 +7,15 @@
     <el-table-column prop="message" label="评论内容" />
     <el-table-column label="操作">
       <template #default="scope">
-        <el-button size="small" @click="handleEditor(scope.row.id, scope.row.message)">修改</el-button>
+        <el-button size="small" @click="toReadNote(scope.row.noteId)">阅读</el-button>
+        <el-button size="small" type="info" @click="handleEditor(scope.row.noteId, scope.row.message)">
+          修改
+        </el-button>
         <el-popconfirm
-          title="确定删除该笔记?"
+          title="确定删除该笔记评论?"
           confirm-button-text="确定"
           cancel-button-text="取消"
-          @confirm="handleDelete(scope.$index, scope.row.id)"
+          @confirm="handleDelete(scope.$index, scope.row.noteId)"
         >
           <template #reference>
             <el-button type="danger" size="small">删除</el-button>
@@ -43,6 +46,7 @@ import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { computed, onMounted, reactive, ref } from 'vue';
 import Result from '../../api/common';
+import router from '../../router';
 
 const loading = ref(false);
 const dialogVisible = ref(false);
@@ -60,7 +64,7 @@ const pagination = reactive({
   total: 0,
 });
 const updComment = ref({
-  id: '',
+  noteId: '',
   message: '',
 });
 
@@ -78,7 +82,7 @@ function changePage(pageNum: number) {
 // 修改评论
 function handleEditor(id: string, commentInfo: any) {
   dialogVisible.value = true;
-  updComment.value.id = id;
+  updComment.value.noteId = id;
   updComment.value.message = commentInfo;
 }
 // 提交修改评论
@@ -102,6 +106,10 @@ function handleDelete(index: number, id: string) {
       if (result.code === 200) myComments.value.splice(index, 1);
       else ElMessage.error(result.msg);
     });
+}
+function toReadNote(id: string) {
+  const noteId = id;
+  router.push({ name: 'ReadNote', query: { noteId } });
 }
 onMounted(() => {
   let result: Result;
