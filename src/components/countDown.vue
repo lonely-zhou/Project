@@ -25,12 +25,14 @@
 </template>
 <script lang="ts" setup>
 import { reactive } from 'vue';
+import lunarFun from 'lunar-fun';
 import api from '../api';
 
 const time = reactive({ d: 0, h: '', m: '', s: '' });
 const year = (api.dateFormat.getDateRormatY() + 1).toString();
+const newYear = lunarFun.lunalToGregorian(year, 1, 1).toString();
 setInterval(() => {
-  const newDate = new Date(year).getTime() - new Date().getTime();
+  const newDate = new Date(newYear).getTime() - new Date().getTime();
   time.d = Math.floor(newDate / 1000 / 60 / 60 / 24);
   time.h = zeroPadding(Math.floor((newDate / 1000 / 60 / 60) % 24), 2);
   time.m = zeroPadding(Math.floor((newDate / 1000 / 60) % 60), 2);
