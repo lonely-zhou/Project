@@ -31,6 +31,7 @@ axios
   width: 100%;
   position: fixed;
   bottom: 0;
+  user-select: none;
 }
 img {
   margin-right: 1rem;

@@ -1,24 +1,23 @@
 <template>
-  <div class="box text-second" data-v-40c207c1="">
-    <h1 data-v-40c207c1="">
-      <font color="#E80017" data-v-40c207c1="">{{ year.charAt(0) }}</font>
-      <font color="#D1002E" data-v-40c207c1="">{{ year.charAt(1) }}</font>
-      <font color="#BA0045" data-v-40c207c1="">{{ year.charAt(2) }}</font>
-      <font color="#A3005C" data-v-40c207c1="">{{ year.charAt(3) }}</font>
-      <font color="#8C0073" data-v-40c207c1="">年</font>
-      <font color="#75008A" data-v-40c207c1="">&nbsp;-&nbsp;</font>
-      <font color="#5E00A1" data-v-40c207c1="">春</font>
-      <font color="#4700B8" data-v-40c207c1="">节</font>
-      <font color="#3000CF" data-v-40c207c1="">倒</font>
-      <font color="#1900E6" data-v-40c207c1="">计</font>
-      <font color="#0200FD" data-v-40c207c1="">时</font>
+  <div class="box text-second">
+    <h1>
+      <font color="#E80017">{{ year.charAt(0) }}</font>
+      <font color="#D1002E">{{ year.charAt(1) }}</font>
+      <font color="#BA0045">{{ year.charAt(2) }}</font>
+      <font color="#A3005C">{{ year.charAt(3) }}</font>
+      <font color="#8C0073">年</font>
+      <font color="#75008A">&nbsp;-&nbsp;</font>
+      <font color="#5E00A1">春</font>
+      <font color="#4700B8">节</font>
+      <font color="#3000CF">倒</font>
+      <font color="#1900E6">计</font>
+      <font color="#0200FD">时</font>
     </h1>
-    <center data-v-40c207c1="">
-      <div id="CountMsg" class="HotDate" data-v-40c207c1="">
-        <span id="t_d" data-v-40c207c1="">{{ time.d }} 天</span><span data-v-40c207c1="">&nbsp;</span>
-        <span id="t_h" data-v-40c207c1="">{{ time.h }} 时</span><span data-v-40c207c1="">&nbsp;</span>
-        <span id="t_m" data-v-40c207c1="">{{ time.m }} 分</span><span data-v-40c207c1="">&nbsp;</span>
-        <span id="t_s" data-v-40c207c1="">{{ time.s }} 秒</span><span data-v-40c207c1="">&nbsp;</span>
+    <center>
+      <div id="CountMsg" class="HotDate">
+        <span id="t_d">{{ time.d }} 天</span><span>&nbsp;</span> <span id="t_h">{{ time.h }} 时</span>
+        <span>&nbsp;</span> <span id="t_m">{{ time.m }} 分</span><span>&nbsp;</span>
+        <span id="t_s">{{ time.s }} 秒</span><span>&nbsp;</span>
       </div>
     </center>
   </div>
@@ -51,6 +50,7 @@ function zeroPadding(num: string | number, digit: number) {
   width: 100%;
   position: fixed;
   bottom: 5rem;
+  user-select: none;
 }
 #t_d {
   color: #982585;

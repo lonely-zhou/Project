@@ -44,6 +44,7 @@ function zeroPadding(num: string | number, digit: number) {
 <style scoped>
 #clock {
   margin-top: 8rem;
+  user-select: none;
 }
 .time {
   font-size: 6rem;
