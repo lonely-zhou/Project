@@ -1,4 +1,4 @@
 # 项目存放
 
-## [RecordAndShare](https://gitee.com/lonelyzhou/Project/tree/RecordAndShare/)
-## [RecordAndShare-Web](https://gitee.com/lonelyzhou/Project/tree/RecordAndShare-Web/)
+## [RecordAndShare](https://github.com/lonely-zhou/Project/tree/RecordAndShare/)
+## [RecordAndShare-Web](https://github.com/lonely-zhou/Project/tree/RecordAndShare-Web/)
